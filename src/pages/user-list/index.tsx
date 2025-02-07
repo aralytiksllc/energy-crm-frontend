@@ -71,7 +71,7 @@ const TabbedDatagrid = () => {
       setFilters &&
         setFilters({ ...filterValues, status: value }, displayedFilters);
     },
-    [displayedFilters, filterValues, setFilters]
+    [displayedFilters, filterValues, setFilters],
   );
 
   return (

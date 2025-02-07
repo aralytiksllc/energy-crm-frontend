@@ -1,4 +1,10 @@
-import { Edit, SimpleForm, TextInput, DateInput, SelectInput } from "react-admin";
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  SelectInput,
+} from "react-admin";
 import { Card, Grid } from "@mui/material";
 
 const UserEdit = () => (
@@ -23,8 +29,17 @@ const UserEdit = () => (
           </Grid>
           <Grid item xs={12} md={6}>
             <TextInput source="lastName" label="Last Name" fullWidth />
-            <TextInput source="password" label="Password" type="password" fullWidth />
-            <DateInput source="dateOfJoining" label="Date of Joining" fullWidth />
+            <TextInput
+              source="password"
+              label="Password"
+              type="password"
+              fullWidth
+            />
+            <DateInput
+              source="dateOfJoining"
+              label="Date of Joining"
+              fullWidth
+            />
           </Grid>
         </Grid>
       </SimpleForm>
