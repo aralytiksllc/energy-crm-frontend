@@ -3,13 +3,13 @@ import { Admin, Resource, ListGuesser } from "react-admin";
 import jsonServerProvider from "ra-data-json-server";
 import UserCreate from "./resources/users/user-create";
 import UserEdit from "./resources/users/user-edit";
+import ProjectCreate from "./resources/projects/project-create";
+import ProjectEdit from "./resources/projects/project-edit";
 import { theme } from "./theme";
-import {MYLayout} from "./compomens/Layout"
-import DescriptionIcon from '@mui/icons-material/Description';
+import { MYLayout } from "./compomens/Layout";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const dataProvider = jsonServerProvider("http://localhost:3000");
-
-import { defaultTheme } from 'react-admin';
 
 const App = () => (
   <Admin dataProvider={dataProvider} theme={theme} layout={MYLayout}>
@@ -20,7 +20,17 @@ const App = () => (
       edit={UserEdit}
       icon={DescriptionIcon}
       options={{
-        label: "This is sexy"
+        label: "Users",
+      }}
+    />
+    <Resource
+      name="projects"
+      list={ListGuesser}
+      create={ProjectCreate}
+      edit={ProjectEdit}
+      icon={DescriptionIcon}
+      options={{
+        label: "Projects",
       }}
     />
   </Admin>
