@@ -5,6 +5,9 @@ import UserCreate from "./resources/users/user-create";
 import UserEdit from "./resources/users/user-edit";
 import ProjectCreate from "./resources/projects/project-create";
 import ProjectEdit from "./resources/projects/project-edit";
+import TimelogCreate from "./resources/timelogs/timelog-create";
+import TimelogEdit from "./resources/timelogs/timelog-edit";
+import TimelogList from "./resources/timelogs/timelog-list";
 import { theme } from "./theme";
 import { MYLayout } from "./compomens/Layout";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -31,6 +34,16 @@ const App = () => (
       icon={DescriptionIcon}
       options={{
         label: "Projects",
+      }}
+    />
+    <Resource
+      name="timelogs"
+      list={TimelogList}
+      create={TimelogCreate}
+      edit={TimelogEdit}
+      icon={DescriptionIcon}
+      options={{
+        label: "Actual Hours",
       }}
     />
   </Admin>
