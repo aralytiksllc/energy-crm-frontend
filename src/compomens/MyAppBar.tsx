@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 
 const Logo = (props: SVGProps<SVGSVGElement>) => {
   const theme = useTheme();
-  return <strong>hr.aralytiks.com</strong>
+  return <strong>hr.aralytiks.com</strong>;
 };
 
 export const AppBarToolbar = () => (

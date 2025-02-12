@@ -21,7 +21,12 @@ const ProjectForm: React.FC = () => {
           <TextInput source="name" label="Project Name" fullWidth />
         </Grid>
         <Grid size={{ sm: 12, md: 12 }}>
-          <TextInput source="description" label="Description" fullWidth multiline />
+          <TextInput
+            source="description"
+            label="Description"
+            fullWidth
+            multiline
+          />
         </Grid>
         <Grid size={{ sm: 12, md: 6 }}>
           <DateInput source="startDate" label="Start Date" fullWidth />

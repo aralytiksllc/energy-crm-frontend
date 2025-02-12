@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "format": "prettier --write \"src/**/*.tsx\"",
+  "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.10.0",
     "prettier": "^3.4.2",
     "ra-data-json-server": "^5.5.3",
+    "ra-data-simple-rest": "^5.5.3",
     "react": "^19.0.0",
     "react-admin": "^5.5.3",
     "react-dom": "^19.0.0",

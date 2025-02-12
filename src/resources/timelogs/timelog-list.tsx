@@ -1,10 +1,4 @@
-import {
-  List,
-  Datagrid,
-  TextField,
-  DateField,
-  NumberField,
-} from "react-admin";
+import { List, Datagrid, TextField, DateField, NumberField } from "react-admin";
 
 const TimelogList = () => (
   <List>
