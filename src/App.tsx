@@ -24,14 +24,19 @@ import { Login } from './pages/login';
 import { Register } from './pages/register';
 import { authProvider } from './providers/auth';
 import { createDataProvider } from './providers/data';
-import { vendorsResource } from './resources/vendors';
-import { VendorsList } from './resources/vendors/pages/vendors-list';
-import { VendorCreate } from './resources/vendors/pages/vendor-create';
-import { VendorEdit } from './resources/vendors/pages/vendor-edit';
-import { VendorShow } from './resources/vendors/pages/vendor-show';
+import { vendorsResource } from './resources/users';
+import { UsersList } from './resources/users/pages/users-list';
+import { UsersCreate } from './resources/users/pages/users-create';
+import { UsersEdit } from './resources/users/pages/users-edit';
+import { UsersShow } from './resources/users/pages/users-show';
 
 export const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDkxMjQzOTYsImV4cCI6MTc0OTIxMDc5Nn0.Y36_8n8E-Xt_eyyYUNUynABd_ObH85KQDMo2Tagn-I8',
+  },
 });
 
 const dataProvider = createDataProvider(axiosInstance);
@@ -75,11 +80,11 @@ export default function CoreFlow() {
                       index
                       element={<NavigateToResource resource="items" />}
                     />
-                    <Route path="/vendors">
-                      <Route index element={<VendorsList />} />
-                      <Route path="create" element={<VendorCreate />} />
-                      <Route path="edit/:id" element={<VendorEdit />} />
-                      <Route path="show/:id" element={<VendorShow />} />
+                    <Route path="/users">
+                      <Route index element={<UsersList />} />
+                      <Route path="create" element={<UsersCreate />} />
+                      <Route path="edit/:id" element={<UsersEdit />} />
+                      <Route path="show/:id" element={<UsersShow />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

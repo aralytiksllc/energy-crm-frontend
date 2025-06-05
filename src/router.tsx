@@ -5,24 +5,18 @@ import { layoutConfig } from './routes';
 import { Login } from './pages/login';
 import { Register } from './pages/register';
 import { ForgotPassword } from './pages/forgotPassword';
-import { VendorsList } from './resources/vendors/pages/vendors-list';
-import { VendorCreate } from './resources/vendors/pages/vendor-create';
-import { VendorEdit } from './resources/vendors/pages/vendor-edit';
-import { VendorShow } from './resources/vendors/pages/vendor-show';
-import { ProductsList } from './resources/products/pages/products-list';
-import { ProductCreate } from './resources/products/pages/product-create';
-import { ProductEdit } from './resources/products/pages/product-edit';
-import { ProductShow } from './resources/products/pages/product-show';
+import { UsersList } from './resources/users/pages/users-list';
+import { UsersCreate } from './resources/users/pages/users-create';
+import { UsersEdit } from './resources/users/pages/users-edit';
+import { UsersShow } from './resources/users/pages/users-show';
 
 export const RouterComponent: React.FC = () => {
   return (
     <>
-      {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* Protected Routes */}
       <Route
         element={
           <Authenticated
@@ -39,23 +33,13 @@ export const RouterComponent: React.FC = () => {
           </Authenticated>
         }
       >
-        {/* Vendor Routes */}
-        <Route path="/vendors">
-          <Route index element={<VendorsList />} />
-          <Route path="create" element={<VendorCreate />} />
-          <Route path="edit/:id" element={<VendorEdit />} />
-          <Route path="show/:id" element={<VendorShow />} />
+        <Route path="/users">
+          <Route index element={<UsersList />} />
+          <Route path="create" element={<UsersCreate />} />
+          <Route path="edit/:id" element={<UsersEdit />} />
+          <Route path="show/:id" element={<UsersShow />} />
         </Route>
 
-        {/* Product Routes */}
-        <Route path="/products">
-          <Route index element={<ProductsList />} />
-          <Route path="create" element={<ProductCreate />} />
-          <Route path="edit/:id" element={<ProductEdit />} />
-          <Route path="show/:id" element={<ProductShow />} />
-        </Route>
-
-        {/* Redirect to vendors list by default */}
         <Route path="/" element={<Navigate to="/vendors" replace />} />
       </Route>
     </>

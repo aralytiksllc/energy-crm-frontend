@@ -1,36 +1,36 @@
-import { ColumnType } from 'antd/es/table';
+import { ColumnsType } from 'antd/es/table';
 import { createActions } from '@/components/actions/create-actions';
-import { IVendor } from '../types';
+import { IUser } from '../types';
 
-export const columns: ColumnType<IVendor>[] = [
+export const columns: ColumnsType<IUser> = [
   {
     dataIndex: 'id',
     title: 'ID',
     sorter: true,
   },
   {
-    dataIndex: 'name',
-    title: 'Name',
+    dataIndex: 'firstName',
+    title: 'First Name',
     sorter: true,
   },
   {
-    dataIndex: 'description',
-    title: 'Description',
+    dataIndex: 'lastName',
+    title: 'Last Name',
     sorter: true,
   },
   {
-    dataIndex: 'contactEmail',
-    title: 'Contact Email',
+    dataIndex: 'email',
+    title: 'Email',
     sorter: true,
   },
   {
-    dataIndex: 'contactPhone',
-    title: 'Contact Phone',
+    dataIndex: 'dateOfBirth',
+    title: 'Date of Birth',
     sorter: true,
   },
   {
-    dataIndex: 'website',
-    title: 'Website',
+    dataIndex: 'dateOfJoining',
+    title: 'Date of Joining',
     sorter: true,
   },
   {

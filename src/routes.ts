@@ -5,16 +5,15 @@ import { Login } from './pages/login';
 import { Register } from './pages/register';
 import { ForgotPassword } from './pages/forgotPassword';
 import { productsResource } from './resources/products';
-import { vendorsResource } from './resources/vendors';
+import { vendorsResource } from './resources/users';
 import { customersResource } from './resources/customers';
 
-// Combine all resources
 export const resources: ResourceProps[] = [
   {
     ...productsResource,
     meta: {
       ...productsResource.meta,
-      order: 1, // This determines the order in the sidebar
+      order: 1,
     },
   },
   {
@@ -33,7 +32,6 @@ export const resources: ResourceProps[] = [
   },
 ];
 
-// Define auth configuration
 export const authConfig = {
   login: {
     path: '/login',
@@ -49,7 +47,6 @@ export const authConfig = {
   },
 };
 
-// Define layout configuration
 export const layoutConfig = {
   Header,
   Sider: ThemedSiderV2,

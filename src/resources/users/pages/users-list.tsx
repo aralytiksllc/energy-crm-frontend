@@ -2,10 +2,11 @@ import * as React from 'react';
 import { Table } from 'antd';
 import { List, useTable } from '@refinedev/antd';
 import { columns } from '../constants/table';
-import { IVendor } from '../types';
+import { IUser } from '../types';
 
-export const VendorsList: React.FC = () => {
-  const { tableProps } = useTable<IVendor>({
+export const UsersList: React.FC = () => {
+  const { tableProps } = useTable<IUser>({
+    resource: 'users',
     filters: { mode: 'server' },
     syncWithLocation: true,
   });
