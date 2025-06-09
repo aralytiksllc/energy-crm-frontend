@@ -29,13 +29,15 @@ import { UsersList } from './resources/users/pages/users-list';
 import { UsersCreate } from './resources/users/pages/users-create';
 import { UsersEdit } from './resources/users/pages/users-edit';
 import { UsersShow } from './resources/users/pages/users-show';
+import { projectsResource } from './resources/projects';
+import MultipleContainers from './resources/projects/pages/MultipleContainers';
 
 export const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
     Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDkxMjQzOTYsImV4cCI6MTc0OTIxMDc5Nn0.Y36_8n8E-Xt_eyyYUNUynABd_ObH85KQDMo2Tagn-I8',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDk0NjEwMDMsImV4cCI6MTc0OTU0NzQwM30.NPWWrqtbpOk1hSE0tfpWLtDcwoJzi-EZwFZo8GLfAQM',
   },
 });
 
@@ -46,7 +48,7 @@ const refineProps: RefineProps = {
   notificationProvider: useNotificationProvider,
   routerProvider: routerBindings,
   authProvider,
-  resources: [vendorsResource],
+  resources: [vendorsResource, projectsResource],
   options: {
     syncWithLocation: true,
   },
@@ -86,6 +88,20 @@ export default function CoreFlow() {
                       <Route path="edit/:id" element={<UsersEdit />} />
                       <Route path="show/:id" element={<UsersShow />} />
                     </Route>
+                    <Route path="/projects">
+                      <Route
+                        index
+                        element={
+                          <MultipleContainers
+                            containerStyle={{
+                              maxHeight: '85vh',
+                            }}
+                            itemCount={15}
+                          />
+                        }
+                      />
+                    </Route>
+
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
                   <Route
