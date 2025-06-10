@@ -1,47 +1,62 @@
 import React from 'react';
-import { Card, Typography } from 'antd';
-import { projectCardStyles } from '../constants/styles';
+import { Card, Typography, Avatar, Space, Tooltip } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { Task } from '../../tasks/types/types';
+import styles from '../styles/projectCard.module.css';
 
-const { Title, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 interface ProjectCardProps {
-  title: string;
-  description?: string;
-  extra?: React.ReactNode;
-  children?: React.ReactNode;
-  className?: string;
+  id: string;
+  content: string;
+  description: string;
+  task?: Task;
 }
 
-export function ProjectCard({
-  title,
+const formatDate = (date: Date): string => {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+};
+
+export const ProjectCard: React.FC<ProjectCardProps> = ({
+  content,
   description,
-  extra,
-  children,
-  className = '',
-}: ProjectCardProps) {
+  task,
+}) => {
   return (
-    <Card
-      className={className}
-      style={projectCardStyles.card as React.CSSProperties}
-      styles={{
-        body: projectCardStyles.body,
-        header: projectCardStyles.header,
-      }}
-      variant={projectCardStyles.variant}
-      title={
-        <Title level={5} style={{ margin: 0, fontSize: 16 }}>
-          {title}
-        </Title>
-      }
-      extra={extra}
-      hoverable
-    >
-      {description && (
-        <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 0 }}>
-          {description}
-        </Paragraph>
+    <Card className={styles.card} hoverable>
+      <Title level={5} className={styles.title}>
+        {content}
+      </Title>
+      <Text className={styles.description}>{description}</Text>
+      {task && (
+        <div className={styles.taskContent}>
+          <div className={styles.taskHeader}>
+            <Text strong>{task.title}</Text>
+          </div>
+          <Text type="secondary" className={styles.taskDescription}>
+            {task.description}
+          </Text>
+          <Space size="middle" className={styles.taskMeta}>
+            <Text type="secondary">{formatDate(task.dueDate)}</Text>
+            <Space size={4}>
+              {task.assignedTo?.map((user) => (
+                <Tooltip key={user.id} title={user.name}>
+                  <Avatar
+                    size="small"
+                    src={user.avatar}
+                    icon={!user.avatar && <UserOutlined />}
+                    className={styles.avatar}
+                  />
+                </Tooltip>
+              ))}
+            </Space>
+          </Space>
+        </div>
       )}
-      {children}
     </Card>
   );
-}
+};

@@ -1,8 +1,10 @@
+import { Task } from '../../tasks/types/types';
+
 export interface Item {
   id: string;
   content: string;
-  description?: string;
-  extra?: React.ReactNode;
+  description: string;
+  task: Task;
 }
 
 export interface Container {

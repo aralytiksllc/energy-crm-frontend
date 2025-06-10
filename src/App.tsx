@@ -30,14 +30,18 @@ import { UsersCreate } from './resources/users/pages/users-create';
 import { UsersEdit } from './resources/users/pages/users-edit';
 import { UsersShow } from './resources/users/pages/users-show';
 import { projectsResource } from './resources/projects';
-import MultipleContainers from './resources/projects/pages/MultipleContainers';
+import ProjectsList from './resources/projects/pages/projects-list';
+import MultipleContainers from './resources/projects/pages/multiple-containers';
+import ProjectsCreate from './resources/projects/pages/projects-create';
+import ProjectsEdit from './resources/projects/pages/projects-edit';
+import ProjectsShow from './resources/projects/pages/projects-show';
 
 export const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
     Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDk0NjEwMDMsImV4cCI6MTc0OTU0NzQwM30.NPWWrqtbpOk1hSE0tfpWLtDcwoJzi-EZwFZo8GLfAQM',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDk1NDUzMzcsImV4cCI6MTc0OTYzMTczN30.HrxdBY1VuMEtg2GyZgswskD2IDB_cGOI2A6XkLL6BFE',
   },
 });
 
@@ -89,17 +93,11 @@ export default function CoreFlow() {
                       <Route path="show/:id" element={<UsersShow />} />
                     </Route>
                     <Route path="/projects">
-                      <Route
-                        index
-                        element={
-                          <MultipleContainers
-                            containerStyle={{
-                              maxHeight: '85vh',
-                            }}
-                            itemCount={15}
-                          />
-                        }
-                      />
+                      <Route index element={<ProjectsList />} />
+                      <Route path=":id" element={<MultipleContainers />} />
+                      <Route path="create" element={<ProjectsCreate />} />
+                      <Route path="edit/:id" element={<ProjectsEdit />} />
+                      <Route path="show/:id" element={<ProjectsShow />} />
                     </Route>
 
                     <Route path="*" element={<ErrorComponent />} />

@@ -3,7 +3,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Item } from '../types/kanban';
 import { ProjectCard } from './ProjectCard';
-import styles from '../pages/kanbanBoard.module.css';
+import styles from '../styles/kanbanBoard.module.css';
+import { Task } from '../../tasks/types/types';
 
 interface SortableItemProps extends Item {
   isDragging?: boolean;
@@ -12,8 +13,8 @@ interface SortableItemProps extends Item {
 const SortableItem: React.FC<SortableItemProps> = ({
   id,
   content,
-  description,
-  extra,
+  description = '',
+  task,
   isDragging,
 }) => {
   const {
@@ -24,15 +25,13 @@ const SortableItem: React.FC<SortableItemProps> = ({
     transition,
     isDragging: sortableDragging,
   } = useSortable({ id });
+
   return (
     <div
       ref={setNodeRef}
-      className={
-        styles['kanban-item'] +
-        (isDragging || sortableDragging
-          ? ' ' + styles['kanban-item--dragging']
-          : '')
-      }
+      className={`${styles['kanban-item']} ${
+        isDragging || sortableDragging ? styles['kanban-item--dragging'] : ''
+      }`}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
@@ -40,7 +39,12 @@ const SortableItem: React.FC<SortableItemProps> = ({
       {...attributes}
       {...listeners}
     >
-      <ProjectCard title={content} description={description} extra={extra} />
+      <ProjectCard
+        id={id}
+        content={content}
+        description={description}
+        task={task as Task}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import styles from '../pages/kanbanBoard.module.css';
+import styles from '../styles/kanbanBoard.module.css';
 
 interface DroppableColumnProps {
   id: string;

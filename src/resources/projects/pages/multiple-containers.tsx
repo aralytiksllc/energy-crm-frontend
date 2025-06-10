@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Typography } from 'antd';
+import { useParams } from 'react-router';
 import {
   DndContext,
   closestCenter,
@@ -21,7 +22,8 @@ import {
 import { Item, Container, MultipleContainersProps } from '../types/kanban';
 import SortableItem from '../components/SortableItem';
 import DroppableColumn from '../components/DroppableColumn';
-import styles from './kanbanBoard.module.css';
+import styles from '../styles/kanbanBoard.module.css';
+import { projectStages } from '../constants/projects';
 import { defaultContainers } from '../constants/kanban';
 import { ProjectCard } from '../components/ProjectCard';
 import {
@@ -34,17 +36,29 @@ const { Title } = Typography;
 
 export default function MultipleContainers({
   itemCount,
-  projects,
 }: MultipleContainersProps) {
-  const base =
-    projects && Array.isArray(projects) ? projects : defaultContainers;
+  const { id } = useParams();
+  const projectId = Number(id);
+
+  const stages =
+    (projectStages[String(projectId)] as { id: string; title: string }[]) || [];
+
+  const containersForProject = stages.map(
+    (stage: { id: string; title: string }) => {
+      const container = defaultContainers.find(
+        (c) => c.projectId === projectId && c.id === stage.id,
+      );
+      return container || { id: stage.id, title: stage.title, items: [] };
+    },
+  );
+
   const containersWithItemCount =
     typeof itemCount === 'number'
-      ? base.map((container) => ({
+      ? containersForProject.map((container: Container) => ({
           ...container,
           items: container.items.slice(0, itemCount),
         }))
-      : base;
+      : containersForProject;
 
   const [containers, setContainers] = useState<Container[]>(
     containersWithItemCount,
@@ -132,8 +146,8 @@ export default function MultipleContainers({
                       key={item.id}
                       id={item.id}
                       content={item.content}
-                      description={item.description}
-                      extra={item.extra}
+                      description={item.description || ''}
+                      task={item.task}
                       isDragging={activeId === item.id}
                     />
                   ))}
@@ -146,9 +160,10 @@ export default function MultipleContainers({
       <DragOverlay>
         {activeItem ? (
           <ProjectCard
-            title={activeItem.content}
-            description={activeItem.description}
-            extra={activeItem.extra}
+            id={activeItem.id}
+            content={activeItem.content}
+            description={activeItem.description || ''}
+            task={activeItem.task}
           />
         ) : null}
       </DragOverlay>
