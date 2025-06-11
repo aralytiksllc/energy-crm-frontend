@@ -63,6 +63,8 @@ export interface IProject {
   tasks?: ITask[];
   documents?: IDocument[];
   notes?: INote[];
+  stages?: string[];
+  tags?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }

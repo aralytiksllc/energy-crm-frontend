@@ -13,7 +13,9 @@ const kanbanColumn: ColumnsType<IProject>[number] = {
   key: 'kanban',
   render: (_: unknown, record: IProject) => (
     <a href={`/projects/${record.id}`} title="Open Kanban Board">
-      <ArrowRightOutlined style={{ fontSize: 18, color: '#2563eb' }} />
+      <ArrowRightOutlined
+        style={{ fontSize: 18, color: 'var(--primary-blue)' }}
+      />
     </a>
   ),
 };

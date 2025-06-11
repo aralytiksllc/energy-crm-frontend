@@ -1,20 +1,11 @@
 import { ColumnsType } from 'antd/es/table';
 import { createActions } from '@/components/actions/create-actions';
 import { IProject } from '../types/types';
-import { projectStages } from './projects';
 
 export const columns: ColumnsType<IProject> = [
   { dataIndex: 'id', title: 'ID', sorter: true },
   { dataIndex: 'name', title: 'Name', sorter: true },
-  {
-    dataIndex: 'stage',
-    title: 'Stages',
-    sorter: true,
-    render: (_: unknown, record: IProject) => {
-      const stages = projectStages[record.id] || [];
-      return `${stages.length} stage${stages.length === 1 ? '' : 's'}`;
-    },
-  },
+  { dataIndex: 'stage', title: 'Stages', sorter: true },
   { dataIndex: 'functionalArea', title: 'Functional Area', sorter: true },
   { dataIndex: 'commercialRegion', title: 'Region', sorter: true },
   { dataIndex: 'commercialCountry', title: 'Country', sorter: true },
