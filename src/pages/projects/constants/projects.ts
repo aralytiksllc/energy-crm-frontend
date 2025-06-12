@@ -10,12 +10,34 @@ export const ProjectFormFields = [
   },
 ];
 
+export const projectStages: { [key: string]: { id: string; title: string }[] } =
+  {
+    1: [
+      { id: 'lead', title: 'Lead' },
+      { id: 'qualified', title: 'Qualified' },
+      { id: 'proposal', title: 'Proposal' },
+      { id: 'negotiation', title: 'Negotiation' },
+      { id: 'closed-won', title: 'Closed Won' },
+      { id: 'closed-lost', title: 'Closed Lost' },
+    ],
+    2: [
+      { id: 'lead', title: 'Lead' },
+      { id: 'qualified', title: 'Qualified' },
+      { id: 'proposal', title: 'Proposal' },
+      { id: 'closed-won', title: 'Closed Won' },
+    ],
+    3: [
+      { id: 'lead', title: 'Lead' },
+      { id: 'closed-won', title: 'Closed Won' },
+    ],
+  };
+
 export const mockProjects = [
   {
     id: 1,
     name: 'Project A',
     description: 'Client onboarding and CRM setup.',
-    stage: Stage.LEAD,
+    stage: projectStages[1].map((s) => s.title).join(', '),
     functionalArea: FunctionalArea.AREA1,
     toPlan: true,
     commercialRegion: 'EMEA',
@@ -49,7 +71,7 @@ export const mockProjects = [
     id: 2,
     name: 'Project B',
     description: 'E-commerce platform development.',
-    stage: Stage.QUALIFIED,
+    stage: projectStages[2].map((s) => s.title).join(', '),
     functionalArea: FunctionalArea.AREA2,
     toPlan: false,
     commercialRegion: 'APAC',
@@ -83,7 +105,7 @@ export const mockProjects = [
     id: 3,
     name: 'Project C',
     description: 'Internal tool for analytics.',
-    stage: Stage.CLOSED_WON,
+    stage: projectStages[3].map((s) => s.title).join(', '),
     functionalArea: FunctionalArea.AREA1,
     toPlan: true,
     commercialRegion: 'AMER',
@@ -114,25 +136,3 @@ export const mockProjects = [
     updatedAt: new Date('2024-06-12'),
   },
 ];
-
-export const projectStages: { [key: string]: { id: string; title: string }[] } =
-  {
-    1: [
-      { id: 'lead', title: 'Lead' },
-      { id: 'qualified', title: 'Qualified' },
-      { id: 'proposal', title: 'Proposal' },
-      { id: 'negotiation', title: 'Negotiation' },
-      { id: 'closed-won', title: 'Closed Won' },
-      { id: 'closed-lost', title: 'Closed Lost' },
-    ],
-    2: [
-      { id: 'lead', title: 'Lead' },
-      { id: 'qualified', title: 'Qualified' },
-      { id: 'proposal', title: 'Proposal' },
-      { id: 'closed-won', title: 'Closed Won' },
-    ],
-    3: [
-      { id: 'lead', title: 'Lead' },
-      { id: 'closed-won', title: 'Closed Won' },
-    ],
-  };

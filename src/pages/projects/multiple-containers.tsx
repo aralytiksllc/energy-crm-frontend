@@ -123,7 +123,7 @@ export default function MultipleContainers({
                 <div className={styles['kanban-column__header']}>
                   <Title level={5} style={{ margin: 0, fontSize: 15 }}>
                     {container.title}
-                  </Title>
+                  </Title>{' '}
                 </div>
               </DroppableColumn>
             );

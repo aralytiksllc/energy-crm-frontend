@@ -54,6 +54,32 @@
   border-bottom: 1px solid rgb(164, 164, 164);
 }
 
+.kanban-column__header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kanban-column__header-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.kanban-column__header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 50%;
+  background: #fff;
+  color: #000000;
+  font-weight: 700;
+  font-size: 11px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
 .kanban-column__body {
   flex: 1;
   overflow-y: auto;
