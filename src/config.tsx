@@ -1,6 +1,7 @@
 // External imports
 import { useNotificationProvider } from '@refinedev/antd';
 import { RefineProps } from '@refinedev/core';
+import { DashboardOutlined } from '@ant-design/icons';
 import routerBindings from '@refinedev/react-router';
 
 // Internal imports
@@ -29,5 +30,9 @@ export const refineProps: RefineProps = {
     warnWhenUnsavedChanges: true,
     useNewQueryKeys: true,
     projectId: 'DLUNzF-hNHv7s-rovOa5',
+    title: {
+      icon: <DashboardOutlined size={24} />,
+      text: 'Aralytiks',
+    },
   },
 };

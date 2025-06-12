@@ -7,7 +7,12 @@ import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 
 // Internal imports
 import { Header } from './components/header';
-import { Register, LogIn, ForgotPassword } from './pages/authentication';
+import {
+  Register,
+  LogIn,
+  ForgotPassword,
+  UpdatePassword,
+} from './pages/authentication';
 import {
   ProjectsCreate,
   ProjectsEdit,
@@ -53,6 +58,7 @@ export const Routes: React.FC<RoutesProps> = () => (
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<LogIn />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/update-password" element={<UpdatePassword />} />
     </Route>
   </ReactRoutes>
 );
