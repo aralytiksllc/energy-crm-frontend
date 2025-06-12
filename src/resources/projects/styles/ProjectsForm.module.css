@@ -1,0 +1,117 @@
+:root {
+  --primary-blue: #2563eb;
+}
+
+.formRoot {
+  width: 100%;
+  background: inherit;
+  padding: 0;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  width: 100%;
+  min-height: 340px;
+}
+
+.leftColumn {
+  flex: 2;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.rightColumn {
+  flex: 1;
+  border-left: 2px solid var(--primary-blue);
+  padding: 16px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-width: 280px;
+  overflow: hidden;
+}
+
+.formTitle {
+  font-family: 'Fira Mono', monospace;
+  font-size: 1.3rem;
+  color: var(--primary-blue);
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+.section {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-family: 'Fira Mono', monospace;
+  font-size: 1rem;
+  color: var(--primary-blue);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.inputItem {
+  flex: 1;
+}
+
+.addButton {
+  color: var(--primary-blue);
+  font-family: 'Fira Mono', monospace;
+  font-size: 0.9rem;
+  padding: 0;
+  margin-left: 0;
+  margin-top: 10px;
+}
+
+.scrollableSections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scrollableFields {
+  padding-right: 2px;
+}
+
+.scrollableFields::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+.scrollableFields::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+.scrollableFields::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollableFields {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.collapsibleContent {
+  overflow: hidden;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+  max-height: 500px;
+}
+.collapsibleContent.collapsed {
+  opacity: 0;
+  max-height: 0;
+  pointer-events: none;
+}

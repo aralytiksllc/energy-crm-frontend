@@ -16,6 +16,15 @@ export const ColorModeContext = createContext<ColorModeContextType>(
   {} as ColorModeContextType,
 );
 
+const lightGrayDarkTheme = {
+  token: {
+    colorBgBase: '#23232b',
+    colorBgContainer: '#292933',
+    colorBorder: '#44444a',
+    colorText: '#f4f4f4',
+  },
+};
+
 export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
@@ -51,10 +60,10 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
       }}
     >
       <ConfigProvider
-        // you can change the theme colors here. example: ...RefineThemes.Magenta,
         theme={{
           ...RefineThemes.Blue,
           algorithm: mode === 'light' ? defaultAlgorithm : darkAlgorithm,
+          ...(mode === 'dark' ? lightGrayDarkTheme : {}),
         }}
       >
         {children}
