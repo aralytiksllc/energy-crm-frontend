@@ -2,6 +2,7 @@
 import { useNotificationProvider } from '@refinedev/antd';
 import { RefineProps } from '@refinedev/core';
 import { DashboardOutlined } from '@ant-design/icons';
+import { AralytiksIcon } from './components/logo';
 import routerBindings from '@refinedev/react-router';
 
 // Internal imports
@@ -31,7 +32,7 @@ export const refineProps: RefineProps = {
     useNewQueryKeys: true,
     projectId: 'DLUNzF-hNHv7s-rovOa5',
     title: {
-      icon: <DashboardOutlined size={24} />,
+      icon: <AralytiksIcon width={24} height={24} fill="#000" />,
       text: 'Aralytiks',
     },
   },
