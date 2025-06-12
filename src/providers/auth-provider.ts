@@ -12,8 +12,10 @@ export const LOGOUT_STATUSES = new Set([401, 403]);
 export const authProvider: AuthProvider = {
   async login(params) {
     try {
+      const { email, password } = params;
+
       const response = await httpClient.post('login', {
-        json: params,
+        json: { email, password },
       });
 
       const data = await response.json<IAuthResponse>();
@@ -35,6 +37,8 @@ export const authProvider: AuthProvider = {
         redirectTo: '/',
       };
     } catch (error: any) {
+      console.log(error);
+
       return {
         success: false,
         error: {

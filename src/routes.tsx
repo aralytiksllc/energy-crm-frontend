@@ -13,12 +13,14 @@ import {
   ForgotPassword,
   UpdatePassword,
 } from './pages/authentication';
-import {
-  ProjectsCreate,
-  ProjectsEdit,
-  ProjectsList,
-  ProjectsShow,
-} from './pages/projects';
+// import {
+//   ProjectsCreate,
+//   ProjectsEdit,
+//   ProjectsList,
+//   ProjectsShow,
+// } from './pages/projects';
+
+import { TasksPage, TaskCreatePage, TaskEditPage } from './pages/tasks';
 
 interface RoutesProps {}
 
@@ -41,10 +43,10 @@ export const Routes: React.FC<RoutesProps> = () => (
     >
       <Route index element={<NavigateToResource resource="projects" />} />
       <Route path="/projects">
-        <Route index element={<ProjectsList />} />
-        <Route path="create" element={<ProjectsCreate />} />
-        <Route path="edit/:id" element={<ProjectsEdit />} />
-        <Route path="show/:id" element={<ProjectsShow />} />
+        <Route index element={<TasksPage />} />
+        <Route path="create" element={<TaskCreatePage />} />
+        <Route path="edit/:id" element={<TaskEditPage />} />
+        <Route path="show/:id" element={<TaskEditPage />} />
       </Route>
       <Route path="*" element={<ErrorComponent />} />
     </Route>

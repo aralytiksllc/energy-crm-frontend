@@ -1,13 +1,12 @@
 // External imports
 import { useNotificationProvider } from '@refinedev/antd';
 import { RefineProps } from '@refinedev/core';
-import { DashboardOutlined } from '@ant-design/icons';
-import { AralytiksIcon } from './components/logo';
 import routerBindings from '@refinedev/react-router';
 
 // Internal imports
 import { authProvider } from './providers/auth-provider';
 import { dataProvider } from './providers/data-provider';
+import { AralytiksIcon } from './components/logo';
 
 export const refineProps: RefineProps = {
   authProvider: authProvider,
