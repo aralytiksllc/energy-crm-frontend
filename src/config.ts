@@ -1,30 +1,33 @@
-import { RefineProps } from '@refinedev/core';
+// External imports
 import { useNotificationProvider } from '@refinedev/antd';
+import { RefineProps } from '@refinedev/core';
 import routerBindings from '@refinedev/react-router';
-import { authProvider } from './providers/auth';
-import { createDataProvider } from './providers/data';
-import { resources, authConfig } from './routes';
-import axios from 'axios';
 
-export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000',
-});
+// Internal imports
+import { authProvider } from './providers/auth-provider';
+import { dataProvider } from './providers/data-provider';
 
-const dataProvider = createDataProvider(axiosInstance);
-
-export const refineConfig: Omit<RefineProps, 'children'> = {
-  dataProvider,
-  notificationProvider: useNotificationProvider,
+export const refineProps: RefineProps = {
+  authProvider: authProvider,
+  dataProvider: dataProvider,
   routerProvider: routerBindings,
-  authProvider,
-  resources,
+  notificationProvider: useNotificationProvider,
+  resources: [
+    {
+      name: 'projects',
+      list: '/projects',
+      create: '/projects/create',
+      edit: '/projects/edit/:id',
+      show: '/projects/show/:id',
+      meta: {
+        canDelete: true,
+      },
+    },
+  ],
   options: {
     syncWithLocation: true,
     warnWhenUnsavedChanges: true,
     useNewQueryKeys: true,
-    projectId: '0HcJGd-NygC1C-sWSoXm',
+    projectId: 'DLUNzF-hNHv7s-rovOa5',
   },
-  LoginPage: authConfig.login.component,
-  RegisterPage: authConfig.register.component,
-  ForgotPasswordPage: authConfig.forgotPassword.component,
 };

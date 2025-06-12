@@ -1,3 +1,4 @@
+// External imports
 import type { RefineThemedLayoutV2HeaderProps } from '@refinedev/antd';
 import { useGetIdentity } from '@refinedev/core';
 import {
@@ -9,6 +10,8 @@ import {
   Typography,
 } from 'antd';
 import React, { useContext } from 'react';
+
+// Internal imports
 import { ColorModeContext } from '../../contexts/color-mode';
 
 const { Text } = Typography;
