@@ -1,6 +1,6 @@
 // External imports
-import { useNotificationProvider } from '@refinedev/antd';
 import { RefineProps } from '@refinedev/core';
+import { useNotificationProvider } from '@refinedev/antd';
 import routerBindings from '@refinedev/react-router';
 
 // Internal imports
@@ -15,11 +15,11 @@ export const refineProps: RefineProps = {
   notificationProvider: useNotificationProvider,
   resources: [
     {
-      name: 'projects',
-      list: '/projects',
-      create: '/projects/create',
-      edit: '/projects/edit/:id',
-      show: '/projects/show/:id',
+      name: 'users',
+      list: '/users',
+      create: '/users/create',
+      edit: '/users/edit/:id',
+      show: '/users/show/:id',
       meta: {
         canDelete: true,
       },

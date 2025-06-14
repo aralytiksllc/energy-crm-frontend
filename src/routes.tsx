@@ -13,14 +13,7 @@ import {
   ForgotPassword,
   UpdatePassword,
 } from './pages/authentication';
-// import {
-//   ProjectsCreate,
-//   ProjectsEdit,
-//   ProjectsList,
-//   ProjectsShow,
-// } from './pages/projects';
-
-import { TasksPage, TaskCreatePage, TaskEditPage } from './pages/tasks';
+import { UsersCreate, UsersEdit, UsersList, UsersShow } from './pages/users';
 
 interface RoutesProps {}
 
@@ -41,12 +34,12 @@ export const Routes: React.FC<RoutesProps> = () => (
         </Authenticated>
       }
     >
-      <Route index element={<NavigateToResource resource="projects" />} />
-      <Route path="/projects">
-        <Route index element={<TasksPage />} />
-        <Route path="create" element={<TaskCreatePage />} />
-        <Route path="edit/:id" element={<TaskEditPage />} />
-        <Route path="show/:id" element={<TaskEditPage />} />
+      <Route index element={<NavigateToResource resource="users" />} />
+      <Route path="/users">
+        <Route index element={<UsersList />} />
+        <Route path="create" element={<UsersCreate />} />
+        <Route path="edit/:id" element={<UsersEdit />} />
+        <Route path="show/:id" element={<UsersShow />} />
       </Route>
       <Route path="*" element={<ErrorComponent />} />
     </Route>
@@ -60,7 +53,7 @@ export const Routes: React.FC<RoutesProps> = () => (
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<LogIn />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/update-password" element={<UpdatePassword />} />
+      <Route path="/update-password/:token" element={<UpdatePassword />} />
     </Route>
   </ReactRoutes>
 );
