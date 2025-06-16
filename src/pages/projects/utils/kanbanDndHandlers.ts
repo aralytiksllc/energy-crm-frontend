@@ -130,3 +130,35 @@ export function handleDragEnd(
     );
   }
 }
+
+export function getInitialContainers(
+  projectId: number,
+  stages: any[],
+  containersForProject: Container[],
+): Container[] {
+  return stages.map((stage) => {
+    const existingContainer = containersForProject.find(
+      (c) => c.id === stage.id,
+    );
+    return (
+      existingContainer || {
+        projectId,
+        id: stage.id,
+        title: stage.title,
+        items: [],
+      }
+    );
+  });
+}
+
+export function handleDeleteCard(
+  id: string,
+  setContainers: React.Dispatch<React.SetStateAction<Container[]>>,
+) {
+  setContainers((prev) =>
+    prev.map((container) => ({
+      ...container,
+      items: container.items.filter((item) => item.id !== id),
+    })),
+  );
+}

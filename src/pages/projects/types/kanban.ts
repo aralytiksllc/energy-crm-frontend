@@ -4,7 +4,13 @@ export interface Item {
   id: string;
   content: string;
   description: string;
-  task: Task;
+  task: Task; // Task.dueDate is already a Date
+  dueDate?: string;
+  users?: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+  }[];
 }
 
 export interface Container {

@@ -15,4 +15,7 @@ export class DayjsForm {
   static normalize(value: DayjsInputValue): string | undefined {
     return value?.format('YYYY-MM-DD');
   }
+  static toDate(value: DayjsInputValue): Date | undefined {
+    return value ? value.toDate() : undefined;
+  }
 }

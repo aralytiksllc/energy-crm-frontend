@@ -1,4 +1,4 @@
-import { Stage, FunctionalArea, IUser } from '../types/types';
+import { FunctionalArea, IUser } from '../types/types';
 
 const mockUser: IUser = { id: 1, name: 'John Doe' };
 
