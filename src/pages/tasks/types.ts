@@ -29,3 +29,9 @@ export interface Task {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Stage {
+  id: string;
+  name: string;
+  ticketCount: number;
+}

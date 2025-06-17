@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Typography, Avatar, Space, Tooltip } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { Task } from '../../tasks/types/types';
+import { Task } from '../../tasks/types';
 import styles from '../styles/projectCard.module.css';
 
 const { Title, Text } = Typography;

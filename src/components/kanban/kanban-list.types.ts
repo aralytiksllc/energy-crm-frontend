@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export interface KanbanListProps<T> {
-  data: T[];
+  items: T[];
 
   renderItem: (item: T, index: number) => React.ReactNode;
 

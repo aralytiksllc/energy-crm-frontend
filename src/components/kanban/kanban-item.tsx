@@ -4,7 +4,7 @@ import {
   useDraggable,
   type UseDraggableArguments,
 } from '@dnd-kit/core';
-import styles from '../styles/kanbanItem.module.css';
+import { useStyles } from './kanban-list.styles';
 
 interface KanbanItemProps<T> {
   children?: React.ReactNode;
@@ -12,9 +12,10 @@ interface KanbanItemProps<T> {
   data: T;
 }
 
-
 export function KanbanItem<T>(props: KanbanItemProps<T>) {
   const { id, data, children } = props;
+
+  const { styles } = useStyles();
 
   const { setNodeRef, attributes, listeners, active } = useDraggable({
     id,
@@ -42,5 +43,5 @@ export function KanbanItem<T>(props: KanbanItemProps<T>) {
         </DragOverlay>
       )}
     </div>
-  )
+  );
 }

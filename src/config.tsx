@@ -34,6 +34,10 @@ export const refineProps: RefineProps = {
         canDelete: true,
       },
     },
+    {
+      name: 'tasks',
+      list: '/tasks',
+    },
   ],
   options: {
     syncWithLocation: true,

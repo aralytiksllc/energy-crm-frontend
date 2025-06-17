@@ -20,7 +20,8 @@ import {
   ProjectsEdit,
   ProjectsShow,
 } from './pages/projects';
-import MultipleContainers from './pages/projects/multiple-containers';
+
+import { TasksList } from './pages/tasks';
 
 interface RoutesProps {}
 
@@ -53,7 +54,9 @@ export const Routes: React.FC<RoutesProps> = () => (
         <Route path="create" element={<ProjectsCreate />} />
         <Route path="edit/:id" element={<ProjectsEdit />} />
         <Route path="show/:id" element={<ProjectsShow />} />
-        <Route path=":id/board" element={<MultipleContainers />} />
+      </Route>
+      <Route path="/tasks">
+        <Route index element={<TasksList />} />
       </Route>
       <Route path="*" element={<ErrorComponent />} />
     </Route>

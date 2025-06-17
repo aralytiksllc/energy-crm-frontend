@@ -1,4 +1,4 @@
-import { TaskType } from '../types/types';
+import { TaskType } from '../types';
 
 export const TASK_TYPE_COLORS: Record<TaskType, string> = {
   [TaskType.EMAIL]: 'blue',
