@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { useColorModeStyles } from './styles';
 
 type ColorModeContextType = {
   mode: string;
@@ -28,6 +29,7 @@ const lightGrayDarkTheme = {
 export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
+  const { styles } = useColorModeStyles();
   const colorModeFromLocalStorage = localStorage.getItem('colorMode');
   const isSystemPreferenceDark = window?.matchMedia(
     '(prefers-color-scheme: dark)',
@@ -59,15 +61,17 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
         mode,
       }}
     >
-      <ConfigProvider
-        theme={{
-          ...RefineThemes.Blue,
-          algorithm: mode === 'light' ? defaultAlgorithm : darkAlgorithm,
-          ...(mode === 'dark' ? lightGrayDarkTheme : {}),
-        }}
-      >
-        {children}
-      </ConfigProvider>
+      <div className={mode === 'light' ? styles.light : styles.dark}>
+        <ConfigProvider
+          theme={{
+            ...RefineThemes.Blue,
+            algorithm: mode === 'light' ? defaultAlgorithm : darkAlgorithm,
+            ...(mode === 'dark' ? lightGrayDarkTheme : {}),
+          }}
+        >
+          {children}
+        </ConfigProvider>
+      </div>
     </ColorModeContext.Provider>
   );
 };

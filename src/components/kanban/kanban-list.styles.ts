@@ -1,148 +1,179 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(() => ({
-  kanbanBoard: {
-    display: 'flex',
-    gap: 12,
-    height: '85vh',
-    minHeight: 400,
-    maxHeight: '85vh',
-    alignItems: 'stretch',
-    overflowX: 'auto',
-    justifyContent: 'flex-start',
-    scrollbarWidth: 'thin',
-    scrollbarColor: '#bfbfbf transparent',
+export const useStyles = createStyles(({ css, token }) => ({
+  kanbanBoard: css`
+    display: flex;
+    gap: 12px;
+    height: 85vh;
+
+    min-height: 400px;
+    max-height: 85vh;
+    overflow-x: auto;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    /* thin, neutral scroll bar */
+    scrollbar-width: thin;
     selectors: {
       '::-webkit-scrollbar': {
-        height: 10,
-        background: 'transparent',
-      },
+        height: 10px;
+        background: transparent;
+      }
       '::-webkit-scrollbar-thumb': {
-        background: '#bfbfbf',
-        borderRadius: 6,
-      },
-      '::-webkit-scrollbar-track': {
-        background: 'transparent',
-      },
-    },
-  },
+        border-radius: 6px;
+      }
+    }
+  `,
 
-  boardOuter: {
-    width: 'calc(100% + 64px)',
-    height: 'calc(100vh - 64px)',
-    display: 'flex',
-    justifyContent: 'column',
-    margin: -32,
-  },
+  boardOuter: css`
+    width: 100%;
+    height: 85vh;
+    display: flex;
+  `,
 
-  boardInner: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    padding: 32,
-    overflow: 'scroll',
-  },
+  boardInner: css`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding: 32px;
+    overflow: hidden;
+  `,
 
-  kanbanColumn: {
-    width: 260,
-    minWidth: 260,
-    maxWidth: 260,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '95%',
-    border: '1px solid #33343a',
-    borderRadius: 14,
-    flexShrink: 0,
-    marginTop: 12,
-    overflow: 'hidden',
-    transition: 'box-shadow 0.2s, border 0.2s',
-    maxHeight: '100%',
-  },
+  column: css`
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    margin: 8px;
+    border-radius: 10px;
+    min-height: 75vh;
+  `,
 
-  kanbanColumnOver: {
-    boxShadow: '0 0 0 2px #52c41a',
-    borderColor: '#52c41a',
-  },
+  body: css`
+    flex: 1;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: ${token.colorBgContainer};
+  `,
 
-  kanbanColumnHeader: {
-    padding: '10px 16px 8px 16px',
-    fontWeight: 600,
-    fontSize: 16,
-    letterSpacing: '0.5px',
-    borderBottom: '1px solid rgb(164, 164, 164)',
-  },
+  items: css`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    align-items: center;
+  `,
 
-  kanbanColumnHeaderContent: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  },
+  footer: css`
+    padding: 8px 16px;
+    font-size: 14px;
+    color: ${token.colorTextSecondary};
+    border-top: 1px solid ${token.colorSplit};
+    background: ${token.colorBgElevated};
+  `,
 
-  kanbanColumnHeaderTitle: {
-    fontWeight: 600,
-    fontSize: 16,
-  },
+  kanbanColumn: css`
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+    height: 95%;
+    margin-top: 12px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid ${token.colorBorder};
+    border-radius: 14px;
+    transition:
+      box-shadow 0.2s,
+      border 0.2s;
+    background: ${token.colorBgContainer};
+  `,
 
-  kanbanColumnHeaderBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 20,
-    height: 20,
-    padding: '0 6px',
-    borderRadius: '50%',
-    background: '#fff',
-    color: '#000',
-    fontWeight: 700,
-    fontSize: 11,
-    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.07)',
-  },
+  kanbanColumnOver: css`
+    border: 2px dashed ${token.colorPrimary};
+    box-shadow: 0 0 0 2px ${token.colorPrimary};
+  `,
 
-  kanbanColumnBody: {
-    flex: 1,
-    overflowY: 'auto',
-    padding: '8px 8px 12px 8px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    maxHeight: '100%',
-    scrollbarWidth: 'thin',
-    scrollbarColor: '#bfbfbf transparent',
+  kanbanColumnHeader: css`
+    padding: 10px 16px 8px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid ${token.colorSplit};
+  `,
+
+  kanbanColumnHeaderContent: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `,
+
+  kanbanColumnHeaderTitle: css`
+    font-weight: 600;
+    font-size: 16px;
+  `,
+
+  kanbanColumnHeaderBadge: css`
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 11px;
+    background: ${token.colorBgElevated};
+    color: ${token.colorText};
+    box-shadow: ${token.boxShadowSecondary};
+  `,
+
+  kanbanColumnBody: css`
+    flex: 1;
+    padding: 8px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    max-height: 100%;
+
+    scrollbar-width: thin;
     selectors: {
       '::-webkit-scrollbar': {
-        width: 8,
-        background: 'transparent',
-      },
+        width: 8px;
+        background: transparent;
+      }
       '::-webkit-scrollbar-thumb': {
-        background: '#bfbfbf',
-        borderRadius: 6,
-      },
-      '::-webkit-scrollbar-track': {
-        background: 'transparent',
-      },
-    },
-  },
+        border-radius: 6px;
+      }
+    }
+  `,
 
-  kanbanColumnEmpty: {
-    fontStyle: 'italic',
-    textAlign: 'center',
-    marginBottom: 8,
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  kanbanColumnEmpty: css`
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    text-align: center;
+  `,
 
-  kanbanItem: {
-    margin: '6px 0',
-    width: '100%',
-    maxWidth: 220,
-    borderRadius: 10,
-    transition: 'opacity 0.2s, z-index 0.2s, box-shadow 0.2s, border 0.2s',
-  },
+  kanbanItem: css`
+    margin: 6px 0;
+    width: 100%;
+    max-width: 220px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transition:
+      opacity 0.2s,
+      box-shadow 0.2s,
+      border 0.2s;
+  `,
 
-  kanbanItemDragging: {
-    opacity: 0.5,
-    zIndex: 1000,
-  },
+  kanbanItemDragging: css`
+    opacity: 0.5;
+    z-index: 1000;
+  `,
 }));

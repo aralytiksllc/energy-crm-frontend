@@ -1,64 +1,83 @@
 import * as React from 'react';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Space } from 'antd';
+import { useDroppable } from '@dnd-kit/core';
+
 import { KanbanList } from '@/components/kanban';
 import type { KanbanColumnProps } from '@/components/kanban';
-import { type Stage, type Task, TaskType } from '../types';
+import type { Stage, Task } from '../types';
 
-const mockUser = {
-  id: 1,
-  name: 'John Doe',
-  avatar: 'https://i.pravatar.cc/150?img=1',
-};
-
-const projectA = { id: 1, name: 'Project A' };
-
-const items: Task[] = [
-  {
-    id: 1,
-    title: 'Initial Client Contact',
-    type: TaskType.EMAIL,
-    isCompleted: false,
-    description: 'Send welcome email and gather initial requirements',
-    dueDate: new Date('2024-03-20'),
-    project: projectA,
-    assignedTo: [mockUser],
-    createdBy: mockUser,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+import { KanbanCard } from './kanban-card';
+import { KanbanCardSkeleton } from './kanban-card.skeleton';
+import { useKanbanColumnStyles } from './kanban-column.styles';
+import { CreateTaskModal } from './create-task-modal';
 
 export function KanbanColumn(props: KanbanColumnProps<Stage>) {
-  const { index, data } = props;
-
-
-
-  const renderItem = React.useCallback(
-    (item: Task) => <div>Render Card</div>,
-    [],
-  );
-
-  const keyExtractor = React.useCallback((item: Task) => item.id, []);
-
-
-
-
-
+  const { data, loading = false } = props;
+  const { styles, cx } = useKanbanColumnStyles();
+  const { isOver, setNodeRef } = useDroppable({ id: data.id });
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 
   const header = (
-    <div>
-      {data.name} ({data.ticketCount})
+    <div className={styles.header}>
+      <Space className={styles.headerLeft}>
+        <span className={styles.title}>{data.name}</span>
+        {!!data.tasks?.length && (
+          <span className={styles.badge}>{data.tasks.length}</span>
+        )}
+      </Space>
+      <Button
+        size="large"
+        shape="circle"
+        icon={<PlusOutlined style={{ fontSize: 20 }} />}
+        type="default"
+        className={styles.addBtn}
+        onClick={() => setIsCreateModalOpen(true)}
+        aria-label="Add new card"
+      />
     </div>
   );
 
-  const footer = <div>is loading</div>;
+  const cardsLoading = loading || !data.tasks;
+
+  const renderItem = React.useCallback(
+    (task: Task) => <KanbanCard task={task} />,
+    [],
+  );
+
+  const keyExtractor = React.useCallback((task: Task) => task.id, []);
 
   return (
-    <KanbanList
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      header={header}
-      footer={footer}
-      items={items}
-    />
+    <>
+      <div
+        ref={setNodeRef}
+        className={cx(styles.root, { [styles.isOver]: isOver })}
+      >
+        {header}
+
+        {cardsLoading ? (
+          <div style={{ padding: 16 }}>
+            <KanbanCardSkeleton />
+            <KanbanCardSkeleton />
+            <KanbanCardSkeleton />
+          </div>
+        ) : (
+          <KanbanList
+            items={data.tasks || []}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            header={null}
+            footer={null}
+          />
+        )}
+      </div>
+
+      <CreateTaskModal
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        stageId={data.id}
+        projectId={data.projectId}
+      />
+    </>
   );
 }

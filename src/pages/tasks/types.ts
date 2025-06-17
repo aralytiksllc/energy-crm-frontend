@@ -34,4 +34,7 @@ export interface Stage {
   id: string;
   name: string;
   ticketCount: number;
+  tasks?: Task[];
+  loading?: boolean;
+  projectId: number;
 }

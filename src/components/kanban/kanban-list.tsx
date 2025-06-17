@@ -4,7 +4,7 @@ import { KanbanItem } from './kanban-item';
 import { useStyles } from './kanban-list.styles';
 
 export function KanbanList<T>(props: KanbanListProps<T>) {
-  const { items, renderItem, header, footer, keyExtractor } = props;
+  const { items, renderItem, keyExtractor } = props;
 
   const { styles } = useStyles();
 
@@ -19,11 +19,7 @@ export function KanbanList<T>(props: KanbanListProps<T>) {
 
   return (
     <div className={styles.column}>
-      <div className={styles.header}>{header}</div>
-      <div className={styles.body}>
-        <div className={styles.items}>{items.map(_renderItem)}</div>
-      </div>
-      <div className={styles.footer}>{footer}</div>
+      <div className={styles.items}>{items.map(_renderItem)}</div>
     </div>
   );
 }

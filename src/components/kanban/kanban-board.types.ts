@@ -4,6 +4,8 @@ export interface KanbanColumnProps<T> {
   index: number;
 
   data: T;
+
+  loading?: boolean;
 }
 
 export interface KanbanBoardProps<T> {
@@ -14,4 +16,6 @@ export interface KanbanBoardProps<T> {
   onDragEnd: (event: DragEndEvent) => void;
 
   ColumnComponent: React.FC<KanbanColumnProps<T>>;
+
+  loadingColumns?: boolean[];
 }

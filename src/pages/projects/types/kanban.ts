@@ -4,7 +4,7 @@ export interface Item {
   id: string;
   content: string;
   description: string;
-  task: Task; // Task.dueDate is already a Date
+  task: Task;
   dueDate?: string;
   users?: {
     id: string;

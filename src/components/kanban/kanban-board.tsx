@@ -13,7 +13,8 @@ import { useStyles } from './kanban-list.styles';
 const sensorOptions = { activationConstraint: { distance: 5 } };
 
 export const KanbanBoard = <T,>(props: KanbanBoardProps<T>) => {
-  const { columns, keyExtractor, onDragEnd, ColumnComponent } = props;
+  const { columns, keyExtractor, onDragEnd, ColumnComponent, loadingColumns } =
+    props;
 
   const { styles } = useStyles();
 
@@ -33,9 +34,14 @@ export const KanbanBoard = <T,>(props: KanbanBoardProps<T>) => {
 
   const renderColumn = React.useCallback(
     (column: T, index: number) => (
-      <ColumnComponent key={keyExtractor(column)} data={column} index={index} />
+      <ColumnComponent
+        key={keyExtractor(column)}
+        data={column}
+        index={index}
+        loading={loadingColumns?.[index]}
+      />
     ),
-    [ColumnComponent, keyExtractor],
+    [ColumnComponent, keyExtractor, loadingColumns],
   );
 
   return (

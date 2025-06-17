@@ -4,7 +4,7 @@ import {
   useDraggable,
   type UseDraggableArguments,
 } from '@dnd-kit/core';
-import { useStyles } from './kanban-list.styles';
+import { useKanbanItemStyles } from './kanban-item.styles';
 
 interface KanbanItemProps<T> {
   children?: React.ReactNode;
@@ -14,8 +14,7 @@ interface KanbanItemProps<T> {
 
 export function KanbanItem<T>(props: KanbanItemProps<T>) {
   const { id, data, children } = props;
-
-  const { styles } = useStyles();
+  const { styles } = useKanbanItemStyles();
 
   const { setNodeRef, attributes, listeners, active } = useDraggable({
     id,
@@ -23,23 +22,20 @@ export function KanbanItem<T>(props: KanbanItemProps<T>) {
   });
 
   const isActive = active?.id === id;
-  const opacity = active ? (isActive ? 1 : 0.5) : 1;
 
   return (
-    <div className={styles.outer}>
+    <div className={styles.root}>
       <div
         ref={setNodeRef}
         {...listeners}
         {...attributes}
-        className={styles.inner}
-        style={{ opacity }}
+        className={isActive ? styles.dragging : undefined}
       >
         {children}
       </div>
-
       {isActive && (
         <DragOverlay zIndex={1000}>
-          <div className={styles.overlay}>{children}</div>
+          <div className={styles.dragging}>{children}</div>
         </DragOverlay>
       )}
     </div>
