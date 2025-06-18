@@ -5,6 +5,10 @@ export const rules: Record<string, Rule[] | any> = {
     { required: true, message: 'Project name is required' },
     { min: 2, message: 'Project name must be at least 2 characters' },
   ],
+  title: [
+    { required: true, message: 'Please enter a title' },
+    { min: 2, message: 'Title must be at least 2 characters' },
+  ],
   description: [
     { required: true, message: 'Description is required' },
     { min: 5, message: 'Description must be at least 5 characters' },

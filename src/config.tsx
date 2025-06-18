@@ -24,6 +24,26 @@ export const refineProps: RefineProps = {
         canDelete: true,
       },
     },
+    {
+      name: 'projects',
+      list: '/projects',
+      create: '/projects/create',
+      edit: '/projects/edit/:id',
+      show: '/projects/show/:id',
+      meta: {
+        canDelete: true,
+      },
+    },
+    {
+      name: 'tasks',
+      list: '/tasks',
+      create: '/tasks/create',
+      edit: '/tasks/edit/:id',
+      show: '/tasks/show/:id',
+      meta: {
+        canDelete: true,
+      },
+    },
   ],
   options: {
     syncWithLocation: true,

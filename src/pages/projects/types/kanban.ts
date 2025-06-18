@@ -1,10 +1,16 @@
-import { Task } from '../../tasks/types/types';
+import { Task } from '../../tasks/types';
 
 export interface Item {
   id: string;
   content: string;
   description: string;
   task: Task;
+  dueDate?: string;
+  users?: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+  }[];
 }
 
 export interface Container {

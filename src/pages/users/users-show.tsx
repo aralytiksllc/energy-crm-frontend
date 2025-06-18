@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Descriptions } from 'antd';
 import { Show, TextField, DateField, BooleanField } from '@refinedev/antd';
 import { useShow } from '@refinedev/core';
-import { IUser } from './types';
+import { IUser } from '@/interfaces/users';
 
 export const UsersShow: React.FC = () => {
   const { query } = useShow<IUser>();

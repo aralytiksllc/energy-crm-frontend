@@ -4,22 +4,39 @@ import { Table } from 'antd';
 import { List } from '@refinedev/antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
+import { useNavigate } from 'react-router';
 
 // Internal imports
 import { columns as baseColumns } from './constants/table';
 import { mockProjects } from './constants/projects';
 import { IProject } from './types/types';
 
+const KanbanLink: React.FC<{ projectId: string | number }> = ({
+  projectId,
+}) => {
+  const navigate = useNavigate();
+  return (
+    <a
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(`/projects/${projectId}/board`);
+      }}
+      href={`/projects/${projectId}/board`}
+      title="Open Kanban Board"
+    >
+      <ArrowRightOutlined
+        style={{ fontSize: 18, color: 'var(--primary-blue)' }}
+      />
+    </a>
+  );
+};
+
 const kanbanColumn: ColumnsType<IProject>[number] = {
   title: 'Kanban',
   dataIndex: 'kanban',
   key: 'kanban',
   render: (_: unknown, record: IProject) => (
-    <a href={`/projects/${record.id}`} title="Open Kanban Board">
-      <ArrowRightOutlined
-        style={{ fontSize: 18, color: 'var(--primary-blue)' }}
-      />
-    </a>
+    <KanbanLink projectId={record.id} />
   ),
 };
 

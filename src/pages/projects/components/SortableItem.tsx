@@ -7,7 +7,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Item } from '../types/kanban';
 import { ProjectCard } from './ProjectCard';
 import styles from '../styles/kanbanBoard.module.css';
-import { Task } from '../../tasks/types/types';
+import { Task } from '../../tasks/types';
 
 interface SortableItemProps extends Item {
   isDragging?: boolean;
