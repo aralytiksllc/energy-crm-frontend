@@ -71,3 +71,5 @@ export const TasksList: React.FC = () => {
     />
   );
 };
+
+export default TasksList;
