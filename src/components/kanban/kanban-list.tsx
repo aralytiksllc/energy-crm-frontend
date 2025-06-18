@@ -17,9 +17,5 @@ export function KanbanList<T>(props: KanbanListProps<T>) {
     [renderItem, keyExtractor],
   );
 
-  return (
-    <div className={styles.column}>
-      <div className={styles.items}>{items.map(_renderItem)}</div>
-    </div>
-  );
+  return items.map(_renderItem);
 }

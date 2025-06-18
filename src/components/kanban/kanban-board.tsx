@@ -8,7 +8,7 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import type { KanbanBoardProps } from './kanban-board.types';
-import { useStyles } from './kanban-list.styles';
+import { useStyles } from './kanban-board.styles';
 
 const sensorOptions = { activationConstraint: { distance: 5 } };
 
@@ -38,17 +38,17 @@ export const KanbanBoard = <T,>(props: KanbanBoardProps<T>) => {
         key={keyExtractor(column)}
         data={column}
         index={index}
-        loading={loadingColumns?.[index]}
+        loading={false}
       />
     ),
-    [ColumnComponent, keyExtractor, loadingColumns],
+    [ColumnComponent, keyExtractor],
   );
 
   return (
-    <div className={styles.boardOuter}>
-      <div className={styles.boardInner}>
+    <div className={styles.container}>
+      <div className={styles.body}>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className={styles.kanbanBoard}>{columns.map(renderColumn)}</div>
+          {columns.map(renderColumn)}
         </DndContext>
       </div>
     </div>

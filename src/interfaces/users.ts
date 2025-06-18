@@ -11,6 +11,8 @@ export interface IUser {
   settings: Record<string, unknown>;
   notes: string | null;
 
+  avatar: string | null;
+
   isActive: boolean;
 
   createdBy?: IUser;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Space } from 'antd';
+import { Badge, Button, Space } from 'antd';
 import { useDroppable } from '@dnd-kit/core';
 
 import { KanbanList } from '@/components/kanban';
@@ -11,6 +11,8 @@ import { KanbanCard } from './kanban-card';
 import { KanbanCardSkeleton } from './kanban-card.skeleton';
 import { useKanbanColumnStyles } from './kanban-column.styles';
 import { CreateTaskModal } from './create-task-modal';
+
+import { ConfigProvider, Typography } from 'antd';
 
 export function KanbanColumn(props: KanbanColumnProps<Stage>) {
   const { data, loading = false } = props;
@@ -46,6 +48,73 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
   );
 
   const keyExtractor = React.useCallback((task: Task) => task.id, []);
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '0 16px',
+      }}
+    >
+      <div
+        style={{
+          padding: '12px',
+        }}
+      >
+        <Space
+          style={{
+            width: '100%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Space>
+            <Typography.Text
+              // ellipsis={{ tooltip: title }}
+              // size="xs"
+              strong
+              style={{
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              "title"
+            </Typography.Text>
+            {!!1 && <Badge count={1} color="cyan" />}
+          </Space>
+          <Button shape="circle" icon={<PlusOutlined />} onClick={() => {}} />
+        </Space>
+        {'description'}
+      </div>
+      <div
+        style={{
+          flex: 1,
+          overflowY: isOver ? 'unset' : 'auto',
+          border: '2px dashed transparent',
+          borderColor: isOver ? '#00000040' : 'red',
+          borderRadius: '4px',
+        }}
+      >
+        <div
+          style={{
+            marginTop: '12px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+          }}
+        >
+          <KanbanList
+            items={data.tasks || []}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            header={null}
+            footer={null}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>

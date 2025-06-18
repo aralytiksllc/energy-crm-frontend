@@ -1,9 +1,25 @@
-import * as React from 'react';
-import { Card, Typography, Tooltip, Col, Row } from 'antd';
+import React, { useMemo } from 'react';
+import {
+  Card,
+  Tag,
+  Typography,
+  Tooltip,
+  Dropdown,
+  Menu,
+  Button,
+  Flex,
+  Modal,
+  message,
+  MenuProps,
+} from 'antd';
 import {
   ClockCircleOutlined,
   CommentOutlined,
   CalendarOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  MoreOutlined,
 } from '@ant-design/icons';
 
 import './animations.css';
@@ -11,10 +27,8 @@ import './animations.css';
 import { UserAvatars } from '@/components/user-avatars';
 import { useCrudMenuItems } from '@/hooks/use-crud-menu-items';
 import { DropdownActions } from '@/components/dropdown-actions';
-import { Priority } from '@/components/priority';
+import { useDeleteMenuItem } from '@/hooks/use-delete-menu-item';
 import { IUser } from '@/interfaces/users';
-
-import { useStyles } from './kanban-card.styles';
 
 const { Text, Paragraph } = Typography;
 
@@ -60,34 +74,6 @@ const users: IUser[] = Array.from({ length: 20 }, (_, i) => {
   };
 });
 
-import {} from 'antd';
-
-const paragraphEllipsis = { rows: 2};
-
-export const useTicketActions = (ticket: any): React.ReactNode[] => {
-  const { estimatedTime, commentsCount, createdDate } = ticket;
-
-  return React.useMemo(() => {
-    return [
-      <Tooltip title="Estimated time" key="time">
-        <span>
-          <ClockCircleOutlined /> {estimatedTime || '—'}
-        </span>
-      </Tooltip>,
-      <Tooltip title="Comments" key="comments">
-        <span>
-          <CommentOutlined /> {commentsCount ?? 0}
-        </span>
-      </Tooltip>,
-      <Tooltip title="Created date" key="date">
-        <span>
-          <CalendarOutlined /> {createdDate || '—'}
-        </span>
-      </Tooltip>,
-    ];
-  }, [estimatedTime, commentsCount, createdDate]);
-};
-
 export const KanbanCard: React.FC = () => {
   const {
     cardTitle,
@@ -99,16 +85,27 @@ export const KanbanCard: React.FC = () => {
     createdDate,
   } = staticData;
 
-  const { styles } = useStyles();
-
-  const ticketActions = useTicketActions({
-    estimatedTime,
-    commentsCount,
-    createdDate,
-  });
+  const actions = [
+    <Tooltip title="Estimated time" key="time">
+      <span>
+        <ClockCircleOutlined /> {estimatedTime}
+      </span>
+    </Tooltip>,
+    <Tooltip title="Comments" key="comments">
+      <span>
+        <CommentOutlined /> {commentsCount}
+      </span>
+    </Tooltip>,
+    <Tooltip title="Created date" key="date">
+      <span>
+        <CalendarOutlined /> {createdDate}
+      </span>
+    </Tooltip>,
+  ];
 
   const crudMenuItems = useCrudMenuItems({
-    confirmTitle: `Delete project test "${cardTitle}"?`,
+
+    confirmTitle: `Delete project "${cardTitle}"?`,
     confirmMessage: 'This action is irreversible.',
     resource: 'tasks',
     resourceId: 1,
@@ -116,34 +113,31 @@ export const KanbanCard: React.FC = () => {
 
   return (
     <Card
-      title={<Text strong={true}>{cardTitle}</Text>}
-      extra={<DropdownActions items={crudMenuItems} />}
-      actions={ticketActions}
-      variant="borderless"
       size="small"
+      variant="borderless"
+      actions={actions}
+      title={<Text strong>{cardTitle}</Text>}
+      extra={<DropdownActions items={crudMenuItems} />}
     >
-      <Row align="middle" gutter={8} wrap={false}>
-        <Col flex="auto">
-          <Priority text={tag.text} />
-        </Col>
-        <Col flex="none">
-          <UserAvatars users={users} />
-        </Col>
-      </Row>
-      <Paragraph
-        className={styles.paragraph}
-        ellipsis={paragraphEllipsis}
-        strong={true}
-      >
-        {taskTitle}
-      </Paragraph>
-      <Paragraph
-        className={styles.paragraph}
-        ellipsis={paragraphEllipsis}
-        strong={false}
-      >
-        {taskDescription}
-      </Paragraph>
+    <Flex style={styles.cardHeader}>
+      <Flex style={styles.tagContainer}>
+        <Tooltip title="Test">
+          <Tag color="blue" style={styles.ellipsisTag}>
+            {'tagText'}
+          </Tag>
+        </Tooltip>
+      </Flex>
+      <UserAvatars users={users} />
+    </Flex>
+
+      <Card.Meta
+        title={taskTitle}
+        description={
+          <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 0 }}>
+            {taskDescription}
+          </Paragraph>
+        }
+      />
     </Card>
   );
 };
