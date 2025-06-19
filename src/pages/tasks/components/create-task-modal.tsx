@@ -53,6 +53,16 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         footer={null}
         width={600}
         destroyOnClose
+        styles={{
+          header: {
+            borderBottom: '1px solid #f0f0f0',
+            paddingBottom: '16px',
+            marginBottom: '24px',
+          },
+          body: {
+            padding: '5px',
+          },
+        }}
       >
         <CreateTask
           stageId={stageId}
