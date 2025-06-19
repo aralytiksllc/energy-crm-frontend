@@ -37,10 +37,7 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
 
   const cardsLoading = loading || !data.tasks;
 
-  const renderItem = React.useCallback(
-    (task: Task) => <KanbanCard task={task} />,
-    [],
-  );
+  const renderItem = React.useCallback((task: Task) => <KanbanCard />, []);
 
   const keyExtractor = React.useCallback((task: Task) => task.id, []);
 
@@ -66,21 +63,24 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
         >
           <Space>
             <Typography.Text
-              // ellipsis={{ tooltip: title }}
-              // size="xs"
               strong
               style={{
                 textTransform: 'uppercase',
                 whiteSpace: 'nowrap',
               }}
             >
-              "title"
+              {data.name}
             </Typography.Text>
-            {!!1 && <Badge count={1} color="cyan" />}
+            {!!data.tasks?.length && (
+              <Badge count={data.tasks.length} color="cyan" />
+            )}
           </Space>
-          <Button shape="circle" icon={<PlusOutlined />} onClick={() => {}} />
+          <CreateTaskModal
+            stageId={data.id}
+            projectId={data.projectId}
+            buttonStyle={{ fontSize: 20 }}
+          />
         </Space>
-        {'description'}
       </div>
       <div
         style={{
@@ -109,32 +109,5 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
         </div>
       </div>
     </div>
-  );
-
-  return (
-    <>
-      <div
-        ref={setNodeRef}
-        className={cx(styles.root, { [styles.isOver]: isOver })}
-      >
-        {header}
-
-        {cardsLoading ? (
-          <div style={{ padding: 16 }}>
-            <KanbanCardSkeleton />
-            <KanbanCardSkeleton />
-            <KanbanCardSkeleton />
-          </div>
-        ) : (
-          <KanbanList
-            items={data.tasks || []}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            header={null}
-            footer={null}
-          />
-        )}
-      </div>
-    </>
   );
 }
