@@ -1,20 +1,5 @@
 import { httpClient } from '@/providers/http-client';
-import type { Task } from '../types';
-
-interface CreateTaskInput {
-  title: string;
-  description?: string;
-  type: string;
-  dueDate?: Date;
-  stageId: string;
-  projectId: number;
-  assignedTo?: number[];
-}
-
-interface UpdateTaskInput {
-  taskId: number;
-  stageId: string;
-}
+import type { Task, CreateTaskInput, UpdateTaskInput } from '../types';
 
 export const createTask = async (data: CreateTaskInput): Promise<Task> => {
   const response = await httpClient.post('tasks', { json: data }).json<Task>();
@@ -28,11 +13,15 @@ export const getTasks = async (projectId: number): Promise<Task[]> => {
   return response;
 };
 
-export const updateTask = async (data: UpdateTaskInput): Promise<Task> => {
+export const updateTask = async (input: UpdateTaskInput): Promise<Task> => {
+  const { taskId, stageId, data } = input;
+  const payload = {
+    ...(stageId && { stageId }),
+    ...(data && data),
+  };
+
   const response = await httpClient
-    .patch(`tasks/${data.taskId}`, {
-      json: { stageId: data.stageId },
-    })
+    .patch(`tasks/${taskId}`, { json: payload })
     .json<Task>();
   return response;
 };

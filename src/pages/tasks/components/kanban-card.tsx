@@ -62,7 +62,7 @@ const users: IUser[] = Array.from({ length: 20 }, (_, i) => {
 
 import {} from 'antd';
 
-const paragraphEllipsis = { rows: 2};
+const paragraphEllipsis = { rows: 2 };
 
 export const useTicketActions = (ticket: any): React.ReactNode[] => {
   const { estimatedTime, commentsCount, createdDate } = ticket;

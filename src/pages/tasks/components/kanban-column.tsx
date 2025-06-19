@@ -18,7 +18,6 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
   const { data, loading = false } = props;
   const { styles, cx } = useKanbanColumnStyles();
   const { isOver, setNodeRef } = useDroppable({ id: data.id });
-  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 
   const header = (
     <div className={styles.header}>
@@ -28,14 +27,10 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
           <span className={styles.badge}>{data.tasks.length}</span>
         )}
       </Space>
-      <Button
-        size="large"
-        shape="circle"
-        icon={<PlusOutlined style={{ fontSize: 20 }} />}
-        type="default"
-        className={styles.addBtn}
-        onClick={() => setIsCreateModalOpen(true)}
-        aria-label="Add new card"
+      <CreateTaskModal
+        stageId={data.id}
+        projectId={data.projectId}
+        buttonStyle={{ fontSize: 20 }}
       />
     </div>
   );
@@ -140,13 +135,6 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
           />
         )}
       </div>
-
-      <CreateTaskModal
-        open={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        stageId={data.id}
-        projectId={data.projectId}
-      />
     </>
   );
 }

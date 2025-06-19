@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Typography, Avatar, Space, Tooltip } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Card, Typography } from 'antd';
+import { TaskCard } from '@/components';
 import { Task } from '../../tasks/types';
+import { MOCK_USERS } from '../../tasks/constants/taskConstants';
 import styles from '../styles/projectCard.module.css';
 
 const { Title, Text } = Typography;
@@ -12,14 +13,6 @@ interface ProjectCardProps {
   description: string;
   task?: Task;
 }
-
-const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
-};
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   content,
@@ -34,27 +27,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       <Text className={styles.description}>{description}</Text>
       {task && (
         <div className={styles.taskContent}>
-          <div className={styles.taskHeader}>
-            <Text strong>{task.title}</Text>
-          </div>
-          <Text type="secondary" className={styles.taskDescription}>
-            {task.description}
-          </Text>
-          <Space size="middle" className={styles.taskMeta}>
-            <Text type="secondary">{formatDate(task.dueDate)}</Text>
-            <Space size={4}>
-              {task.assignedTo?.map((user) => (
-                <Tooltip key={user.id} title={user.name}>
-                  <Avatar
-                    size="small"
-                    src={user.avatar}
-                    icon={!user.avatar && <UserOutlined />}
-                    className={styles.avatar}
-                  />
-                </Tooltip>
-              ))}
-            </Space>
-          </Space>
+          <TaskCard task={task} users={MOCK_USERS} />
         </div>
       )}
     </Card>
