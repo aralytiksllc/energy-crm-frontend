@@ -1,67 +1,104 @@
 import { createStyles } from 'antd-style';
 
-export const useRichTextEditorStyles = createStyles(({ token, css }) => ({
-  container: css`
-    border: 1px solid ${token.colorBorder};
-    border-radius: 6px;
-    background: ${token.colorBgContainer};
-    overflow: hidden;
+interface StyleParams {
+  height?: number;
+}
 
-    &:hover {
-      border-color: ${token.colorPrimary};
-    }
+export const useRichTextEditorStyles = createStyles(
+  ({ token, css }, { height = 200 }: StyleParams = {}) => ({
+    container: css`
+      border: 1px solid ${token.colorBorder};
+      border-radius: 6px;
+      background: ${token.colorBgContainer};
+      overflow: hidden;
 
-    &:focus-within {
-      border-color: ${token.colorPrimary};
-      box-shadow: 0 0 0 2px ${token.colorPrimary}20;
-    }
-  `,
+      &:hover {
+        border-color: ${token.colorPrimary};
+      }
 
-  toolbar: css`
-    border-bottom: 1px solid ${token.colorBorderSecondary};
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: ${token.colorFillTertiary};
-    flex-wrap: wrap;
-  `,
+      &:focus-within {
+        border-color: ${token.colorPrimary};
+        box-shadow: 0 0 0 2px ${token.colorPrimary}20;
+      }
+    `,
 
-  toolbarButton: css`
-    border: none;
-    box-shadow: none;
-    height: 28px;
-    padding: 0 8px;
-    border-radius: 4px;
-    font-size: 12px;
+    toolbar: css`
+      border-bottom: 1px solid ${token.colorBorderSecondary};
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: ${token.colorFillTertiary};
+      flex-wrap: wrap;
+    `,
 
-    &:hover {
-      background: ${token.colorFillSecondary};
-    }
+    toolbarButton: css`
+      border: none;
+      box-shadow: none;
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 4px;
+      font-size: 12px;
 
-    &:disabled {
-      opacity: 0.5;
-    }
-  `,
+      &:hover {
+        background: ${token.colorFillSecondary};
+      }
 
-  divider: css`
-    height: 20px;
-    margin: 0 4px;
-  `,
+      &:disabled {
+        opacity: 0.5;
+      }
+    `,
 
-  textArea: css`
-    border: none !important;
-    box-shadow: none !important;
-    padding: 12px;
-    resize: none;
+    divider: css`
+      height: 20px;
+      margin: 0 4px;
+    `,
 
-    &:focus {
+    textArea: css`
       border: none !important;
       box-shadow: none !important;
-    }
+      padding: 12px;
+      resize: none;
 
-    &::placeholder {
-      color: ${token.colorTextPlaceholder};
-    }
-  `,
-}));
+      &:focus {
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      &::placeholder {
+        color: ${token.colorTextPlaceholder};
+      }
+    `,
+
+    editor: css`
+      border: none;
+
+      .ql-container {
+        border: none;
+        height: ${height}px;
+        font-family: ${token.fontFamily};
+      }
+
+      .ql-editor {
+        min-height: ${height}px;
+        height: ${height}px;
+        padding: 12px 16px;
+        line-height: 1.6;
+        color: ${token.colorText};
+        overflow-y: auto;
+
+        &.ql-blank::before {
+          color: ${token.colorTextPlaceholder};
+          font-style: normal;
+        }
+      }
+
+      .ql-toolbar {
+        border: none;
+        border-bottom: 1px solid ${token.colorBorder};
+        padding: 8px 12px;
+        background-color: ${token.colorFillAlter};
+      }
+    `,
+  }),
+);

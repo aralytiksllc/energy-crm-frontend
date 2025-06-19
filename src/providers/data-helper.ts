@@ -1,8 +1,12 @@
 // External imports
-import type { CrudFilters, CrudSort } from '@refinedev/core';
-import qs from 'qs';
+import type {
+  CrudFilters,
+  CrudSort,
+  GetListParams,
+  LogicalFilter,
+} from '@refinedev/core';
 
-export interface QueryParams {
+export interface QueryParams extends GetListParams {
   filters?: CrudFilters;
   sorters?: CrudSort[];
   pagination?: {
@@ -11,23 +15,47 @@ export interface QueryParams {
   };
 }
 
+// Transform Refine filters to backend format
+const transformFilters = (filters: CrudFilters) => {
+  return filters
+    .filter((filter): filter is LogicalFilter => 'field' in filter)
+    .map((filter) => ({
+      field: filter.field,
+      operator: filter.operator,
+      value: filter.value,
+    }));
+};
+
+// Transform Refine sorters to backend format
+const transformSorters = (sorters: CrudSort[]) => {
+  return sorters.map((sorter) => ({
+    field: sorter.field,
+    order: sorter.order?.toUpperCase() || 'ASC',
+  }));
+};
+
 export const dataHelper = {
-  buildQueryString(params: QueryParams): string {
-    const query: Record<string, any> = {};
+  buildQueryString(params: GetListParams): string {
+    const queryParams = new URLSearchParams();
 
-    if (params.filters) {
-      query.filters = params.filters;
-    }
-
-    if (params.sorters) {
-      query.sorters = params.sorters;
-    }
-
+    // Handle pagination
     if (params.pagination) {
-      query.current = params.pagination.current ?? 1;
-      query.pageSize = params.pagination.pageSize ?? 20;
+      queryParams.append('current', String(params.pagination.current || 1));
+      queryParams.append('pageSize', String(params.pagination.pageSize || 20));
     }
 
-    return qs.stringify(query, { encode: false });
+    // Handle sorting
+    if (params.sorters && params.sorters.length > 0) {
+      const transformedSorters = transformSorters(params.sorters);
+      queryParams.append('sorters', JSON.stringify(transformedSorters));
+    }
+
+    // Handle filtering
+    if (params.filters && params.filters.length > 0) {
+      const transformedFilters = transformFilters(params.filters);
+      queryParams.append('filters', JSON.stringify(transformedFilters));
+    }
+
+    return queryParams.toString();
   },
 };

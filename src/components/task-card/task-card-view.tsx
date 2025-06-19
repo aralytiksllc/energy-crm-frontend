@@ -10,12 +10,17 @@ import { TaskType } from '../task-form/task-form.types';
 
 const { Title, Paragraph, Text } = Typography;
 
-const taskTypeColors: Record<TaskType, string> = {
-  [TaskType.EMAIL]: '#1890ff',
-  [TaskType.MEETING]: '#52c41a',
-  [TaskType.PHONE_CALL]: '#faad14',
+const typeColors: Record<TaskType, string> = {
+  [TaskType.FEATURE]: '#52c41a',
+  [TaskType.BUG]: '#f5222d',
+  [TaskType.CODE_REVIEW]: '#faad14',
+  [TaskType.TESTING]: '#722ed1',
+  [TaskType.DOCUMENTATION]: '#1890ff',
+  [TaskType.REFACTOR]: '#fa8c16',
+  [TaskType.MEETING]: '#13c2c2',
+  [TaskType.DEPLOYMENT]: '#eb2f96',
+  [TaskType.RESEARCH]: '#52c41a',
   [TaskType.OTHER]: '#8c8c8c',
-  [TaskType.TASK]: '#722ed1',
 };
 
 const formatDate = (date: Date): string => {
@@ -59,7 +64,7 @@ export const TaskCardView: React.FC<TaskCardViewProps> = ({
           marginBottom: 12,
         }}
       >
-        <Tag color={taskTypeColors[task.type]} style={{ margin: 0 }}>
+        <Tag color={typeColors[task.type]} style={{ margin: 0 }}>
           {task.type}
         </Tag>
         {onEdit && !disabled && (

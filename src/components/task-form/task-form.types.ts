@@ -2,19 +2,23 @@ import type { FormInstance } from 'antd/es/form';
 import type { UploadFile } from 'antd';
 
 export enum TaskType {
-  EMAIL = 'EMAIL',
+  FEATURE = 'FEATURE',
+  BUG = 'BUG',
+  CODE_REVIEW = 'CODE_REVIEW',
+  TESTING = 'TESTING',
+  DOCUMENTATION = 'DOCUMENTATION',
+  REFACTOR = 'REFACTOR',
   MEETING = 'MEETING',
-  PHONE_CALL = 'PHONE_CALL',
+  DEPLOYMENT = 'DEPLOYMENT',
+  RESEARCH = 'RESEARCH',
   OTHER = 'OTHER',
-  TASK = 'TASK',
 }
 
 export enum TaskPriority {
-  LOWEST = 'LOWEST',
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  HIGHEST = 'HIGHEST',
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High',
+  Critical = 'Critical',
 }
 
 export interface User {
@@ -35,17 +39,29 @@ export interface TaskFormValues {
   type: TaskType;
   priority?: TaskPriority;
   dueDate?: Date;
+  projectId?: number;
   assignees?: TaskAssignee[];
   attachments?: UploadFile[];
 }
 
 export type TaskFormTab = 'overview' | 'attachments' | 'history' | 'comments';
 
+export interface Project {
+  id: number;
+  name: string;
+  description?: string;
+  status: string;
+  isActive: boolean;
+}
+
 export interface TaskFormProps {
   showUserSelection?: boolean;
   onUserSelect?: (userId: number) => void;
   selectedUsers?: number[];
   users?: User[];
+  projects?: Project[];
+  projectsLoading?: boolean;
+  showProjectSelection?: boolean;
   form?: FormInstance<TaskFormValues>;
   initialValues?: Partial<TaskFormValues>;
   layout?: 'horizontal' | 'vertical' | 'inline';
@@ -66,9 +82,8 @@ export interface TaskFormProps {
 }
 
 export const PRIORITY_OPTIONS = [
-  { label: 'Lowest', value: TaskPriority.LOWEST, color: '#d9d9d9' },
-  { label: 'Low', value: TaskPriority.LOW, color: '#52c41a' },
-  { label: 'Medium', value: TaskPriority.MEDIUM, color: '#faad14' },
-  { label: 'High', value: TaskPriority.HIGH, color: '#fa8c16' },
-  { label: 'Highest', value: TaskPriority.HIGHEST, color: '#f5222d' },
+  { label: 'Low', value: TaskPriority.Low, color: '#52c41a' },
+  { label: 'Medium', value: TaskPriority.Medium, color: '#faad14' },
+  { label: 'High', value: TaskPriority.High, color: '#fa8c16' },
+  { label: 'Critical', value: TaskPriority.Critical, color: '#f5222d' },
 ];

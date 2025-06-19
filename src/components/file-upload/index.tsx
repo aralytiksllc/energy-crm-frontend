@@ -31,7 +31,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const { styles } = useFileUploadStyles();
 
   const handleUpload: UploadProps['customRequest'] = ({ file, onSuccess }) => {
-    // Mock upload - in real app, this would upload to server
     setTimeout(() => {
       onSuccess?.(file);
     }, 1000);

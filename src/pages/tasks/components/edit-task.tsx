@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import { TaskType } from '@/components/task-form/task-form.types';
 import { useEditTask } from '../hooks/useEditTask';
-import { MOCK_USERS } from '../constants/taskConstants';
+import { useUsers } from '@/pages/users/hooks/useUsers';
 import { useEditTaskStyles } from './edit-task.styles';
 import { useAssigneeSection } from './assignee-section';
 import type { EditTaskProps } from '../types';
@@ -44,6 +44,7 @@ export const EditTask: React.FC<EditTaskProps> = ({
 }) => {
   const [form] = Form.useForm<TaskFormValues>();
   const { mutate: editTask, isLoading: editLoading } = useEditTask();
+  const { data: users = [], isLoading: usersLoading } = useUsers();
   const [selectedUsers, setSelectedUsers] = React.useState<number[]>(
     initialData?.assignedTo || [],
   );
@@ -56,18 +57,20 @@ export const EditTask: React.FC<EditTaskProps> = ({
   const [activeTab, setActiveTab] = React.useState<TaskFormTab>('overview');
   const { styles } = useEditTaskStyles();
 
-  const loading = externalLoading || editLoading;
+  // Transform users to match the expected User interface
+  const transformedUsers = React.useMemo(() => {
+    return users.map((user) => ({
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`,
+      avatar: user.avatar || undefined,
+    }));
+  }, [users]);
 
-  // Mock current user - in a real app, this would come from auth context
-  const currentUser = {
-    id: 1,
-    name: 'Current User',
-    avatar: undefined,
-  };
+  const loading = externalLoading || editLoading;
 
   const assigneeSection = useAssigneeSection({
     assignees,
-    users: MOCK_USERS,
+    users: transformedUsers,
     disabled,
     onAssigneesChange: setAssignees,
   });
@@ -85,7 +88,7 @@ export const EditTask: React.FC<EditTaskProps> = ({
       <Space align="center" className={styles.assigneeDisplay}>
         <Avatar.Group size="small" max={{ count: 3 }}>
           {validAssignees.map((assignee, index) => {
-            const user = MOCK_USERS.find((u) => u.id === assignee.userId);
+            const user = transformedUsers.find((u) => u.id === assignee.userId);
             return user ? (
               <Tooltip key={index} title={user.name}>
                 <Avatar src={user.avatar}>{user.name[0]}</Avatar>
@@ -114,11 +117,29 @@ export const EditTask: React.FC<EditTaskProps> = ({
         const validAssignees = assignees.filter((a) => a.userId > 0);
         const assignedUserIds = validAssignees.map((a) => a.userId);
 
+        if (validAssignees.length === 0) {
+          throw new Error('Please assign at least one user to the task');
+        }
+
+        // Transform form data to match backend UpdateTaskDto
+        const updateTaskData = {
+          title: formValues.title,
+          description: formValues.description,
+          type: formValues.type || TaskType.OTHER,
+          priority: formValues.priority,
+          dueDate: formValues.dueDate
+            ? new Date(formValues.dueDate).toISOString()
+            : undefined,
+          assignedToIds: assignedUserIds,
+          assignees: validAssignees.map((assignee) => ({
+            userId: assignee.userId,
+            estimatedHours: assignee.estimatedHours,
+          })),
+        };
+
         await editTask({
           id: taskId,
-          ...formValues,
-          assignedTo: assignedUserIds,
-          type: formValues.type || TaskType.TASK,
+          ...updateTaskData,
         });
 
         if (onSuccess) {
@@ -172,7 +193,7 @@ export const EditTask: React.FC<EditTaskProps> = ({
         onFinish={handleFinish}
         disabled={disabled}
         loading={loading}
-        users={MOCK_USERS}
+        users={transformedUsers}
         selectedUsers={selectedUsers}
         onUserSelect={handleUserSelect}
         showUserSelection={showUserSelection}
@@ -185,19 +206,42 @@ export const EditTask: React.FC<EditTaskProps> = ({
         renderCommentsSection={() => (
           <TaskCommentsSection
             taskId={taskId?.toString()}
-            currentUser={currentUser}
             disabled={disabled}
             loading={loading}
           />
         )}
-        currentUser={currentUser}
         taskId={taskId?.toString()}
       />
 
       {activeTab === 'overview' && showUserSelection && (
-        <div className={styles.assigneeFormSection}>
-          {assigneeSection.expanded}
-        </div>
+        <Form.Item
+          name="assignees"
+          label="Assignees"
+          rules={[
+            { required: true, message: 'At least one assignee is required' },
+            {
+              validator: (_, value) => {
+                if (!value || !Array.isArray(value)) {
+                  return Promise.reject(
+                    new Error('At least one assignee is required'),
+                  );
+                }
+                const validAssignees = value.filter(
+                  (assignee) => assignee?.userId > 0,
+                );
+                if (validAssignees.length === 0) {
+                  return Promise.reject(
+                    new Error('At least one assignee is required'),
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
+          ]}
+          className={styles.assigneeFormSection}
+        >
+          <div>{assigneeSection.expanded}</div>
+        </Form.Item>
       )}
 
       {showActions && (

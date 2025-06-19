@@ -29,6 +29,11 @@ export type {
 export { TaskCommentsSection } from './task-comments-section';
 export type { TaskCommentsSectionProps } from './task-comments-section';
 
+export { GenericModal } from './generic-modal';
+export type { GenericModalProps, GenericModalTab } from './generic-modal';
+
+export { ClientOption } from './client-option';
+
 export {
   TaskCard,
   TaskCardView,

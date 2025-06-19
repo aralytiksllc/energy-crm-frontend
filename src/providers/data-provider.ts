@@ -19,7 +19,6 @@ import type {
 // Internal imports
 import { API_URL } from './http-constants';
 import { httpClient } from './http-client';
-import { dataHelper } from './data-helper';
 
 export const dataProvider: DataProvider = {
   getApiUrl() {
@@ -29,17 +28,46 @@ export const dataProvider: DataProvider = {
   async getList<TData extends BaseRecord>(
     params: GetListParams,
   ): Promise<GetListResponse<TData>> {
-    const qs = dataHelper.buildQueryString(params);
-    const url = `${params.resource}?${qs}`;
-    const response = await httpClient.get(url).json<{
-      items: TData[];
-      total: number;
-    }>();
+    const url = params.resource;
 
-    return {
-      data: response.items,
-      total: response.total,
-    };
+    try {
+      const response = await httpClient.get(url).json<any>();
+
+      // Handle different response formats
+      if (response.items && typeof response.total === 'number') {
+        // Format: { items: TData[], total: number }
+        return {
+          data: response.items,
+          total: response.total,
+        };
+      } else if (response.data && typeof response.total === 'number') {
+        // Format: { data: TData[], total: number }
+        return {
+          data: response.data,
+          total: response.total,
+        };
+      } else if (Array.isArray(response)) {
+        // Format: TData[] (simple array)
+        return {
+          data: response,
+          total: response.length,
+        };
+      } else if (response.results && typeof response.count === 'number') {
+        // Format: { results: TData[], count: number }
+        return {
+          data: response.results,
+          total: response.count,
+        };
+      } else {
+        return {
+          data: [],
+          total: 0,
+        };
+      }
+    } catch (error) {
+      console.error(`Error fetching ${params.resource}:`, error);
+      throw error;
+    }
   },
 
   async getOne<TData extends BaseRecord>(
@@ -97,9 +125,7 @@ export const dataProvider: DataProvider = {
 
     switch (method) {
       case 'get': {
-        const qs = dataHelper.buildQueryString(params);
-        const url = `${params.url}?${qs}`;
-        const data = await httpClient.get(url).json<TData>();
+        const data = await httpClient.get(params.url).json<TData>();
         return { data };
       }
 

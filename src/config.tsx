@@ -27,8 +27,6 @@ export const refineProps: RefineProps = {
     {
       name: 'projects',
       list: '/projects',
-      create: '/projects/create',
-      edit: '/projects/edit/:id',
       show: '/projects/show/:id',
       meta: {
         canDelete: true,
