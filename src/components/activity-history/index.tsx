@@ -1,5 +1,5 @@
 import React from 'react';
-import { Timeline, Typography, Avatar, Space, Tag } from 'antd';
+import { Timeline, Typography, Avatar, Space, Tag, Empty } from 'antd';
 import { ClockCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { useActivityHistoryStyles } from './activity-history.styles';
 
@@ -73,57 +73,22 @@ export const ActivityHistory: React.FC<ActivityHistoryProps> = ({
     return timestamp.toLocaleDateString();
   };
 
-  const mockActivities: ActivityItem[] =
-    activities.length > 0
-      ? activities
-      : [
-          {
-            id: '1',
-            action: 'created',
-            description: 'Task was created',
-            user: { id: 1, name: 'John Doe', avatar: undefined },
-            timestamp: new Date(Date.now() - 86400000),
-            type: 'created',
-          },
-          {
-            id: '2',
-            action: 'assigned',
-            description: 'Assigned to Jane Smith',
-            user: { id: 2, name: 'Project Manager', avatar: undefined },
-            timestamp: new Date(Date.now() - 43200000),
-            type: 'assigned',
-          },
-          {
-            id: '3',
-            action: 'commented',
-            description: 'Added a comment: "Please review the requirements"',
-            user: { id: 3, name: 'Jane Smith', avatar: undefined },
-            timestamp: new Date(Date.now() - 21600000),
-            type: 'commented',
-          },
-          {
-            id: '4',
-            action: 'attached',
-            description: 'Uploaded document: requirements.pdf',
-            user: { id: 1, name: 'John Doe', avatar: undefined },
-            timestamp: new Date(Date.now() - 7200000),
-            type: 'attached',
-          },
-          {
-            id: '5',
-            action: 'status_changed',
-            description: 'Status changed from "To Do" to "In Progress"',
-            user: { id: 3, name: 'Jane Smith', avatar: undefined },
-            timestamp: new Date(Date.now() - 3600000),
-            type: 'status_changed',
-          },
-        ];
+  if (activities.length === 0 && !loading) {
+    return (
+      <div className={styles.container}>
+        <Empty
+          description="No activity history yet"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       <Timeline
         className={styles.timeline}
-        items={mockActivities.map((activity) => ({
+        items={activities.map((activity) => ({
           dot: getActivityIcon(activity.type),
           color: getActivityColor(activity.type),
           children: (
@@ -161,12 +126,6 @@ export const ActivityHistory: React.FC<ActivityHistoryProps> = ({
           ),
         }))}
       />
-
-      {mockActivities.length === 0 && !loading && (
-        <div className={styles.emptyState}>
-          <Text type="secondary">No activity history available</Text>
-        </div>
-      )}
     </div>
   );
 };

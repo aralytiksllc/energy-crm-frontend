@@ -1,7 +1,7 @@
 // External imports
 import React from 'react';
-import { Table, Space } from 'antd';
-import { List, useTable, CreateButton } from '@refinedev/antd';
+import { Table } from 'antd';
+import { List, useTable } from '@refinedev/antd';
 
 // Internal imports
 import { useProjectColumns } from './constants/table';
@@ -9,30 +9,28 @@ import { IProject } from './types/types';
 import { CreateProjectModal } from './components/create-project-modal';
 
 export const ProjectsList: React.FC = () => {
-  const { tableProps } = useTable<IProject>({
+  const { tableProps, tableQuery } = useTable<IProject>({
     resource: 'projects',
     filters: { mode: 'server' },
     syncWithLocation: true,
   });
 
   const handleProjectCreated = (project: IProject) => {
-    // Handle successful project creation
+    // Refetch the table data to include the new project
+    tableQuery.refetch();
   };
 
   const handleProjectUpdated = () => {
     // Refetch the table data after project update
-    tableProps.onChange?.();
+    tableQuery.refetch();
   };
 
   const columns = useProjectColumns(handleProjectUpdated);
 
   return (
     <List
-      headerButtons={({ defaultButtons }) => (
-        <>
-          {defaultButtons}
-          <CreateButton />
-        </>
+      headerButtons={() => (
+        <CreateProjectModal onProjectCreated={handleProjectCreated} />
       )}
     >
       <div style={{ overflowX: 'auto' }}>
