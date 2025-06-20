@@ -1,7 +1,7 @@
 // External imports
 import { AuthPage } from '@refinedev/antd';
 
-export interface ForgotPasswordProps {}
+type ForgotPasswordProps = Record<string, never>;
 
 export const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
   return <AuthPage type="forgotPassword" />;

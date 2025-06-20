@@ -42,6 +42,13 @@ export const refineProps: RefineProps = {
         canDelete: true,
       },
     },
+    {
+      name: 'dashboard',
+      list: '/dashboard',
+      meta: {
+        label: 'Dashboard',
+      },
+    },
   ],
   options: {
     syncWithLocation: true,

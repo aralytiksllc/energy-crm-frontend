@@ -1,8 +1,8 @@
 // External imports
 import { AuthPage } from '@refinedev/antd';
 
-export interface LogInProps {}
+type LoginProps = Record<string, never>;
 
-export const LogIn: React.FC<LogInProps> = () => {
+export const Login: React.FC<LoginProps> = () => {
   return <AuthPage type="login" />;
 };

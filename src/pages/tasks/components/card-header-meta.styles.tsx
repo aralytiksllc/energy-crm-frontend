@@ -1,36 +1,36 @@
-import React, { useMemo } from 'react';
-import {
-  Card,
-  Tag,
-  Typography,
-  Tooltip,
-  Dropdown,
-  Menu,
-  Button,
-  Flex,
-  Modal,
-  message,
-  MenuProps,
-} from 'antd';
+import React from 'react';
+import { Card, Tag, Typography, Tooltip, Flex } from 'antd';
 import {
   ClockCircleOutlined,
   CommentOutlined,
   CalendarOutlined,
-  EllipsisOutlined,
-  EyeOutlined,
-  DeleteOutlined,
-  MoreOutlined,
 } from '@ant-design/icons';
-
-import './animations.css';
 
 import { UserAvatars } from '@/components/user-avatars';
 import { useCrudMenuItems } from '@/hooks/use-crud-menu-items';
 import { DropdownActions } from '@/components/dropdown-actions';
-import { useDeleteMenuItem } from '@/hooks/use-delete-menu-item';
 import { IUser } from '@/interfaces/users';
 
 const { Text, Paragraph } = Typography;
+
+// Styles
+const styles = {
+  cardHeader: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  tagContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+  ellipsisTag: {
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+  },
+};
 
 // Static data
 const staticData = {
@@ -38,10 +38,6 @@ const staticData = {
   taskTitle: 'Fix responsive issues on login page',
   taskDescription:
     'Fix responsive issues on login page when resizing on tablet view. Also check alignment problems and inconsistent font sizes.',
-  tag: {
-    color: 'red',
-    text: 'shume tekst shume tekst shume tekst shume tekst',
-  },
   estimatedTime: '3h',
   commentsCount: 5,
   createdDate: '15 May',
@@ -79,7 +75,6 @@ export const KanbanCard: React.FC = () => {
     cardTitle,
     taskTitle,
     taskDescription,
-    tag,
     estimatedTime,
     commentsCount,
     createdDate,
@@ -104,7 +99,6 @@ export const KanbanCard: React.FC = () => {
   ];
 
   const crudMenuItems = useCrudMenuItems({
-
     confirmTitle: `Delete project "${cardTitle}"?`,
     confirmMessage: 'This action is irreversible.',
     resource: 'tasks',
@@ -119,16 +113,16 @@ export const KanbanCard: React.FC = () => {
       title={<Text strong>{cardTitle}</Text>}
       extra={<DropdownActions items={crudMenuItems} />}
     >
-    <Flex style={styles.cardHeader}>
-      <Flex style={styles.tagContainer}>
-        <Tooltip title="Test">
-          <Tag color="blue" style={styles.ellipsisTag}>
-            {'tagText'}
-          </Tag>
-        </Tooltip>
+      <Flex style={styles.cardHeader}>
+        <Flex style={styles.tagContainer}>
+          <Tooltip title="Test">
+            <Tag color="blue" style={styles.ellipsisTag}>
+              {'tagText'}
+            </Tag>
+          </Tooltip>
+        </Flex>
+        <UserAvatars users={users} />
       </Flex>
-      <UserAvatars users={users} />
-    </Flex>
 
       <Card.Meta
         title={taskTitle}

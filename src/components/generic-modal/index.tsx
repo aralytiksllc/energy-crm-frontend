@@ -9,7 +9,7 @@ export interface GenericModalTab {
   icon?: ReactNode;
 }
 
-export interface GenericModalProps {
+interface GenericModalProps<T = Record<string, unknown>> {
   // Modal configuration
   title: string;
   width?: number;
@@ -45,7 +45,7 @@ export interface GenericModalProps {
 
   // Form integration
   form?: any;
-  onFinish?: (values: any) => void;
+  onFinish: (values: T) => void;
   formLayout?: 'horizontal' | 'vertical' | 'inline';
 
   // Additional classes/styles

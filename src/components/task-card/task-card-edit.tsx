@@ -289,17 +289,28 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
           </Space>
         )}
 
-        {isEditing === 'assignedTo' ? (
+        {isEditing === 'assignees' ? (
           <div style={{ minWidth: 200 }}>
             {renderEditableField(
-              'assignedTo',
+              'assignees',
               <UserSelector
-                value={editedTask.assignedTo?.map((user) => user.id) || []}
+                value={
+                  editedTask.assignees?.map(
+                    (assignee) => assignee.user?.id || assignee.userId,
+                  ) || []
+                }
                 onChange={(userIds) => {
                   const selectedUsers = users.filter((user) =>
                     userIds.includes(user.id),
                   );
-                  handleFieldChange('assignedTo', selectedUsers);
+                  const assignees = selectedUsers.map((user) => ({
+                    user,
+                    userId: user.id,
+                    taskId: editedTask.id,
+                    estimatedHours: 0,
+                    actualHours: 0,
+                  }));
+                  handleFieldChange('assignees', assignees);
                 }}
                 users={users}
                 disabled={disabled}
@@ -316,12 +327,12 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
               padding: '4px',
               borderRadius: 4,
             }}
-            onClick={() => handleFieldEdit('assignedTo')}
+            onClick={() => handleFieldEdit('assignees')}
           >
             <span style={{ color: '#8c8c8c' }}>👥</span>
             <span style={{ color: '#8c8c8c', fontSize: 12 }}>
-              {editedTask.assignedTo && editedTask.assignedTo.length > 0
-                ? `${editedTask.assignedTo.length} assigned`
+              {editedTask.assignees && editedTask.assignees.length > 0
+                ? `${editedTask.assignees.length} assigned`
                 : 'Unassigned'}
             </span>
           </Space>

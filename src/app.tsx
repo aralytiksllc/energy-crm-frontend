@@ -15,7 +15,8 @@ import { ColorModeContextProvider } from './contexts/color-mode';
 import { refineProps } from './config';
 import { Routes } from './routes';
 
-interface AppProps {}
+// Remove empty interface and replace with type alias
+type AppProps = Record<string, never>;
 
 export const App: React.FC<AppProps> = () => (
   <BrowserRouter>

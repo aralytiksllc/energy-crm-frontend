@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Avatar } from 'antd';
+import React, { useCallback } from 'react';
+import { Avatar, Tooltip } from 'antd';
 import type { IUser } from '@/interfaces/users';
 import { UserAvatar } from '@/components/user-avatar';
 
