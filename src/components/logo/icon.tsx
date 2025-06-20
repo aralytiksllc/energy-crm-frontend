@@ -1,8 +1,9 @@
 import React from 'react';
+import { SVGProps } from 'react';
 
-export interface AralytiksIconProps extends React.SVGProps<SVGSVGElement> {}
+type IconProps = SVGProps<SVGSVGElement>;
 
-export const AralytiksIcon: React.FC<AralytiksIconProps> = (props) => (
+export const Icon: React.FC<IconProps> = (props) => (
   <svg
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"

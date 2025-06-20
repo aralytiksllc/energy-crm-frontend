@@ -15,8 +15,8 @@ import {
 } from './pages/authentication';
 import { UsersCreate, UsersEdit, UsersList, UsersShow } from './pages/users';
 import { ProjectsList, ProjectsShow } from './pages/projects';
-
 import { TasksList } from './pages/tasks';
+import { Dashboard } from './pages/dashboard';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
@@ -48,6 +48,9 @@ export const Routes: React.FC = () => (
       </Route>
       <Route path="/tasks">
         <Route index element={<TasksList />} />
+      </Route>
+      <Route path="/dashboard">
+        <Route index element={<Dashboard />} />
       </Route>
       <Route path="*" element={<ErrorComponent />} />
     </Route>

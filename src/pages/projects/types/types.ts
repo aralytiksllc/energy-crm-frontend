@@ -57,7 +57,8 @@ export interface IProject {
   status: ProjectStatus;
   priority: ProjectPriority;
   progress: number;
-  clientName?: string;
+  customerId: number;
+  customer?: ICustomer;
   projectManagerId?: number;
   budget: number;
   startDate: Date;
@@ -72,6 +73,13 @@ export interface IProject {
   members: IProjectMember[];
 }
 
+// Customer interface for project relations
+export interface ICustomer {
+  id: number;
+  name: string;
+  isActive: boolean;
+}
+
 // Create Project DTO - exactly matching backend
 export interface CreateProjectDto {
   name: string; // Required
@@ -80,7 +88,7 @@ export interface CreateProjectDto {
   status?: ProjectStatus;
   priority?: ProjectPriority;
   progress?: number;
-  clientName?: string;
+  customerId: number; // Required - customer relationship
   projectManagerId?: number;
   budget?: number;
   startDate: string; // Required (ISO date string)
@@ -102,7 +110,7 @@ export interface UpdateProjectDto {
   status?: ProjectStatus;
   priority?: ProjectPriority;
   progress?: number;
-  clientName?: string;
+  customerId?: number;
   projectManagerId?: number;
   budget?: number;
   startDate?: string;

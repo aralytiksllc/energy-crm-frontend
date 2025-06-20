@@ -11,6 +11,11 @@ export interface ProjectSummary {
   description?: string;
   status: string;
   isActive: boolean;
+  customerId: number;
+  customer?: {
+    id: number;
+    name: string;
+  };
 }
 
 export interface ProjectsPagedResponse {
