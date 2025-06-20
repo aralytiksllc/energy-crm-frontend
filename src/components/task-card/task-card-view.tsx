@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import type { TaskCardViewProps } from './task-card.types';
 import { TaskType } from '../task-form/task-form.types';
+import { stripHtmlTags } from '@/helpers/text-utils';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -23,7 +24,8 @@ const typeColors: Record<TaskType, string> = {
   [TaskType.OTHER]: '#8c8c8c',
 };
 
-const formatDate = (date: Date): string => {
+const formatDate = (date?: Date): string => {
+  if (!date) return 'No due date';
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -48,6 +50,11 @@ export const TaskCardView: React.FC<TaskCardViewProps> = ({
   const editableFieldStyle = {
     transition: 'background-color 0.2s',
   };
+
+  // Strip HTML tags from description
+  const plainTextDescription = task.description
+    ? stripHtmlTags(task.description)
+    : '';
 
   return (
     <Card
@@ -120,7 +127,7 @@ export const TaskCardView: React.FC<TaskCardViewProps> = ({
           }
         }}
       >
-        {task.description}
+        {plainTextDescription}
       </Paragraph>
 
       <Space
@@ -161,7 +168,7 @@ export const TaskCardView: React.FC<TaskCardViewProps> = ({
             borderRadius: 4,
             ...editableFieldStyle,
           }}
-          onClick={() => handleFieldClick('assignedTo')}
+          onClick={() => handleFieldClick('assignees')}
           onMouseEnter={(e) => {
             if (!disabled && onFieldEdit) {
               e.currentTarget.style.backgroundColor = '#fafafa';
@@ -173,16 +180,19 @@ export const TaskCardView: React.FC<TaskCardViewProps> = ({
             }
           }}
         >
-          {task.assignedTo?.map((user) => (
-            <Tooltip key={user.id} title={user.name}>
+          {task.assignees?.map((assignee) => (
+            <Tooltip
+              key={assignee.userId}
+              title={assignee.user?.name || `User ${assignee.userId}`}
+            >
               <Avatar
                 size="small"
-                src={user.avatar}
-                icon={!user.avatar && <UserOutlined />}
+                src={assignee.user?.avatar}
+                icon={!assignee.user?.avatar && <UserOutlined />}
               />
             </Tooltip>
           ))}
-          {(!task.assignedTo || task.assignedTo.length === 0) && (
+          {(!task.assignees || task.assignees.length === 0) && (
             <Text type="secondary" style={{ fontSize: 12 }}>
               Unassigned
             </Text>

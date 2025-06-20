@@ -84,11 +84,7 @@ export const useAssigneeSection = ({
   const renderExpandedContent = () => (
     <Space direction="vertical" className={styles.expandedContent}>
       <Row justify="space-between" align="middle">
-        <Col>
-          <Text strong className={styles.sectionTitle}>
-            Assignees
-          </Text>
-        </Col>
+        <Col></Col>
         <Col>{getAssigneeDisplayText()}</Col>
       </Row>
 

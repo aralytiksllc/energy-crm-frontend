@@ -84,6 +84,7 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
           border: '2px dashed transparent',
           borderColor: isOver ? '#00000040' : 'red',
           borderRadius: '4px',
+          width: '200px',
         }}
       >
         <div
