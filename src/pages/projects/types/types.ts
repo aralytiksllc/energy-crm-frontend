@@ -1,3 +1,122 @@
+export enum ProjectStatus {
+  NotStarted = 'NotStarted',
+  InProgress = 'InProgress',
+  Completed = 'Completed',
+  OnHold = 'OnHold',
+  Cancelled = 'Cancelled',
+}
+
+export enum ProjectRole {
+  Manager = 'Manager',
+  Developer = 'Developer',
+  QA = 'QA',
+  Designer = 'Designer',
+  Stakeholder = 'Stakeholder',
+}
+
+export enum ProjectPriority {
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High',
+  Critical = 'Critical',
+}
+
+// Backend User interface (simplified)
+export interface IUser {
+  id: number;
+  name: string;
+  email?: string;
+}
+
+// Backend Project Member interface
+export interface IProjectMember {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: ProjectRole;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  project: IProject;
+  user: IUser;
+}
+
+// Backend Project Entity - exactly matching the backend schema
+export interface IProject {
+  // Base fields from BaseEntity
+  id: number;
+  createdById?: number;
+  updatedById?: number;
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Project-specific fields
+  name: string;
+  description?: string;
+  category?: string;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  progress: number;
+  clientName?: string;
+  projectManagerId?: number;
+  budget: number;
+  startDate: Date;
+  deadline?: Date;
+  endDate?: Date;
+  isArchived: boolean;
+  isPrivate: boolean;
+  technologies?: string[];
+  tags?: string[];
+  color?: string;
+  notes?: string;
+  members: IProjectMember[];
+}
+
+// Create Project DTO - exactly matching backend
+export interface CreateProjectDto {
+  name: string; // Required
+  description?: string;
+  category?: string;
+  status?: ProjectStatus;
+  priority?: ProjectPriority;
+  progress?: number;
+  clientName?: string;
+  projectManagerId?: number;
+  budget?: number;
+  startDate: string; // Required (ISO date string)
+  deadline?: string; // ISO date string
+  endDate?: string; // ISO date string
+  isArchived?: boolean;
+  isPrivate?: boolean;
+  technologies?: string[];
+  tags?: string[];
+  color?: string;
+  notes?: string;
+}
+
+// Update Project DTO - exactly matching backend
+export interface UpdateProjectDto {
+  name?: string;
+  description?: string;
+  category?: string;
+  status?: ProjectStatus;
+  priority?: ProjectPriority;
+  progress?: number;
+  clientName?: string;
+  projectManagerId?: number;
+  budget?: number;
+  startDate?: string;
+  deadline?: string;
+  endDate?: string;
+  isArchived?: boolean;
+  isPrivate?: boolean;
+  technologies?: string[];
+  tags?: string[];
+  color?: string;
+  notes?: string;
+}
+
+// Legacy types for backward compatibility
 export enum Stage {
   LEAD = 'LEAD',
   QUALIFIED = 'QUALIFIED',
@@ -10,11 +129,6 @@ export enum Stage {
 export enum FunctionalArea {
   AREA1 = 'AREA1',
   AREA2 = 'AREA2',
-}
-
-export interface IUser {
-  id: number;
-  name: string;
 }
 
 export interface ITask {
@@ -30,41 +144,4 @@ export interface IDocument {
 export interface INote {
   id: number;
   content: string;
-}
-
-export interface IProject {
-  id: number;
-  name: string;
-  stage: Stage;
-  functionalArea: FunctionalArea;
-  toPlan?: boolean;
-  commercialRegion?: string;
-  commercialCountry?: string;
-  customerType?: string;
-  customerDetails?: {
-    address?: string;
-    name?: string;
-    contact?: string;
-  };
-  pWin?: number;
-  pGo?: number;
-  totalContractValue?: number;
-  division?: string;
-  expectedRfpDate?: Date;
-  expectedRfqDate?: Date;
-  expectedSubmissionDate?: Date;
-  expectedAwardDate?: Date;
-  expectedContractStartDate?: Date;
-  description?: string;
-  owner?: IUser;
-  ownerId?: number;
-  createdBy?: IUser;
-  createdById?: number;
-  tasks?: ITask[];
-  documents?: IDocument[];
-  notes?: INote[];
-  stages?: string[];
-  tags?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
 }

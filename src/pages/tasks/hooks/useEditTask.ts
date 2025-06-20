@@ -1,28 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updateTask } from '../api/tasks';
 import type { EditTaskInput } from '../types';
-
-const editTask = async (input: EditTaskInput): Promise<void> => {
-  console.log('Editing task:', input);
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  if (!input.title || input.title.trim().length === 0) {
-    throw new Error('Task title is required');
-  }
-  return Promise.resolve();
-};
 
 export const useEditTask = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: editTask,
-    onSuccess: () => {
+    mutationFn: async (input: EditTaskInput) => {
+      const { id, ...data } = input;
+      return updateTask(id, data);
+    },
+    onSuccess: (updatedTask) => {
+      // Invalidate and refetch task lists
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['stages'] });
+      // Update specific task in cache
+      queryClient.setQueryData(['task', updatedTask.id], updatedTask);
     },
-    onError: (error) => {
-      console.error('Error editing task:', error);
+    onError: (error: Error) => {
+      console.error('Failed to edit task:', error);
     },
   });
 };

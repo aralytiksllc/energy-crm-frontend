@@ -14,18 +14,11 @@ import {
   UpdatePassword,
 } from './pages/authentication';
 import { UsersCreate, UsersEdit, UsersList, UsersShow } from './pages/users';
-import {
-  ProjectsList,
-  ProjectsCreate,
-  ProjectsEdit,
-  ProjectsShow,
-} from './pages/projects';
+import { ProjectsList, ProjectsShow } from './pages/projects';
 
 import { TasksList } from './pages/tasks';
 
-interface RoutesProps {}
-
-export const Routes: React.FC<RoutesProps> = () => (
+export const Routes: React.FC = () => (
   <ReactRoutes>
     <Route
       element={
@@ -51,8 +44,6 @@ export const Routes: React.FC<RoutesProps> = () => (
       </Route>
       <Route path="/projects">
         <Route index element={<ProjectsList />} />
-        <Route path="create" element={<ProjectsCreate />} />
-        <Route path="edit/:id" element={<ProjectsEdit />} />
         <Route path="show/:id" element={<ProjectsShow />} />
       </Route>
       <Route path="/tasks">

@@ -4,7 +4,7 @@ export const useKanbanColumnStyles = createStyles(({ css }) => ({
   root: css`
     display: flex;
     flex-direction: column;
-    width: 300px;
+    width: 320px;
     background: var(--color-bg-container);
     border-radius: var(--border-radius);
     position: relative;
@@ -16,6 +16,7 @@ export const useKanbanColumnStyles = createStyles(({ css }) => ({
     transition:
       border 0.2s,
       box-shadow 0.2s;
+    flex-shrink: 0;
   `,
 
   header: css`

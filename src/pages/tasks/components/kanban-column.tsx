@@ -27,17 +27,16 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
           <span className={styles.badge}>{data.tasks.length}</span>
         )}
       </Space>
-      <CreateTaskModal
-        stageId={data.id}
-        projectId={data.projectId}
-        buttonStyle={{ fontSize: 20 }}
-      />
+      <CreateTaskModal stageId={data.id} buttonStyle={{ fontSize: 20 }} />
     </div>
   );
 
   const cardsLoading = loading || !data.tasks;
 
-  const renderItem = React.useCallback((task: Task) => <KanbanCard />, []);
+  const renderItem = React.useCallback(
+    (task: Task) => <KanbanCard key={task.id} task={task} />,
+    [],
+  );
 
   const keyExtractor = React.useCallback((task: Task) => task.id, []);
 
@@ -75,11 +74,7 @@ export function KanbanColumn(props: KanbanColumnProps<Stage>) {
               <Badge count={data.tasks.length} color="cyan" />
             )}
           </Space>
-          <CreateTaskModal
-            stageId={data.id}
-            projectId={data.projectId}
-            buttonStyle={{ fontSize: 20 }}
-          />
+          <CreateTaskModal stageId={data.id} buttonStyle={{ fontSize: 20 }} />
         </Space>
       </div>
       <div

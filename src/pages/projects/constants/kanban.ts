@@ -31,7 +31,7 @@ export const defaultContainers = [
         task: {
           id: 1,
           title: 'Initial Client Contact',
-          type: TaskType.EMAIL,
+          type: TaskType.FEATURE,
           isCompleted: false,
           description: 'Send welcome email and gather initial requirements',
           dueDate: new Date('2024-03-20'),
@@ -182,7 +182,7 @@ export const defaultContainers = [
         task: {
           id: 13,
           title: 'Send B2B Emails',
-          type: TaskType.EMAIL,
+          type: TaskType.FEATURE,
           isCompleted: false,
           description: 'Send introductory emails to B2B leads',
           dueDate: new Date('2024-04-10'),

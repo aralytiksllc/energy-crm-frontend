@@ -4,8 +4,9 @@ import { ClockCircleOutlined } from '@ant-design/icons';
 import { useCreateTask } from '../hooks/useCreateTask';
 import { useCreateTaskStyles } from './create-task.styles';
 import { useAssigneeSection } from './assignee-section';
-import { MOCK_USERS } from '../constants/taskConstants';
 import { TaskType } from '@/components/task-form/task-form.types';
+import { useProjects } from '@/pages/projects/hooks/useProjects';
+import { useUsers } from '@/pages/users/hooks/useUsers';
 import type { CreateTaskProps } from '../types';
 import type {
   TaskFormValues,
@@ -30,24 +31,33 @@ export const CreateTask: React.FC<CreateTaskProps> = ({
 }) => {
   const [form] = Form.useForm<TaskFormValues>();
   const { mutate: createTask, isLoading: createLoading } = useCreateTask();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const { data: users = [], isLoading: usersLoading } = useUsers();
   const [assignees, setAssignees] = React.useState<TaskAssignee[]>([
     { userId: 0, estimatedHours: 0 },
   ]);
   const [activeTab, setActiveTab] = React.useState<TaskFormTab>('overview');
   const { styles } = useCreateTaskStyles();
 
-  const loading = externalLoading || createLoading;
+  // Ensure projects is always an array
+  const safeProjects = React.useMemo(() => {
+    return Array.isArray(projects) ? projects : [];
+  }, [projects]);
 
-  // Mock current user - in a real app, this would come from auth context
-  const currentUser = {
-    id: 1,
-    name: 'Current User',
-    avatar: undefined,
-  };
+  // Transform users to match the expected User interface
+  const transformedUsers = React.useMemo(() => {
+    return users.map((user) => ({
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`,
+      avatar: user.avatar || undefined,
+    }));
+  }, [users]);
+
+  const loading = externalLoading || createLoading;
 
   const assigneeSection = useAssigneeSection({
     assignees,
-    users: MOCK_USERS,
+    users: transformedUsers,
     disabled,
     onAssigneesChange: (newAssignees) => {
       setAssignees(newAssignees);
@@ -68,7 +78,7 @@ export const CreateTask: React.FC<CreateTaskProps> = ({
       <Space align="center" className={styles.assigneeDisplay}>
         <Avatar.Group size="small" max={{ count: 3 }}>
           {validAssignees.map((assignee, index) => {
-            const user = MOCK_USERS.find((u) => u.id === assignee.userId);
+            const user = transformedUsers.find((u) => u.id === assignee.userId);
             return user ? (
               <Tooltip key={index} title={user.name}>
                 <Avatar src={user.avatar}>{user.name[0]}</Avatar>
@@ -94,15 +104,35 @@ export const CreateTask: React.FC<CreateTaskProps> = ({
       try {
         const formValues = values || (await form.validateFields());
         const validAssignees = assignees.filter((a) => a.userId > 0);
-        const assignedUserIds = validAssignees.map((a) => a.userId);
 
-        await createTask({
-          ...formValues,
-          stageId,
-          projectId,
-          assignedTo: assignedUserIds,
-          type: formValues.type || TaskType.TASK,
-        });
+        // Transform form data to match backend CreateTaskDto
+        const selectedProjectId = formValues.projectId || projectId;
+
+        if (!selectedProjectId) {
+          throw new Error('Please select a project');
+        }
+
+        if (validAssignees.length === 0) {
+          throw new Error('Please assign at least one user to the task');
+        }
+
+        const createTaskData = {
+          title: formValues.title,
+          description: formValues.description,
+          type: formValues.type || TaskType.OTHER,
+          priority: formValues.priority,
+          dueDate: formValues.dueDate
+            ? new Date(formValues.dueDate).toISOString()
+            : undefined,
+          isCompleted: false, // New tasks are not completed by default
+          projectId: selectedProjectId,
+          assignees: validAssignees.map((assignee) => ({
+            userId: assignee.userId,
+            estimatedHours: assignee.estimatedHours,
+          })),
+        };
+
+        await createTask(createTaskData);
 
         form.resetFields();
         setAssignees([{ userId: 0, estimatedHours: 0 }]);
@@ -121,7 +151,7 @@ export const CreateTask: React.FC<CreateTaskProps> = ({
         }
       }
     },
-    [form, createTask, stageId, projectId, assignees, onSuccess, onError],
+    [form, createTask, projectId, assignees, onSuccess, onError],
   );
 
   const handleReset = React.useCallback(() => {
@@ -152,16 +182,48 @@ export const CreateTask: React.FC<CreateTaskProps> = ({
         activeTab={activeTab}
         onTabChange={setActiveTab}
         initialValues={{
-          type: TaskType.TASK,
+          type: TaskType.OTHER,
+          projectId: projectId,
         }}
         showActions={showActions}
         onSave={() => handleSubmit()}
         onCancel={handleReset}
+        projects={safeProjects}
+        projectsLoading={projectsLoading}
+        showProjectSelection={true}
         renderAssigneeSection={() =>
           activeTab === 'overview' && showUserSelection ? (
-            <div className={styles.assigneeFormSection}>
-              {assigneeSection.expanded}
-            </div>
+            <Form.Item
+              name="assignees"
+              label="Assignees"
+              rules={[
+                {
+                  required: true,
+                  message: 'At least one assignee is required',
+                },
+                {
+                  validator: (_, value) => {
+                    if (!value || !Array.isArray(value)) {
+                      return Promise.reject(
+                        new Error('At least one assignee is required'),
+                      );
+                    }
+                    const validAssignees = value.filter(
+                      (assignee) => assignee?.userId > 0,
+                    );
+                    if (validAssignees.length === 0) {
+                      return Promise.reject(
+                        new Error('At least one assignee is required'),
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+              className={styles.assigneeFormSection}
+            >
+              <div>{assigneeSection.expanded}</div>
+            </Form.Item>
           ) : null
         }
         renderCommentsSection={() => (
@@ -171,7 +233,6 @@ export const CreateTask: React.FC<CreateTaskProps> = ({
             </Text>
           </div>
         )}
-        currentUser={currentUser}
       />
     </Card>
   );

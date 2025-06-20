@@ -244,7 +244,6 @@ export const useTaskFormStyles = createStyles(({ token, css }) => ({
 
   formHeader: css`
     margin-bottom: 32px;
-    padding: 20px 0;
     border-radius: 12px;
     display: flex;
     justify-content: center;

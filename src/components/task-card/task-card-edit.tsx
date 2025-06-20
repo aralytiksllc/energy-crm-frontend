@@ -18,12 +18,17 @@ import dayjs from 'dayjs';
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
-const taskTypeColors: Record<TaskType, string> = {
-  [TaskType.EMAIL]: '#1890ff',
-  [TaskType.MEETING]: '#52c41a',
-  [TaskType.PHONE_CALL]: '#faad14',
+const typeColors: Record<TaskType, string> = {
+  [TaskType.FEATURE]: '#52c41a',
+  [TaskType.BUG]: '#f5222d',
+  [TaskType.CODE_REVIEW]: '#faad14',
+  [TaskType.TESTING]: '#722ed1',
+  [TaskType.DOCUMENTATION]: '#1890ff',
+  [TaskType.REFACTOR]: '#fa8c16',
+  [TaskType.MEETING]: '#13c2c2',
+  [TaskType.DEPLOYMENT]: '#eb2f96',
+  [TaskType.RESEARCH]: '#52c41a',
   [TaskType.OTHER]: '#8c8c8c',
-  [TaskType.TASK]: '#722ed1',
 };
 
 const taskTypeOptions = Object.values(TaskType).map((type) => ({
@@ -134,7 +139,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
           )
         ) : (
           <Tag
-            color={taskTypeColors[editedTask.type]}
+            color={typeColors[editedTask.type]}
             style={{ margin: 0, cursor: 'pointer' }}
             onClick={() => handleFieldEdit('type')}
           >

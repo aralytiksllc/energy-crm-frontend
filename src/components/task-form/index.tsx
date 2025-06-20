@@ -25,7 +25,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import { useTaskFormStyles } from './task-form.styles';
-import { RichTextEditor } from '../rich-text-editor';
+import { ReactQuillEditor } from '../rich-text-editor';
 import { FileUpload } from '../file-upload';
 import { ActivityHistory } from '../activity-history';
 import {
@@ -53,6 +53,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   onCancel,
   renderAssigneeSection,
   renderCommentsSection,
+  projects = [],
+  projectsLoading = false,
+  showProjectSelection = false,
 }) => {
   const { styles, cx } = useTaskFormStyles();
   const [internalTab, setInternalTab] = React.useState<TaskFormTab>('overview');
@@ -81,6 +84,35 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                 </Form.Item>
               </Col>
             </Row>
+
+            {showProjectSelection && (
+              <Form.Item
+                name="projectId"
+                label="Project"
+                rules={[{ required: true, message: 'Please select a project' }]}
+              >
+                <Select
+                  placeholder={
+                    projectsLoading ? 'Loading projects...' : 'Select a project'
+                  }
+                  size="large"
+                  className={styles.fieldSelect}
+                  loading={projectsLoading}
+                  disabled={disabled || projectsLoading}
+                  notFoundContent={
+                    (projects || []).length === 0
+                      ? 'No projects available. Please create a project first.'
+                      : 'No projects found'
+                  }
+                >
+                  {(projects || []).map((project) => (
+                    <Select.Option key={project.id} value={project.id}>
+                      {project.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            )}
 
             <Row gutter={[16, 16]}>
               <Col span={12}>
@@ -150,11 +182,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({
               label="Description"
               rules={taskFormValidation.description}
             >
-              <RichTextEditor
-                placeholder="Enter task description..."
-                rows={8}
-                maxLength={2000}
-                showCount
+              <ReactQuillEditor
+                placeholder="Enter task description"
+                height={150}
               />
             </Form.Item>
 

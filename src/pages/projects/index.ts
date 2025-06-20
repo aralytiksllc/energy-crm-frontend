@@ -1,4 +1,2 @@
-export * from './projects-create';
-export * from './projects-edit';
-export * from './projects-list';
-export * from './projects-show';
+export { ProjectsList } from './projects-list';
+export { ProjectsShow } from './projects-show';

@@ -12,6 +12,9 @@ import {
 } from '@ant-design/icons';
 import { useRichTextEditorStyles } from './rich-text-editor.styles';
 
+// Export the new React Quill components
+export { ReactQuillEditor, FormReactQuillEditor } from './react-quill-editor';
+
 const { TextArea } = Input;
 
 export interface RichTextEditorProps {
