@@ -21,7 +21,8 @@ export function KanbanItem<T>(props: KanbanItemProps<T>) {
     data: data as UseDraggableArguments['data'],
   });
 
-  const isActive = active?.id === id;
+  const isDragging = active?.id === id;
+  const isAnotherDragging = active && !isDragging;
 
   return (
     <div className={styles.root}>
@@ -29,11 +30,11 @@ export function KanbanItem<T>(props: KanbanItemProps<T>) {
         ref={setNodeRef}
         {...listeners}
         {...attributes}
-        className={isActive ? styles.dragging : undefined}
+        className={isAnotherDragging ? styles.dragging2 : undefined}
       >
         {children}
       </div>
-      {isActive && (
+      {isDragging && (
         <DragOverlay zIndex={1000}>
           <div className={styles.dragging}>{children}</div>
         </DragOverlay>

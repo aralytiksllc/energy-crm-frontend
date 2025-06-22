@@ -16,6 +16,7 @@ import {
 import { UsersList } from './pages/users';
 import { ProjectsList } from './pages/projects';
 import { Tasks } from './pages/tasks';
+import { Dashboard } from './pages/dashboard';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
@@ -35,6 +36,7 @@ export const Routes: React.FC = () => (
       }
     >
       <Route index element={<NavigateToResource resource="users" />} />
+      <Route index path="/dashboard" element={<Dashboard />} />
       <Route index path="/users" element={<UsersList />} />
       <Route index path="/projects" element={<ProjectsList />} />
       <Route index path="/tasks" element={<Tasks />} />

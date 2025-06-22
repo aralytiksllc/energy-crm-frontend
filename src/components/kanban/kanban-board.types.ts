@@ -1,21 +1,12 @@
-import type { DragEndEvent } from '@dnd-kit/core';
+export type KanbanSection<T> = {
+  id: string | number;
+  name: string;
+  items: T[];
+};
 
-export interface KanbanColumnProps<T> {
-  index: number;
-
-  data: T;
-
-  loading?: boolean;
-}
-
-export interface KanbanBoardProps<T> {
-  columns: T[];
-
-  keyExtractor: (item: T) => string;
-
-  onDragEnd: (event: DragEndEvent) => void;
-
-  ColumnComponent: React.FC<KanbanColumnProps<T>>;
-
-  loadingColumns?: boolean[];
-}
+export type KanbanBoardProps<T> = {
+  sections: KanbanSection<T>[];
+  keyExtractor: (item: T) => string | number;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  renderColumnHeader: (section: KanbanSection<T>) => React.ReactNode;
+};

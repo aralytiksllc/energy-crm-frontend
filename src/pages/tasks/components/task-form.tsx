@@ -57,7 +57,7 @@ export const TaskForm: React.FC<TaskFormProps> = (props) => {
       </Form.Item>
 
       <Form.Item name="description" label="Description">
-      <Input placeholder="Enter task title" />
+        <Input placeholder="Enter task title" />
       </Form.Item>
 
       <Row gutter={16}>

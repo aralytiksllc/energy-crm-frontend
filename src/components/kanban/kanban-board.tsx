@@ -1,4 +1,7 @@
 import * as React from 'react';
+import type { KanbanBoardProps } from './kanban-board.types';
+import { KanbanColumn } from './kanban-column';
+
 import {
   DndContext,
   MouseSensor,
@@ -7,15 +10,16 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core';
-import type { KanbanBoardProps } from './kanban-board.types';
 import { useStyles } from './kanban-board.styles';
 
 const sensorOptions = { activationConstraint: { distance: 5 } };
 
-export const KanbanBoard = <T,>(props: KanbanBoardProps<T>) => {
-  const { columns, keyExtractor, onDragEnd, ColumnComponent, loadingColumns } =
-    props;
-
+export function KanbanBoard<T>({
+  sections,
+  keyExtractor,
+  renderItem,
+  renderColumnHeader,
+}: KanbanBoardProps<T>) {
   const { styles } = useStyles();
 
   const mouseSensor = useSensor(MouseSensor, sensorOptions);
@@ -24,33 +28,25 @@ export const KanbanBoard = <T,>(props: KanbanBoardProps<T>) => {
 
   const sensors = useSensors(mouseSensor, touchSensor);
 
-  const handleDragEnd = React.useCallback(
-    (event: DragEndEvent) => {
-      if (event.over === null) return;
-      onDragEnd(event);
-    },
-    [onDragEnd],
-  );
-
-  const renderColumn = React.useCallback(
-    (column: T, index: number) => (
-      <ColumnComponent
-        key={keyExtractor(column)}
-        data={column}
-        index={index}
-        loading={false}
-      />
-    ),
-    [ColumnComponent, keyExtractor],
-  );
+  const handleDragEnd = React.useCallback((event: DragEndEvent) => {
+    if (event.over === null) return;
+    // onDragEnd(event);
+  }, []);
 
   return (
     <div className={styles.container}>
       <div className={styles.body}>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          {columns.map(renderColumn)}
+          {sections.map((section) => (
+            <KanbanColumn
+              key={section.id}
+              section={section}
+              renderItem={renderItem}
+              renderHeader={renderColumnHeader}
+            />
+          ))}
         </DndContext>
       </div>
     </div>
   );
-};
+}

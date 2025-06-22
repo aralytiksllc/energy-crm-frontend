@@ -22,6 +22,13 @@ export const refineProps: RefineProps = {
       },
     },
     {
+      name: 'dashboard',
+      list: '/dashboard',
+      meta: {
+        canDelete: true,
+      },
+    },
+    {
       name: 'projects',
       list: '/projects',
       meta: {
