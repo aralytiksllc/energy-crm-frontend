@@ -9,11 +9,6 @@ export interface VendorFormProps {
   formProps: FormProps;
 }
 
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-
-dayjs.extend(customParseFormat);
-
 export const UsersForm: React.FC<VendorFormProps> = (props) => {
   const { formProps } = props;
 

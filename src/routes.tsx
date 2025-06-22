@@ -13,10 +13,9 @@ import {
   ForgotPassword,
   UpdatePassword,
 } from './pages/authentication';
-import { UsersCreate, UsersEdit, UsersList, UsersShow } from './pages/users';
-import { ProjectsList, ProjectsShow } from './pages/projects';
-import { TasksList } from './pages/tasks';
-import { Dashboard } from './pages/dashboard';
+import { UsersList } from './pages/users';
+import { ProjectsList } from './pages/projects';
+import { Tasks } from './pages/tasks';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
@@ -36,22 +35,9 @@ export const Routes: React.FC = () => (
       }
     >
       <Route index element={<NavigateToResource resource="users" />} />
-      <Route path="/users">
-        <Route index element={<UsersList />} />
-        <Route path="create" element={<UsersCreate />} />
-        <Route path="edit/:id" element={<UsersEdit />} />
-        <Route path="show/:id" element={<UsersShow />} />
-      </Route>
-      <Route path="/projects">
-        <Route index element={<ProjectsList />} />
-        <Route path="show/:id" element={<ProjectsShow />} />
-      </Route>
-      <Route path="/tasks">
-        <Route index element={<TasksList />} />
-      </Route>
-      <Route path="/dashboard">
-        <Route index element={<Dashboard />} />
-      </Route>
+      <Route index path="/users" element={<UsersList />} />
+      <Route index path="/projects" element={<ProjectsList />} />
+      <Route index path="/tasks" element={<Tasks />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route

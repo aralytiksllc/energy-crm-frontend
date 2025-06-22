@@ -3,15 +3,15 @@ import React from 'react';
 import { CrudTable } from '@/components/crud-table/crud-table';
 
 // Internal imports
-import { ProjectForm } from './components/project-form';
+import { TaskForm } from './components/task-form';
 import { columns } from './constants/table';
 
-export const ProjectsList: React.FC = () => {
+export const Tasks: React.FC = () => {
   return (
     <CrudTable<any>
-      resource="projects"
+      resource="tasks"
       columns={columns}
-      FormComponent={ProjectForm}
+      FormComponent={TaskForm}
       DetailsComponent={() => <></>}
       drawerTitles={{
         create: 'Create Project',

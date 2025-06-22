@@ -44,15 +44,15 @@ export const columns: ColumnsType<IUser> = [
     title: 'Created At',
     sorter: true,
   },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions',
-    sorter: false,
-    render: createActions({
-      showButton: {},
-      editButton: {},
-      deleteButton: {},
-    }),
-  },
+  // {
+  //   title: 'Actions',
+  //   dataIndex: 'actions',
+  //   key: 'actions',
+  //   sorter: false,
+  //   render: createActions({
+  //     showButton: {},
+  //     editButton: {},
+  //     deleteButton: {},
+  //   }),
+  // },
 ];

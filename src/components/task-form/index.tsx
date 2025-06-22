@@ -85,35 +85,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({
               </Col>
             </Row>
 
-            {showProjectSelection && (
-              <Form.Item
-                name="projectId"
-                label="Project"
-                rules={[{ required: true, message: 'Please select a project' }]}
-              >
-                <Select
-                  placeholder={
-                    projectsLoading ? 'Loading projects...' : 'Select a project'
-                  }
-                  size="large"
-                  className={styles.fieldSelect}
-                  loading={projectsLoading}
-                  disabled={disabled || projectsLoading}
-                  notFoundContent={
-                    (projects || []).length === 0
-                      ? 'No projects available. Please create a project first.'
-                      : 'No projects found'
-                  }
-                >
-                  {(projects || []).map((project) => (
-                    <Select.Option key={project.id} value={project.id}>
-                      {project.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            )}
-
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <Form.Item
@@ -187,8 +158,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                 height={150}
               />
             </Form.Item>
-
-            {renderAssigneeSection && renderAssigneeSection()}
           </Space>
         );
 
