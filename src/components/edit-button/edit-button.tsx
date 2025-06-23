@@ -1,8 +1,8 @@
 // External dependencies
 import * as React from 'react';
 import { Button } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
 import { useEditButton } from '@refinedev/core';
+import { EditOutlined } from '@ant-design/icons';
 
 // Internal dependencies
 import type { EditButtonProps } from './edit-button.types';

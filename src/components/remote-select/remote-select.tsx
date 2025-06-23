@@ -1,16 +1,11 @@
+// External dependencies
 import * as React from 'react';
-import { Select, SelectProps } from 'antd';
+import { Select } from 'antd';
 import { useSelect } from '@refinedev/antd';
-import { UseSelectProps, BaseRecord, HttpError } from '@refinedev/core';
+import type { BaseRecord, HttpError } from '@refinedev/core';
 
-type RequiredSelectProps<T> = Pick<
-  UseSelectProps<T, HttpError, T>,
-  'resource' | 'optionValue' | 'optionLabel'
->;
-
-interface RemoteSelectProps<T extends BaseRecord>
-  extends SelectProps,
-    RequiredSelectProps<T> {}
+// Internal dependencies
+import type { RemoteSelectProps } from './remote-select.types';
 
 export const RemoteSelect = <T extends BaseRecord>(
   props: RemoteSelectProps<T>,

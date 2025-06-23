@@ -1,5 +1,4 @@
 import { ColumnsType } from 'antd/es/table';
-import { createActions } from '@/components/actions/create-actions';
 import { Tag, Progress, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { IProject } from '@/interfaces/project';
@@ -132,16 +131,5 @@ export const columns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (date: string) => (date ? dayjs(date).format('MMM DD, YYYY') : '-'),
-  },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions',
-    sorter: false,
-    render: createActions({
-      showButton: {},
-      editButton: {},
-      deleteButton: {},
-    }),
   },
 ];

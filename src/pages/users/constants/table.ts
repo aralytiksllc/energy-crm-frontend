@@ -1,5 +1,4 @@
 import { ColumnsType } from 'antd/es/table';
-import { createActions } from '@/components/actions/create-actions';
 import { IUser } from '@/interfaces/users';
 
 export const columns: ColumnsType<IUser> = [
@@ -44,15 +43,4 @@ export const columns: ColumnsType<IUser> = [
     title: 'Created At',
     sorter: true,
   },
-  // {
-  //   title: 'Actions',
-  //   dataIndex: 'actions',
-  //   key: 'actions',
-  //   sorter: false,
-  //   render: createActions({
-  //     showButton: {},
-  //     editButton: {},
-  //     deleteButton: {},
-  //   }),
-  // },
 ];

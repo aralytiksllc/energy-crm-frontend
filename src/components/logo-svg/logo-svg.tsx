@@ -2,9 +2,9 @@
 import * as React from 'react';
 
 // Internal dependencies
-import type { AralytiksIconProps } from './icon.types';
+import type { LogoSvgProps } from './logo-svg.types';
 
-export const Icon: React.FC<IconProps> = (props) => (
+export const LogoSvg: React.FC<LogoSvgProps> = (props) => (
   <svg
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"

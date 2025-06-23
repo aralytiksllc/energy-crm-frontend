@@ -1,18 +1,30 @@
 // External dependencies
 import * as React from 'react';
-import { Drawer, Button } from 'antd';
+import { Drawer, Space, Button } from 'antd';
 
 // Internal dependencies
 import type { DrawerFormProps } from './drawer-form.types';
 
 export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
-  const { title, width, saveButtonProps, drawerProps, formProps, renderForm } =
-    props;
+  const {
+    title,
+    width,
+    saveButtonProps,
+    drawerProps,
+    formProps,
+    renderForm,
+    close,
+  } = props;
 
   const footer = (
-    <Button type="primary" {...saveButtonProps}>
-      Save
-    </Button>
+    <Space direction="horizontal" align="center">
+      <Button type="primary" size="large" block={true} {...saveButtonProps}>
+        Save
+      </Button>
+      <Button type="default" size="large" block={true} onClick={close}>
+        Close
+      </Button>
+    </Space>
   );
 
   return (

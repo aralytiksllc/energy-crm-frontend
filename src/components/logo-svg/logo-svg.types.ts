@@ -3,4 +3,4 @@ import * as React from 'react';
 
 // Internal dependencies
 
-export interface AralytiksIconProps extends React.SVGProps<SVGSVGElement> {}
+export interface LogoSvgProps extends React.SVGProps<SVGSVGElement> {}
