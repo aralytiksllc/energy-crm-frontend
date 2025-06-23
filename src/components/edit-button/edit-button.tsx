@@ -1,18 +1,16 @@
-import React from 'react';
-import { Button, ButtonProps } from 'antd';
+// External dependencies
+import * as React from 'react';
+import { Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useEditButton } from '@refinedev/core';
 
-interface EditButtonProps extends Omit<ButtonProps, 'onClick'> {
-  resource: string;
-  resourceId: number;
-  onClick: (id: number) => void;
-}
+// Internal dependencies
+import type { EditButtonProps } from './edit-button.types';
 
 export const EditButton: React.FC<EditButtonProps> = (props) => {
   const { resource, resourceId, onClick, ...restProps } = props;
 
-  const { disabled, canAccess } = useEditButton({
+  const { canAccess, disabled } = useEditButton({
     id: resourceId,
     resource,
   });
@@ -22,16 +20,16 @@ export const EditButton: React.FC<EditButtonProps> = (props) => {
     [resourceId, onClick],
   );
 
-  if (!canAccess) return null;
+  if (canAccess) {
+    return (
+      <Button
+        icon={<EditOutlined />}
+        disabled={disabled}
+        onClick={handleClick}
+        {...restProps}
+      />
+    );
+  }
 
-  return (
-    <Button
-      icon={<EditOutlined />}
-      disabled={disabled}
-      onClick={handleClick}
-      {...restProps}
-    >
-      {/* {label} */}
-    </Button>
-  );
+  return null;
 };
