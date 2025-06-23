@@ -1,7 +1,8 @@
-import React from 'react';
-import { SVGProps } from 'react';
+// External dependencies
+import * as React from 'react';
 
-type IconProps = SVGProps<SVGSVGElement>;
+// Internal dependencies
+import type { AralytiksIconProps } from './icon.types';
 
 export const Icon: React.FC<IconProps> = (props) => (
   <svg
