@@ -1,4 +1,7 @@
-const TOKEN_KEY = 'core-flow-token';
+// External dependencies
+
+// Internal dependencies
+import { TOKEN_KEY } from './auth-storage.constants';
 
 export const authStorage = {
   get() {

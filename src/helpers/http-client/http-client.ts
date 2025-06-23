@@ -1,6 +1,9 @@
+// External dependencies
 import ky from 'ky';
+
+// Internal dependencies
+import { authStorage } from '@/helpers/auth-storage';
 import { API_URL } from './http-constants';
-import { authStorage } from './auth-storage';
 
 export const httpClient = ky.create({
   prefixUrl: API_URL,

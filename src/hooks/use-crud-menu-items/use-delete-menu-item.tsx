@@ -10,7 +10,7 @@ import { useLatestRef } from '../use-latest-ref';
 import type {
   UseDeleteMenuItem,
   UseDeleteMenuItemProps,
-} from './use-delete-menu-item.types';
+} from '../use-delete-menu-item/use-delete-menu-item.types';
 
 export const useDeleteMenuItem = (
   props: UseDeleteMenuItemProps,

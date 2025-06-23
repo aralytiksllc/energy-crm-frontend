@@ -15,7 +15,7 @@ import {
 import { ProjectStatus } from '@/interfaces/project-status.enum';
 import { ProjectPriority } from '@/interfaces/project-priority.enum';
 import { Wysiwyg } from '@/components/rich-text-editor';
-import { DayjsForm } from '@/helpers/dayjs-form';
+import { DayjsForm } from '@/helpers/dayjs-transformer';
 import { RemoteSelect } from '@/components/remote-select';
 
 const statusOptions = Object.values(ProjectStatus).map((status) => ({
@@ -107,8 +107,8 @@ export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
           <Form.Item
             name="startDate"
             label="Start Date"
-            getValueProps={DayjsForm.getValueProps}
-            normalize={DayjsForm.normalize}
+            getValueProps={DayjsTransformer.toValueProps}
+            normalize={DayjsTransformer.toNormalizedDate}
             rules={[{ required: true }]}
           >
             <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
@@ -118,8 +118,8 @@ export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
           <Form.Item
             name="deadline"
             label="End Date"
-            getValueProps={DayjsForm.getValueProps}
-            normalize={DayjsForm.normalize}
+            getValueProps={DayjsTransformer.toValueProps}
+            normalize={DayjsTransformer.toNormalizedDate}
           >
             <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
           </Form.Item>

@@ -1,4 +1,4 @@
-import { httpClient } from '@/providers/http-client';
+import { httpClient } from '@/helpers/http-client/http-client';
 import type {
   Task,
   CreateTaskDto,

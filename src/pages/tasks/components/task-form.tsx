@@ -13,7 +13,7 @@ import {
 import { TaskPriority } from '@/interfaces/task-priority.enum';
 import { TaskType } from '@/interfaces/task-type.enum';
 import { RemoteSelect } from '@/components/remote-select';
-import { DayjsForm } from '@/helpers/dayjs-form';
+import { DayjsForm } from '@/helpers/dayjs-transformer';
 import { Wysiwyg } from '@/components/rich-text-editor';
 
 const priorityOptions = Object.values(TaskPriority).map((priority) => ({
@@ -80,8 +80,8 @@ export const TaskForm: React.FC<TaskFormProps> = (props) => {
       <Form.Item
         name="dueDate"
         label="Due Date"
-        getValueProps={DayjsForm.getValueProps}
-        normalize={DayjsForm.normalize}
+        getValueProps={DayjsTransformer.toValueProps}
+        normalize={DayjsTransformer.toNormalizedDate}
       >
         <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
       </Form.Item>
@@ -97,8 +97,8 @@ export const TaskForm: React.FC<TaskFormProps> = (props) => {
       <Form.Item
         name="completedDate"
         label="Completed Date"
-        getValueProps={DayjsForm.getValueProps}
-        normalize={DayjsForm.normalize}
+        getValueProps={DayjsTransformer.toValueProps}
+        normalize={DayjsTransformer.toNormalizedDate}
       >
         <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
       </Form.Item>

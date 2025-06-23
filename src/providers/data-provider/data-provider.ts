@@ -17,8 +17,8 @@ import type {
 } from '@refinedev/core';
 
 // Internal imports
-import { API_URL } from './http-constants';
-import { httpClient } from './http-client';
+import { API_URL } from '../../helpers/http-client/http-constants';
+import { httpClient } from '../../helpers/http-client/http-client';
 
 export const dataProvider: DataProvider = {
   getApiUrl() {

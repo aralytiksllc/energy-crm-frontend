@@ -9,7 +9,7 @@ import { useLatestRef } from '../use-latest-ref';
 import type {
   UseEditMenuItemProps,
   UseEditMenuItem,
-} from './use-edit-menu-item.types';
+} from '../use-edit-menu-item/use-edit-menu-item.types';
 
 export const useEditMenuItem = (
   props: UseEditMenuItemProps,

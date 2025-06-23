@@ -5,7 +5,7 @@ import type { FormProps } from 'antd/lib/form';
 
 // Internal imports
 import type { IUser } from '@/interfaces/users';
-import { DayjsForm } from '@/helpers/dayjs-form';
+import { DayjsTransformer } from '@/helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
 import { rules } from './user-form.rules';
 
@@ -60,8 +60,8 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
         label="Date of Birth"
         name="dateOfBirth"
         className={styles.formItem}
-        getValueProps={DayjsForm.getValueProps}
-        normalize={DayjsForm.normalize}
+        getValueProps={DayjsTransformer.toValueProps}
+        normalize={DayjsTransformer.toNormalizedDate}
         rules={rules.dateOfBirth}
       >
         <DatePicker className={styles.datePicker} />
@@ -71,8 +71,8 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
         label="Date of Joining"
         name="dateOfJoining"
         className={styles.formItem}
-        getValueProps={DayjsForm.getValueProps}
-        normalize={DayjsForm.normalize}
+        getValueProps={DayjsTransformer.toValueProps}
+        normalize={DayjsTransformer.toNormalizedDate}
         rules={rules.dateOfJoining}
       >
         <DatePicker className={styles.datePicker} />
