@@ -9,6 +9,7 @@ import { DynamicTable } from './DynamicTable';
 import { keyExtractor } from './keyExtractor';
 
 import { EditButton } from '@/components/edit-button';
+import { DeleteButton } from '@/components/delete-button';
 
 const { Text } = Typography;
 
@@ -41,8 +42,6 @@ export function CrudTable<TData extends { id: number }>(
     resource,
   });
 
-  const { mutate: deleteItem } = useDelete();
-
   const createDrawerForm = useDrawerForm({
     action: 'create',
     resource,
@@ -56,16 +55,6 @@ export function CrudTable<TData extends { id: number }>(
   const handleCreate = React.useCallback(
     () => createDrawerForm.show(),
     [createDrawerForm.show],
-  );
-
-  const handleEdit = React.useCallback(
-    (id: number) => editDrawerForm.show(id),
-    [editDrawerForm.show],
-  );
-
-  const handleDelete = React.useCallback(
-    (id: number) => deleteItem({ resource, id, mutationMode: 'pessimistic' }),
-    [deleteItem, resource],
   );
 
   //
@@ -91,21 +80,20 @@ export function CrudTable<TData extends { id: number }>(
           <EditButton
             resource={resource}
             resourceId={record.id}
-            onClick={handleEdit}
+            onClick={editDrawerForm.show}
             type="default"
             size="small"
           />
-          <EditButton
+          <DeleteButton
             resource={resource}
             resourceId={record.id}
-            onClick={handleEdit}
             type="default"
             size="small"
           />
         </Space>
       ),
     }),
-    [handleEdit],
+    [resource, editDrawerForm.show],
   );
 
   const headerButtons = React.useCallback(
