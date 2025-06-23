@@ -19,6 +19,7 @@ export const Actions: React.FC<ActionsProps> = (props) => {
         <EditButton
           hideText={config?.editButton?.hideText ?? true}
           size={config?.editButton?.size ?? 'small'}
+          meta={{ test: 'test' }}
           recordItemId={record.id}
           {...config?.editButton}
         />

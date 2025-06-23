@@ -56,20 +56,19 @@ export const mockKanbanSections: KanbanSection<any>[] = [
 ];
 
 export const Tasks: React.FC = () => {
-
   const { data, isLoading } = useList<any>({ resource: 'tasks' });
 
-  const sections =  _(data?.data).groupBy('priority')
-  .map((items, status) => ({
-    id: status,
-    name: _.startCase(status), // p.sh. "in-progress" → "In Progress"
-    items,
-  }))
-  .value();
-
+  const sections = _(data?.data)
+    .groupBy('priority')
+    .map((items, status) => ({
+      id: status,
+      name: _.startCase(status), // p.sh. "in-progress" → "In Progress"
+      items,
+    }))
+    .value();
 
   console.log(sections);
-  
+
   return (
     <CrudKanban<any>
       resource="tasks"

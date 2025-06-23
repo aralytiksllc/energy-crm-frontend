@@ -1,27 +1,25 @@
+// External imports
 import * as React from 'react';
 import { Form, Input, DatePicker, Switch } from 'antd';
-import { FormProps } from 'antd/lib/form';
-import { DayjsForm } from '@/helpers/dayjs-form';
-import { useStyles } from './styles';
-import { rules } from './validation';
+import type { FormProps } from 'antd/lib/form';
 
-export interface VendorFormProps {
-  formProps: FormProps;
+// Internal imports
+import type { IUser } from '@/interfaces/users';
+import { DayjsForm } from '@/helpers/dayjs-form';
+import { useStyles } from './user-form.styles';
+import { rules } from './user-form.rules';
+
+export interface UsersFormProps {
+  formProps: FormProps<IUser>;
 }
 
-export const UsersForm: React.FC<VendorFormProps> = (props) => {
+export const UsersForm: React.FC<UsersFormProps> = (props) => {
   const { formProps } = props;
 
   const { styles } = useStyles();
 
   return (
-    <Form
-      {...formProps}
-      layout="horizontal"
-      labelCol={{ span: 6 }}
-      wrapperCol={{ span: 14 }}
-      className={styles.form}
-    >
+    <Form {...formProps} layout="vertical">
       <Form.Item
         label="First Name"
         name="firstName"

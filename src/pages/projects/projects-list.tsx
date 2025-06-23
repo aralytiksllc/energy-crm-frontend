@@ -1,23 +1,26 @@
 // External imports
 import React from 'react';
-import { CrudTable } from '@/components/crud-table/crud-table';
+import { Table } from 'antd';
+import { List, useTable } from '@refinedev/antd';
+import { Outlet } from 'react-router';
 
 // Internal imports
-import { ProjectForm } from './components/project-form';
+import { IProject } from '@/interfaces/project';
 import { columns } from './constants/table';
 
 export const ProjectsList: React.FC = () => {
+  const { tableProps } = useTable<IProject>({
+    resource: 'projects',
+    filters: { mode: 'server' },
+    syncWithLocation: true,
+  });
+
   return (
-    <CrudTable<any>
-      resource="projects"
-      columns={columns}
-      FormComponent={ProjectForm}
-      DetailsComponent={() => <></>}
-      drawerTitles={{
-        create: 'Create Project',
-        edit: 'Edit Project',
-        view: 'Project Details',
-      }}
-    />
+    <>
+      <List headerProps={{ breadcrumb: <></> }}>
+        <Table {...tableProps} columns={columns} rowKey="id" size="small" />
+      </List>
+      <Outlet />
+    </>
   );
 };

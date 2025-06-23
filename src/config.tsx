@@ -19,6 +19,7 @@ export const refineProps: RefineProps = {
       list: '/users',
       meta: {
         canDelete: true,
+        canEdit: false,
       },
     },
     {
@@ -31,6 +32,7 @@ export const refineProps: RefineProps = {
     {
       name: 'projects',
       list: '/projects',
+      edit: '/projects/edit/:id',
       meta: {
         canDelete: true,
       },

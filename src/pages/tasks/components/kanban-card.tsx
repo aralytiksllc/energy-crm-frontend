@@ -108,9 +108,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
       <Row align="middle" gutter={8} wrap={false} style={{ marginBottom: 8 }}>
         <Col flex="auto">
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            <Tag color={getTypeColor(task.type)}>
-            task.type
-            </Tag>
+            <Tag color={getTypeColor(task.type)}>task.type</Tag>
             {/* {task.priority && (
               <Tag color={getPriorityColor(task.priority)}>{task.priority}</Tag>
             )}
