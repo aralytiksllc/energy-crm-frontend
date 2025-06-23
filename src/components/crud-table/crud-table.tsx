@@ -4,7 +4,7 @@ import { List, useTable, useDrawerForm } from '@refinedev/antd';
 import { useDelete, useShow, HttpError } from '@refinedev/core';
 import type { FormProps } from 'antd';
 
-import { DrawerForm } from './DrawerForm';
+import { DrawerForm } from '../drawer-form/drawer-form';
 import { DynamicTable } from './DynamicTable';
 import { keyExtractor } from './keyExtractor';
 

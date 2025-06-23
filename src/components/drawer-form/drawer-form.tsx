@@ -1,16 +1,9 @@
 // External dependencies
-import React from 'react';
+import * as React from 'react';
 import { Drawer, Button } from 'antd';
-import type { UseDrawerFormReturnType } from '@refinedev/antd';
-import type { FormProps } from 'antd/es/form';
 
 // Internal dependencies
-
-interface DrawerFormProps extends UseDrawerFormReturnType {
-  renderForm: (formProps: FormProps) => React.ReactNode;
-  title?: string;
-  width?: number;
-}
+import type { DrawerFormProps } from './drawer-form.types';
 
 export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
   const { title, width, saveButtonProps, drawerProps, formProps, renderForm } =
