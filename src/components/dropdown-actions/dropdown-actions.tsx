@@ -1,17 +1,12 @@
 // External imports
 import * as React from 'react';
-import { Dropdown, Button, type DropdownProps, type MenuProps } from 'antd';
+import { Dropdown, Button, type MenuProps } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
 // Internal imports
+import type { DropdownActionsProps } from './dropdown-actions.types';
 import { useStyles } from './dropdown-actions.styles';
-
-export interface DropdownActionsProps {
-  items: MenuProps['items'];
-  placement?: DropdownProps['placement'];
-  onItemClick?: (key: string) => void;
-}
 
 export const DropdownActions: React.FC<DropdownActionsProps> = (props) => {
   const { items, placement = 'bottom', onItemClick } = props;
