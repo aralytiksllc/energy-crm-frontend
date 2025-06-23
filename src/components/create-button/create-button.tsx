@@ -1,28 +1,27 @@
-import React from 'react';
-import { Button, ButtonProps } from 'antd';
-import { PlusSquareOutlined } from '@ant-design/icons';
+// External dependencies
+import * as React from 'react';
+import { Button } from 'antd';
 import { useCreateButton } from '@refinedev/core';
+import { PlusSquareOutlined } from '@ant-design/icons';
 
-interface CreateButtonProps extends ButtonProps {
-  resource: string;
-}
+// Internal dependencies
+import type { CreateButtonProps } from './create-button.types';
 
 export const CreateButton: React.FC<CreateButtonProps> = (props) => {
   const { resource, onClick, ...restProps } = props;
 
-  const { hidden, disabled, label } = useCreateButton({ resource });
+  const { canAccess, disabled } = useCreateButton({ resource });
 
-  if (hidden) return null;
+  if (canAccess) {
+    return (
+      <Button
+        icon={<PlusSquareOutlined />}
+        disabled={disabled}
+        onClick={onClick}
+        {...restProps}
+      />
+    );
+  }
 
-  return (
-    <Button
-      icon={<PlusSquareOutlined />}
-      disabled={disabled}
-      onClick={onClick}
-      type="primary"
-      {...restProps}
-    >
-      {label}
-    </Button>
-  );
+  return null;
 };
