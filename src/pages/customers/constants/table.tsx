@@ -2,13 +2,13 @@ import type { ColumnsType } from 'antd/es/table';
 import { Space, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 
-import type { Task } from '@/interfaces/task';
+import type { Customer } from '../types/customer.types';
 import { EditButton } from '@/components/edit-button';
 import { DeleteButton } from '@/components/delete-button';
 
 const { Text } = Typography;
 
-export const columns: ColumnsType<Task> = [
+export const columns: ColumnsType<Customer> = [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -17,37 +17,29 @@ export const columns: ColumnsType<Task> = [
     sorter: true,
   },
   {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
     sorter: true,
-    render: (title: string) => <Text strong>{title}</Text>,
-  },
-  {
-    title: 'Priority',
-    dataIndex: 'priority',
-    key: 'priority',
-    sorter: true,
-    render: (priority: string) => <Tag>{priority}</Tag>,
+    render: (name: string) => <Text strong>{name}</Text>,
   },
   {
     title: 'Status',
-    dataIndex: 'isCompleted',
-    key: 'isCompleted',
+    dataIndex: 'isActive',
+    key: 'isActive',
     sorter: true,
-    render: (isCompleted: boolean) => (
-      <Tag color={isCompleted ? 'green' : 'blue'}>
-        {isCompleted ? 'Completed' : 'In Progress'}
+    render: (isActive: boolean) => (
+      <Tag color={isActive ? 'green' : 'red'}>
+        {isActive ? 'Active' : 'Inactive'}
       </Tag>
     ),
   },
   {
-    title: 'Due Date',
-    dataIndex: 'dueDate',
-    key: 'dueDate',
+    title: 'Created At',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
     sorter: true,
-    render: (date?: string) =>
-      date ? dayjs(date).format('MMM DD, YYYY') : '-',
+    render: (date: Date) => dayjs(date).format('MMM DD, YYYY'),
   },
   {
     title: 'Actions',
@@ -57,15 +49,15 @@ export const columns: ColumnsType<Task> = [
     render: (_, record) => (
       <Space size="middle">
         <EditButton
-          resource="tasks"
+          resource="customers"
           resourceId={record.id}
           type="default"
           size="small"
         />
         <DeleteButton
-          resource="tasks"
+          resource="customers"
           resourceId={record.id}
-          confirmTitle={`Delete task "${record.title}"?`}
+          confirmTitle={`Delete customer "${record.name}"?`}
           type="primary"
           size="small"
         />

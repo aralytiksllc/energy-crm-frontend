@@ -28,7 +28,13 @@ export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
   );
 
   return (
-    <Drawer {...drawerProps} title={title} footer={footer} width={width}>
+    <Drawer
+      {...drawerProps}
+      title={title}
+      footer={footer}
+      width={width}
+      destroyOnHidden
+    >
       {renderForm(formProps)}
     </Drawer>
   );

@@ -9,4 +9,5 @@ export interface DrawerFormProps extends UseDrawerFormReturnType {
   renderForm: (formProps: FormProps) => ReactNode;
   title?: string;
   width?: number;
+  open?: boolean;
 }

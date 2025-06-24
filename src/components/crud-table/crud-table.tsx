@@ -1,25 +1,19 @@
 import * as React from 'react';
-import { Table, Typography, TableProps, Space } from 'antd';
+import { Table, Space } from 'antd';
 import { List, useTable, useDrawerForm } from '@refinedev/antd';
-import { useDelete, useShow, HttpError } from '@refinedev/core';
 import type { FormProps } from 'antd';
 
 import { DrawerForm } from '../drawer-form/drawer-form';
 
-import { EditButton } from '@/components/edit-button';
-import { DeleteButton } from '@/components/delete-button';
-
 import { PopoverSelect } from '@/components/dropdown-select';
-import { useSelections } from '@/hooks/use-selections';
 import { DrawerFormProvider } from '@/components/drawer-form';
-
-const { Text } = Typography;
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
   columns: any;
   renderForm: (formProps: FormProps) => React.ReactNode;
   drawerWidth?: number;
+  createInitialValues?: Partial<TData>;
   drawerTitles?: {
     create?: string;
     edit?: string;
@@ -35,6 +29,7 @@ export function CrudTable<TData extends { id: number }>(
     columns,
     renderForm,
     drawerWidth = 720,
+    createInitialValues,
     drawerTitles = {},
   } = props;
 
@@ -48,6 +43,14 @@ export function CrudTable<TData extends { id: number }>(
     action: 'create',
     resource,
   });
+
+  const augmentedCreateDrawerForm = {
+    ...createDrawerForm,
+    formProps: {
+      ...createDrawerForm.formProps,
+      initialValues: createInitialValues,
+    },
+  };
 
   const editDrawerForm = useDrawerForm({
     action: 'edit',
@@ -95,15 +98,20 @@ export function CrudTable<TData extends { id: number }>(
               onToggleAll={onToggleAll}
               optionKey={(col: any) => col.dataIndex}
               optionLabel={(col: any) => col.title}
-              buttonLabel="Selecte Columns"
+              buttonLabel="Select Columns"
             />
             {defaultButtons}
           </Space>
         )}
       >
-        <Table {...tableProps} columns={selectedColumns} />
+        <Table
+          {...tableProps}
+          rowKey="id"
+          columns={selectedColumns}
+          scroll={{ x: true }}
+        />
         <DrawerForm
-          {...createDrawerForm}
+          {...augmentedCreateDrawerForm}
           renderForm={renderForm}
           title={drawerTitles.create}
           width={drawerWidth}

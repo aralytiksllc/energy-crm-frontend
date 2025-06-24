@@ -6,7 +6,6 @@ import {
   Select,
   DatePicker,
   Switch,
-  Typography,
   Row,
   Col,
   FormProps,
@@ -15,7 +14,7 @@ import {
 import { ProjectStatus } from '@/interfaces/project-status.enum';
 import { ProjectPriority } from '@/interfaces/project-priority.enum';
 import { Wysiwyg } from '@/components/rich-text-editor';
-import { DayjsForm } from '@/helpers/dayjs-transformer';
+import { DayjsTransformer } from '@/helpers/dayjs-transformer';
 import { RemoteSelect } from '@/components/remote-select';
 
 const statusOptions = Object.values(ProjectStatus).map((status) => ({
@@ -34,8 +33,6 @@ export interface ProjectFormProps {
 
 export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
   const { formProps } = props;
-
-  console.log('formProps.defaultValue', formProps.initialValues);
 
   return (
     <Form layout="vertical" {...formProps}>
@@ -62,17 +59,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
         rules={[{ required: true }]}
       >
         <Wysiwyg />
-      </Form.Item>
-
-      <Form.Item
-        name="description"
-        label="Description"
-        rules={[{ required: true }]}
-      >
-        <Input.TextArea
-          placeholder="Enter project description"
-          autoSize={{ minRows: 5 }}
-        />
       </Form.Item>
 
       <Form.Item name="budget" label="Budget" rules={[{ required: true }]}>

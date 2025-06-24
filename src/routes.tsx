@@ -9,15 +9,15 @@ import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 import { Header } from './components/header';
 import {
   Register,
-  LogIn,
+  Login,
   ForgotPassword,
   UpdatePassword,
 } from './pages/authentication';
-import { UsersList } from './pages/users';
-import { ProjectsList } from './pages/projects/projects-list';
-import { ProjectsEdit } from './pages/projects/projects-edit';
+import { Users } from './pages/users';
 import { Tasks } from './pages/tasks';
 import { Dashboard } from './pages/dashboard';
+import { Projects } from './pages/projects';
+import { Customers } from './pages/customers';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
@@ -38,11 +38,10 @@ export const Routes: React.FC = () => (
     >
       <Route index element={<NavigateToResource resource="users" />} />
       <Route index path="/dashboard" element={<Dashboard />} />
-      <Route index path="/users" element={<UsersList />} />
-      <Route path="/projects" element={<ProjectsList />}>
-        <Route index path="/projects/edit/:id" element={<ProjectsEdit />} />
-      </Route>
+      <Route index path="/users" element={<Users />} />
+      <Route path="/projects" element={<Projects />}></Route>
       <Route index path="/tasks" element={<Tasks />} />
+      <Route index path="/customers" element={<Customers />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route
@@ -53,7 +52,7 @@ export const Routes: React.FC = () => (
       }
     >
       <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<LogIn />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/update-password/:token" element={<UpdatePassword />} />
     </Route>

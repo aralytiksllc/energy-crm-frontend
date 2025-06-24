@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, Row, Col, Typography, Table, Tag, Avatar, Space } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
-import type { Task } from '../../tasks/types';
+import type { Task } from '@/interfaces/task';
 import type { ProjectSummary } from '../../projects/api/projects';
 
 const { Title, Text } = Typography;

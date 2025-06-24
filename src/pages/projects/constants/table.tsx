@@ -4,6 +4,8 @@ import dayjs from 'dayjs';
 import { IProject } from '@/interfaces/project';
 import { ProjectStatus } from '@/interfaces/project-status.enum';
 import { ProjectPriority } from '@/interfaces/project-priority.enum';
+import { EditButton } from '@/components/edit-button';
+import { DeleteButton } from '@/components/delete-button';
 
 const { Text } = Typography;
 
@@ -131,5 +133,29 @@ export const columns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (date: string) => (date ? dayjs(date).format('MMM DD, YYYY') : '-'),
+  },
+  {
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions',
+    width: 100,
+    render: (_, record) => (
+      <Space size="middle">
+        <EditButton
+          resource="projects"
+          resourceId={record.id}
+          type="default"
+          size="small"
+        />
+        <DeleteButton
+          resource="projects"
+          resourceId={record.id}
+          confirmTitle={`Delete project "${record.name}"?`}
+          type="primary"
+          size="small"
+        />
+      </Space>
+    ),
+    fixed: 'right',
   },
 ];

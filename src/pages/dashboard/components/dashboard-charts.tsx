@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, Row, Col, Typography, Empty, message } from 'antd';
 import { Pie } from '@ant-design/charts';
-import type { Task } from '../../tasks/types';
+import type { Task } from '@/interfaces/task';
 import type { ProjectSummary } from '../../projects/api/projects';
 import type { Customer } from '../../customers/types/customer.types';
 import dayjs, { type Dayjs } from 'dayjs';
