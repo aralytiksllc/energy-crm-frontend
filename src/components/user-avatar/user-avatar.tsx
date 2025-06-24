@@ -3,13 +3,9 @@ import * as React from 'react';
 import { Avatar, Tooltip } from 'antd';
 
 // Internal imports
-import type { IUser } from '@/interfaces/users';
+import type { UserAvatarProps } from './user-avatar.types';
 import { useFullname } from './use-fullname';
 import { useInitials } from './use-initials';
-
-interface UserAvatarProps {
-  user: IUser;
-}
 
 export const UserAvatar: React.FC<UserAvatarProps> = (props) => {
   const { user } = props;

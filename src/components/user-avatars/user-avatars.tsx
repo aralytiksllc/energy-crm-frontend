@@ -1,27 +1,22 @@
-import React, { useCallback } from 'react';
-import { Avatar, Tooltip } from 'antd';
-import type { IUser } from '@/interfaces/users';
-import { UserAvatar } from '@/components/user-avatar';
+// External dependencies
+import * as React from 'react';
+import { Avatar } from 'antd';
 
-interface UserAvatarsProps {
-  users: IUser[];
-}
+// Internal dependencies
+import { UserAvatar } from '@/components/user-avatar';
+import type { IUser } from '@/interfaces/users';
+import type { UserAvatarsProps } from './user-avatars.types';
 
 export const UserAvatars: React.FC<UserAvatarsProps> = (props) => {
-  const { users } = props;
+  const { users, ...restProps } = props;
 
-  const renderUserAvatar = useCallback(
+  const renderUserAvatar = React.useCallback(
     (user: IUser) => <UserAvatar key={user.id} user={user} />,
     [],
   );
 
   return (
-    <Avatar.Group
-      max={{
-        count: 3,
-        style: { color: '#f56a00', backgroundColor: '#fde3cf' },
-      }}
-    >
+    <Avatar.Group max={{ count: 3 }} {...restProps}>
       {users.map(renderUserAvatar)}
     </Avatar.Group>
   );

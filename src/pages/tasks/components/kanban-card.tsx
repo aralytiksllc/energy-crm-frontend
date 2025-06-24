@@ -14,7 +14,6 @@ import { useCrudMenuItems } from '@/hooks/use-crud-menu-items';
 import { DropdownActions } from '@/components/dropdown-actions';
 import { IUser } from '@/interfaces/users';
 import { stripHtmlTags } from '@/helpers/text-utils';
-import type { Task } from '../types';
 
 import { useStyles } from './kanban-card.styles';
 
@@ -47,22 +46,18 @@ export const useTicketActions = (ticket: any): React.ReactNode[] => {
 };
 
 interface KanbanCardProps {
-  task: Task;
+  task: any;
 }
 
 export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
   const { styles } = useStyles();
 
   // Calculate estimated time from assignees
-  const estimatedTime =
-    task.assignees?.reduce(
-      (total, assignee) => total + (assignee.estimatedHours || 0),
-      0,
-    ) || 0;
+  const estimatedTime = 0;
 
   // Format dates
-  const dueDate = task.dueDate ? dayjs(task.dueDate).format('MMM DD') : null;
-  const createdDate = dayjs(task.createdAt).format('MMM DD');
+  const dueDate = dayjs(new Date()).format('MMM DD');
+  const createdDate = dayjs(new Date()).format('MMM DD');
 
   // Get task type color
   const getTypeColor = (type: string) => {
@@ -81,17 +76,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
     return colorMap[type] || 'default';
   };
 
-  // Get priority color
-  const getPriorityColor = (priority?: string) => {
-    const colorMap: Record<string, string> = {
-      Low: 'green',
-      Medium: 'orange',
-      High: 'red',
-      Critical: 'volcano',
-    };
-    return priority ? colorMap[priority] || 'default' : 'default';
-  };
-
   const ticketActions = useTicketActions({
     estimatedTime: estimatedTime > 0 ? `${estimatedTime}h` : '—',
     commentsCount: 0, // TODO: Add comments count when available
@@ -106,27 +90,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
   });
 
   // Convert assignees to IUser format for UserAvatars component
-  const assigneeUsers: IUser[] =
-    task.assignees?.map((assignee) => ({
-      id: assignee.userId,
-      firstName: assignee.user?.name?.split(' ')[0] || `User`,
-      lastName: assignee.user?.name?.split(' ')[1] || `${assignee.userId}`,
-      email: `user${assignee.userId}@example.com`,
-      password: '',
-      dateOfBirth: null,
-      dateOfJoining: null,
-      settings: {},
-      notes: null,
-      avatar: assignee.user?.avatar || null,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })) || [];
-
-  // Strip HTML tags from description
-  const plainTextDescription = task.description
-    ? stripHtmlTags(task.description)
-    : '';
 
   return (
     <Card
@@ -138,16 +101,15 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
       }
       extra={<DropdownActions items={crudMenuItems} />}
       actions={ticketActions}
+      loading={false}
       variant="borderless"
       size="small"
     >
       <Row align="middle" gutter={8} wrap={false} style={{ marginBottom: 8 }}>
         <Col flex="auto">
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            <Tag color={getTypeColor(task.type)}>
-              {task.type.replace('_', ' ')}
-            </Tag>
-            {task.priority && (
+            <Tag color={getTypeColor(task.type)}>task.type</Tag>
+            {/* {task.priority && (
               <Tag color={getPriorityColor(task.priority)}>{task.priority}</Tag>
             )}
             {dueDate && (
@@ -156,11 +118,11 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
               >
                 Due: {dueDate}
               </Tag>
-            )}
+            )} */}
           </div>
         </Col>
         <Col flex="none">
-          <UserAvatars users={assigneeUsers} />
+          <UserAvatars users={[]} />
         </Col>
       </Row>
       <Paragraph
@@ -170,15 +132,13 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
       >
         {task.title}
       </Paragraph>
-      {plainTextDescription && (
-        <Paragraph
-          className={styles.paragraph}
-          ellipsis={paragraphEllipsis}
-          strong={false}
-        >
-          {plainTextDescription}
-        </Paragraph>
-      )}
+      <Paragraph
+        className={styles.paragraph}
+        ellipsis={paragraphEllipsis}
+        strong={false}
+      >
+        {'plainTextDescription'}
+      </Paragraph>
     </Card>
   );
 };

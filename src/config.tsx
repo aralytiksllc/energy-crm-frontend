@@ -6,7 +6,7 @@ import routerBindings from '@refinedev/react-router';
 // Internal imports
 import { authProvider } from './providers/auth-provider';
 import { dataProvider } from './providers/data-provider';
-import { AralytiksIcon } from './components/logo';
+import { LogoSvg } from './components/logo-svg';
 
 export const refineProps: RefineProps = {
   authProvider: authProvider,
@@ -17,9 +17,14 @@ export const refineProps: RefineProps = {
     {
       name: 'users',
       list: '/users',
-      create: '/users/create',
-      edit: '/users/edit/:id',
-      show: '/users/show/:id',
+      meta: {
+        canDelete: true,
+        canEdit: false,
+      },
+    },
+    {
+      name: 'dashboard',
+      list: '/dashboard',
       meta: {
         canDelete: true,
       },
@@ -27,7 +32,7 @@ export const refineProps: RefineProps = {
     {
       name: 'projects',
       list: '/projects',
-      show: '/projects/show/:id',
+      edit: '/projects/edit/:id',
       meta: {
         canDelete: true,
       },
@@ -56,7 +61,7 @@ export const refineProps: RefineProps = {
     useNewQueryKeys: true,
     projectId: 'DLUNzF-hNHv7s-rovOa5',
     title: {
-      icon: <AralytiksIcon width={24} height={24} fill="#000" />,
+      icon: <LogoSvg width={24} height={24} fill="#000" />,
       text: 'Aralytiks',
     },
   },

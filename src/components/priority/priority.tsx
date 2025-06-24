@@ -3,24 +3,19 @@ import * as React from 'react';
 import { Tag, Tooltip } from 'antd';
 
 // Internal imports
+import type { PriorityProps } from './priority.types';
 import { useStyles } from './priority.styles';
 
-interface PriorityProps {
-  text: string;
-}
-
 export const Priority: React.FC<PriorityProps> = (props) => {
-  const { text } = props;
+  const { text, ...restProps } = props;
 
   const { styles } = useStyles();
 
   return (
-    <div className={styles.container}>
-      <Tooltip title={text}>
-        <Tag color="blue" className={styles.tag}>
-          {text}
-        </Tag>
-      </Tooltip>
-    </div>
+    <Tooltip title={text}>
+      <Tag color="blue" className={styles.tag} {...restProps}>
+        {text}
+      </Tag>
+    </Tooltip>
   );
 };

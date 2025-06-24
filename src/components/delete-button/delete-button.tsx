@@ -1,30 +1,29 @@
-import * as React from 'react';
-import { Button, Modal } from 'antd';
+// External imports
+import React from 'react';
+import { Modal, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDeleteButton } from '@refinedev/core';
-import type { ButtonProps } from 'antd';
 
-interface DeleteButtonProps extends ButtonProps {
-  resource: string;
-  resourceId: number;
-  confirmTitle?: string;
-  confirmMessage?: string;
-}
+// Internal dependencies
+import type { DeleteButtonProps } from './delete-button.types';
 
 export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
   const {
     resource,
-    resourceId: id,
+    resourceId,
     confirmTitle = 'Are you sure you want to delete this item?',
     confirmMessage = 'This action cannot be undone.',
-    ...buttonProps
+    ...restProps
   } = props;
 
-  const { onConfirm } = useDeleteButton({ resource, id });
+  const { canAccess, onConfirm } = useDeleteButton({
+    resource,
+    id: resourceId,
+  });
 
   const handleClick = React.useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      e.stopPropagation();
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
       Modal.confirm({
         title: confirmTitle,
         content: confirmMessage,
@@ -40,12 +39,16 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
     [confirmTitle, confirmMessage, onConfirm],
   );
 
-  return (
-    <Button
-      onClick={handleClick}
-      icon={<DeleteOutlined />}
-      danger={true}
-      {...buttonProps}
-    />
-  );
+  if (canAccess) {
+    return (
+      <Button
+        icon={<DeleteOutlined />}
+        onClick={handleClick}
+        danger={true}
+        {...restProps}
+      />
+    );
+  }
+
+  return null;
 };
