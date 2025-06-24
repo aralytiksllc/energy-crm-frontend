@@ -8,5 +8,5 @@ export interface EditButtonProps extends Omit<ButtonProps, 'onClick'> {
 
   resourceId: number;
 
-  onClick: (id: number) => void;
+  // onClick: (id: number) => void;
 }

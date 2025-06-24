@@ -7,8 +7,13 @@ import { EditOutlined } from '@ant-design/icons';
 // Internal dependencies
 import type { EditButtonProps } from './edit-button.types';
 
+// TODO: FIX THIS
+import { useDrawerFormContext } from '@/components/drawer-form';
+
 export const EditButton: React.FC<EditButtonProps> = (props) => {
-  const { resource, resourceId, onClick, ...restProps } = props;
+  const { resource, resourceId, ...restProps } = props;
+
+  const { drawerForm } = useDrawerFormContext();
 
   const { canAccess, disabled } = useEditButton({
     id: resourceId,
@@ -16,8 +21,8 @@ export const EditButton: React.FC<EditButtonProps> = (props) => {
   });
 
   const handleClick = React.useCallback(
-    () => onClick(resourceId),
-    [resourceId, onClick],
+    () => drawerForm?.show(resourceId),
+    [drawerForm?.show, resourceId],
   );
 
   if (canAccess) {

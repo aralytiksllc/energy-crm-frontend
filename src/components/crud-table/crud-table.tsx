@@ -1,15 +1,17 @@
 import * as React from 'react';
-import { Button, Space, Typography, TableProps } from 'antd';
+import { Table, Typography, TableProps, Space } from 'antd';
 import { List, useTable, useDrawerForm } from '@refinedev/antd';
 import { useDelete, useShow, HttpError } from '@refinedev/core';
 import type { FormProps } from 'antd';
 
 import { DrawerForm } from '../drawer-form/drawer-form';
-import { DynamicTable } from './DynamicTable';
-import { keyExtractor } from './keyExtractor';
 
 import { EditButton } from '@/components/edit-button';
 import { DeleteButton } from '@/components/delete-button';
+
+import { PopoverSelect } from '@/components/dropdown-select';
+import { useSelections } from '@/hooks/use-selections';
+import { DrawerFormProvider } from '@/components/drawer-form';
 
 const { Text } = Typography;
 
@@ -57,74 +59,62 @@ export function CrudTable<TData extends { id: number }>(
     [createDrawerForm.show],
   );
 
-  //
-  //
-  //
-  //
-  //
-  //
-
-  //
-
   const createButtonProps = React.useMemo(
     () => ({ onClick: handleCreate }),
     [handleCreate],
   );
 
-  const actionColumn = React.useMemo(
-    () => ({
-      title: 'Actions',
-      key: 'actions',
-      render: (_: unknown, record: TData) => (
-        <Space>
-          <EditButton
-            resource={resource}
-            resourceId={record.id}
-            onClick={editDrawerForm.show}
-            type="default"
-            size="small"
-          />
-          <DeleteButton
-            resource={resource}
-            resourceId={record.id}
-            type="default"
-            size="small"
-          />
-        </Space>
-      ),
-    }),
-    [resource, editDrawerForm.show],
-  );
+  const [selectedColumns, setSelectedColumns] = React.useState(columns);
 
-  const headerButtons = React.useCallback(
-    ({ defaultButtons }: any) => <Space>{defaultButtons}</Space>,
-    [],
-  );
+  const onSelectColumn = (column: any) => {
+    setSelectedColumns((prev: any[]) => {
+      const map = new Map(prev.map((c) => [c.dataIndex, c]));
+      map.has(column.dataIndex)
+        ? map.delete(column.id)
+        : map.set(column.id, column);
+      return Array.from(map.values());
+    });
+  };
 
-  const fullColumns = React.useMemo(
-    () => [...columns, actionColumn],
-    [columns, actionColumn],
-  );
+  const onToggleAll = () => {
+    setSelectedColumns((prev: any[]) =>
+      prev.length === columns.length ? [] : [...columns],
+    );
+  };
 
   return (
-    <List headerButtons={headerButtons} createButtonProps={createButtonProps}>
-      <DynamicTable<TData>
-        columns={fullColumns}
-        tableProps={tableProps}
-        initialVisibleKeys={fullColumns.map(keyExtractor)}
-      />
-      <DrawerForm
-        {...createDrawerForm}
-        renderForm={renderForm}
-        title={drawerTitles.create}
-        width={drawerWidth}
-      />
-      <DrawerForm
-        {...editDrawerForm}
-        renderForm={renderForm}
-        title={drawerTitles.edit}
-        width={drawerWidth}
-      />
-    </List>
+    <DrawerFormProvider drawerForm={editDrawerForm}>
+      <List
+        createButtonProps={createButtonProps}
+        headerButtons={({ defaultButtons }) => (
+          <Space>
+            <PopoverSelect
+              options={columns}
+              selected={selectedColumns}
+              onSelect={onSelectColumn}
+              onToggleAll={onToggleAll}
+              optionKey={(col: any) => col.dataIndex}
+              optionLabel={(col: any) => col.title}
+              buttonLabel="Selecte Columns"
+            />
+            {defaultButtons}
+          </Space>
+        )}
+      >
+        <Table {...tableProps} columns={selectedColumns} />
+        <DrawerForm
+          {...createDrawerForm}
+          renderForm={renderForm}
+          title={drawerTitles.create}
+          width={drawerWidth}
+        />
+        <DrawerForm
+          {...editDrawerForm}
+          renderForm={renderForm}
+          title={drawerTitles.edit}
+          width={drawerWidth}
+        />
+      </List>
+    </DrawerFormProvider>
   );
 }
