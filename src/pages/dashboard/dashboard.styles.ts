@@ -271,4 +271,64 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
       }
     `,
   },
+
+  hideChartTopLine: css`
+    & .recharts-cartesian-grid-horizontal line:first-of-type {
+      stroke-opacity: 0;
+    }
+  `,
+
+  fullWidth: css`
+    width: 100%;
+  `,
+
+  statIcon: css`
+    font-size: 32px;
+  `,
+
+  statIconPrimary: css`
+    color: #1890ff;
+  `,
+
+  statIconSuccess: css`
+    color: #52c41a;
+  `,
+
+  statIconWarning: css`
+    color: #faad14;
+  `,
+
+  statIconInfo: css`
+    color: #13c2c2;
+  `,
+
+  legendWrapper: css`
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding-bottom: 20px;
+  `,
+
+  legendItem: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `,
+
+  legendColorBox: css`
+    width: 12px;
+    height: 12px;
+  `,
+
+  legendLabel: css`
+    font-size: 14px;
+    font-weight: bold;
+  `,
+
+  barChartLabel: css`
+    color: #262626;
+    font-weight: 600;
+    font-size: 11px;
+    text-align: left;
+  `,
 }));
