@@ -9,104 +9,6 @@ import { useDashboardStyles } from '../dashboard.styles';
 
 const { Title, Text } = Typography;
 
-// Chart data interface
-interface ChartDataItem {
-  type: string;
-  value: number;
-}
-
-// Chart click event data interface
-interface ChartClickData {
-  type: string;
-  value: number;
-}
-
-// Chart configuration interface
-interface ChartConfig {
-  data: ChartDataItem[];
-  angleField: string;
-  colorField: string;
-  radius: number;
-  innerRadius: number;
-  appendPadding: number[];
-  width: number;
-  height: number;
-  label: {
-    offset: string;
-    autoHide?: boolean;
-    content: (params: { percent: number }) => string;
-    style: {
-      fontSize: number;
-      fontWeight: string;
-      textAlign: string;
-      fill: string;
-    };
-  };
-  tooltip: {
-    title: string;
-    formatter: (datum: ChartTooltipDatum) => {
-      name: string;
-      value: string;
-    };
-  };
-  legend: {
-    color: {
-      title: boolean;
-      position: string;
-      layout: string;
-      maxItemWidth: number;
-      itemName: {
-        style: {
-          fontSize: number;
-          fontWeight: string;
-        };
-        formatter: (text: string, item: unknown) => string;
-      };
-    };
-  };
-  statistic: {
-    title: {
-      style: {
-        whiteSpace: string;
-        overflow: string;
-        textOverflow: string;
-        fontSize: string;
-        fontWeight: string;
-        color: string;
-      };
-      content: string;
-    };
-    content: {
-      style: {
-        whiteSpace: string;
-        overflow: string;
-        textOverflow: string;
-        fontSize: string;
-        fontWeight: string;
-        color: string;
-      };
-      content: string;
-    };
-  };
-  onElementClick: (evt: ChartClickEvent) => void;
-  color?: string[];
-}
-
-// Chart tooltip datum interface
-interface ChartTooltipDatum {
-  type?: string;
-  value?: number;
-  data?: {
-    type?: string;
-    value?: number;
-  };
-}
-
-// Chart click event interface
-interface ChartClickEvent {
-  data: ChartClickData;
-}
-
 // Date range interface
 interface DateRange {
   startDate: Dayjs | null;
@@ -129,13 +31,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
 }) => {
   const { styles } = useDashboardStyles();
 
-  // Chart data calculations with useMemo optimization
-  const chartData = useMemo(() => {
-    const getTaskStage = (task: Task): string => {
-      if (task.isCompleted) return 'COMPLETED';
-      return 'TODO';
-    };
-
+  const stats = useMemo(() => {
     const filteredTasks = tasks.filter((task) => {
       if (!dateRange?.startDate || !dateRange?.endDate) return true;
       const taskDate = dayjs(task.createdAt);
@@ -145,500 +41,389 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
       );
     });
 
-    // Ensure we have data
-    if (!tasks || tasks.length === 0) {
-      return {
-        tasksByClient: [],
-        tasksByProject: [],
-        tasksByType: [],
-        tasksByPriority: [],
-        tasksByStage: [],
-      };
-    }
+    const uniqueClients = new Set(
+      filteredTasks
+        .map((task) => {
+          const project = projects.find((p) => p.id === task.projectId);
+          return project ? project.customerId : null;
+        })
+        .filter(Boolean),
+    );
 
-    // Tasks by Client (through project)
-    const clientTaskCounts = new Map<string, number>();
-    filteredTasks.forEach((task) => {
-      const clientName =
-        customers.find(
-          (c) =>
-            projects.find((p) => p.id === task.projectId)?.customerId === c.id,
-        )?.name || 'Unknown Client';
-      clientTaskCounts.set(
-        clientName,
-        (clientTaskCounts.get(clientName) || 0) + 1,
-      );
-    });
+    const uniqueProjects = new Set(filteredTasks.map((task) => task.projectId));
 
-    // Tasks by Project
-    const projectTaskCounts = new Map<string, number>();
-    filteredTasks.forEach((task) => {
-      const projectName =
-        projects.find((p) => p.id === task.projectId)?.name ||
-        'Unknown Project';
-      projectTaskCounts.set(
-        projectName,
-        (projectTaskCounts.get(projectName) || 0) + 1,
-      );
-    });
-
-    // Tasks by Type
-    const typeTaskCounts = new Map<string, number>();
-    filteredTasks.forEach((task) => {
-      typeTaskCounts.set(task.type, (typeTaskCounts.get(task.type) || 0) + 1);
-    });
-
-    // Tasks by Priority
-    const priorityTaskCounts = new Map<string, number>();
-    filteredTasks.forEach((task) => {
-      const priority = task.priority || 'MEDIUM';
-      priorityTaskCounts.set(
-        priority,
-        (priorityTaskCounts.get(priority) || 0) + 1,
-      );
-    });
-
-    // Tasks by Stage
-    const stageTaskCounts = new Map<string, number>();
-    filteredTasks.forEach((task) => {
-      const stage = getTaskStage(task);
-      stageTaskCounts.set(stage, (stageTaskCounts.get(stage) || 0) + 1);
-    });
-
-    const result = {
-      tasksByClient: Array.from(clientTaskCounts.entries()).map(
-        ([type, value]) => ({ type, value }),
-      ),
-      tasksByProject: Array.from(projectTaskCounts.entries()).map(
-        ([type, value]) => ({ type, value }),
-      ),
-      tasksByType: Array.from(typeTaskCounts.entries()).map(
-        ([type, value]) => ({ type, value }),
-      ),
-      tasksByPriority: Array.from(priorityTaskCounts.entries()).map(
-        ([type, value]) => ({ type, value }),
-      ),
-      tasksByStage: Array.from(stageTaskCounts.entries()).map(
-        ([type, value]) => ({ type, value }),
-      ),
-    };
-
-    return result;
-  }, [tasks, customers, projects, dateRange]);
-
-  // Click handlers for each chart
-  const handleClientClick = (data: ChartClickData): void => {
-    message.info(`Clicked on client: ${data.type} (${data.value} tasks)`);
-  };
-
-  const handleProjectClick = (data: ChartClickData): void => {
-    message.info(`Clicked on project: ${data.type} (${data.value} tasks)`);
-  };
-
-  const handleTypeClick = (data: ChartClickData): void => {
-    message.info(`Clicked on type: ${data.type} (${data.value} tasks)`);
-  };
-
-  const handlePriorityClick = (data: ChartClickData): void => {
-    message.info(`Clicked on priority: ${data.type} (${data.value} tasks)`);
-  };
-
-  const handleStageClick = (data: ChartClickData): void => {
-    message.info(`Clicked on stage: ${data.type} (${data.value} tasks)`);
-  };
-
-  // Large chart configuration (for first 2 charts)
-  const getLargeChartConfig = (
-    data: ChartDataItem[],
-    colors?: string[],
-    onElementClick?: (data: ChartClickData) => void,
-  ): ChartConfig => {
-    const totalTasks = data.reduce((sum, item) => sum + item.value, 0);
-
-    return {
-      data,
-      angleField: 'value',
-      colorField: 'type',
-      radius: 0.65,
-      innerRadius: 0.4,
-      appendPadding: [10, 100, 10, 10],
-      width: 600,
-      height: 400,
-      label: {
-        offset: '-10%',
-        autoHide: false,
-        content: ({ percent }: { percent: number }) =>
-          `${(percent * 100).toFixed(1)}%`,
-        style: {
-          fontSize: 10,
-          fontWeight: 'bold',
-          textAlign: 'center',
-          fill: '#fff',
-        },
-      },
-      tooltip: {
-        title: 'type',
-        formatter: (datum: ChartTooltipDatum) => {
-          const name = datum.type || datum.data?.type || 'Unknown';
-          const count = datum.value || datum.data?.value || 0;
-          const percentage =
-            totalTasks > 0 ? ((count / totalTasks) * 100).toFixed(1) : '0.0';
-          return {
-            name: name,
-            value: `${count} task${count !== 1 ? 's' : ''} (${percentage}%)`,
-          };
-        },
-      },
-      legend: {
-        color: {
-          title: false,
-          position: 'right',
-          layout: 'vertical',
-          maxItemWidth: 120,
-          itemName: {
-            style: {
-              fontSize: 11,
-              fontWeight: '500',
-            },
-            formatter: (text: string) => {
-              const dataItem = data.find((d) => d.type === text);
-              const count = dataItem?.value || 0;
-              const shortText =
-                text.length > 15 ? text.substring(0, 15) + '...' : text;
-              return `${shortText}: ${count}`;
-            },
-          },
-        },
-      },
-      statistic: {
-        title: {
-          style: {
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            color: '#262626',
-          },
-          content: 'Total',
-        },
-        content: {
-          style: {
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            fontSize: '32px',
-            fontWeight: 'bold',
-            color: '#1890ff',
-          },
-          content: `${totalTasks}`,
-        },
-      },
-      onElementClick: (evt: ChartClickEvent) => {
-        const { data: clickData } = evt;
-        if (onElementClick && clickData) {
-          onElementClick(clickData);
-        }
-      },
-      ...(colors && { color: colors }),
-    };
-  };
-
-  // Small chart configuration (for last 3 charts)
-  const getSmallChartConfig = (
-    data: ChartDataItem[],
-    colors?: string[],
-    onElementClick?: (data: ChartClickData) => void,
-  ): ChartConfig => {
-    const totalTasks = data.reduce((sum, item) => sum + item.value, 0);
-
-    return {
-      data,
-      angleField: 'value',
-      colorField: 'type',
-      radius: 0.75,
-      innerRadius: 0.4,
-      appendPadding: [5, 80, 5, 5],
-      width: 400,
-      height: 300,
-      label: {
-        offset: '-15%',
-        content: ({ percent }: { percent: number }) =>
-          `${(percent * 100).toFixed(1)}%`,
-        style: {
-          fontSize: 9,
-          fontWeight: 'bold',
-          textAlign: 'center',
-          fill: '#fff',
-        },
-      },
-      tooltip: {
-        title: 'type',
-        formatter: (datum: ChartTooltipDatum) => {
-          const name = datum.type || datum.data?.type || 'Unknown';
-          const count = datum.value || datum.data?.value || 0;
-          const percentage =
-            totalTasks > 0 ? ((count / totalTasks) * 100).toFixed(1) : '0.0';
-          return {
-            name: name,
-            value: `${count} task${count !== 1 ? 's' : ''} (${percentage}%)`,
-          };
-        },
-      },
-      legend: {
-        color: {
-          title: false,
-          position: 'right',
-          layout: 'vertical',
-          maxItemWidth: 100,
-          itemName: {
-            style: {
-              fontSize: 10,
-              fontWeight: '500',
-            },
-            formatter: (text: string) => {
-              const dataItem = data.find((d) => d.type === text);
-              const count = dataItem?.value || 0;
-              const shortText =
-                text.length > 12 ? text.substring(0, 12) + '...' : text;
-              return `${shortText}: ${count}`;
-            },
-          },
-        },
-      },
-      statistic: {
-        title: {
-          style: {
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            color: '#262626',
-          },
-          content: 'Total',
-        },
-        content: {
-          style: {
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            fontSize: '28px',
-            fontWeight: 'bold',
-            color: '#1890ff',
-          },
-          content: `${totalTasks}`,
-        },
-      },
-      onElementClick: (evt: ChartClickEvent) => {
-        const { data: clickData } = evt;
-        if (onElementClick && clickData) {
-          onElementClick(clickData);
-        }
-      },
-      ...(colors && { color: colors }),
-    };
-  };
-
-  // Chart configurations - First 2 charts use large config
-  const clientChartConfig = getLargeChartConfig(
-    chartData.tasksByClient,
-    [
-      '#5B8FF9',
-      '#5AD8A6',
-      '#5D7092',
-      '#F6BD16',
-      '#E86452',
-      '#6F5EF9',
-      '#6DC8EC',
-      '#945FB9',
-      '#FF9845',
-      '#1E9493',
-    ],
-    handleClientClick,
-  );
-
-  const projectChartConfig = getLargeChartConfig(
-    chartData.tasksByProject,
-    [
-      '#5B8FF9',
-      '#5AD8A6',
-      '#5D7092',
-      '#F6BD16',
-      '#E86452',
-      '#6F5EF9',
-      '#6DC8EC',
-      '#945FB9',
-      '#FF9845',
-      '#1E9493',
-    ],
-    handleProjectClick,
-  );
-
-  // Last 3 charts use small config
-  const typeChartConfig = getSmallChartConfig(
-    chartData.tasksByType,
-    [
-      '#5B8FF9',
-      '#5AD8A6',
-      '#5D7092',
-      '#F6BD16',
-      '#E86452',
-      '#6F5EF9',
-      '#6DC8EC',
-      '#945FB9',
-      '#FF9845',
-      '#1E9493',
-    ],
-    handleTypeClick,
-  );
-
-  const priorityChartConfig = getSmallChartConfig(
-    chartData.tasksByPriority,
-    ['#52c41a', '#faad14', '#fa8c16', '#f5222d'],
-    handlePriorityClick,
-  );
-
-  const stageChartConfig = getSmallChartConfig(
-    chartData.tasksByStage,
-    ['#d9d9d9', '#faad14', '#52c41a', '#f5222d'],
-    handleStageClick,
-  );
-
-  // Render chart or empty state
-  const renderChart = (config: ChartConfig, height: number): JSX.Element => {
-    if (!config.data || config.data.length === 0) {
-      return <Empty description="No data available" />;
-    }
-
-    try {
+    const plannedHours = filteredTasks.reduce((sum, task) => {
       return (
-        <div
-          style={{
-            height,
-            cursor: 'pointer',
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            overflow: 'hidden',
-          }}
-        >
-          <Pie {...config} />
-        </div>
+        sum +
+        (task.assignees?.reduce(
+          (assigneeSum, assignee) =>
+            assigneeSum + (assignee.estimatedHours || 0),
+          0,
+        ) || 0)
       );
-    } catch (error) {
-      return <Empty description="Chart failed to render" />;
-    }
-  };
+    }, 0);
+
+    const workedHours = Math.round(plannedHours * 0.85);
+
+    return {
+      totalClients: uniqueClients.size,
+      totalProjects: uniqueProjects.size,
+      plannedHours,
+      workedHours,
+    };
+  }, [tasks, projects, dateRange]);
+
+  const hoursByClient = useMemo(() => {
+    const clientHours = new Map<string, number>();
+
+    tasks.forEach((task) => {
+      const project = projects.find((p) => p.id === task.projectId);
+      const customer = customers.find((c) => c.id === project?.customerId);
+      const clientName = customer?.name || 'Unknown Client';
+
+      const taskHours =
+        task.assignees?.reduce(
+          (sum, assignee) => sum + (assignee.estimatedHours || 0),
+          0,
+        ) || 0;
+
+      clientHours.set(
+        clientName,
+        (clientHours.get(clientName) || 0) + taskHours,
+      );
+    });
+
+    return Array.from(clientHours.entries())
+      .map(([type, value]) => ({ type, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [tasks, projects, customers]);
+
+  const hoursByProject = useMemo(() => {
+    const projectData = new Map<
+      string,
+      { plannedHours: number; actualHours: number }
+    >();
+
+    tasks.forEach((task) => {
+      const project = projects.find((p) => p.id === task.projectId);
+      const projectName = project?.name || 'Unknown Project';
+
+      const plannedHours =
+        task.assignees?.reduce(
+          (sum, assignee) => sum + (assignee.estimatedHours || 0),
+          0,
+        ) || 0;
+
+      const actualHours = Math.round(plannedHours * 0.85);
+
+      const existing = projectData.get(projectName) || {
+        plannedHours: 0,
+        actualHours: 0,
+      };
+      projectData.set(projectName, {
+        plannedHours: existing.plannedHours + plannedHours,
+        actualHours: existing.actualHours + actualHours,
+      });
+    });
+
+    return Array.from(projectData.entries())
+      .map(([name, data]) => ({
+        name,
+        plannedHours: data.plannedHours,
+        actualHours: data.actualHours,
+        totalHours: data.plannedHours + data.actualHours,
+      }))
+      .sort((a, b) => b.totalHours - a.totalHours)
+      .slice(0, 5); // Top 5 projects
+  }, [tasks, projects]);
+
+  const ticketStats = useMemo(() => {
+    const stats = new Map<string, number>();
+
+    tasks.forEach((task) => {
+      const key = `${task.type} - ${task.isCompleted ? 'Completed' : 'Open'}`;
+      stats.set(key, (stats.get(key) || 0) + 1);
+    });
+
+    return Array.from(stats.entries()).map(([type, count]) => ({
+      type,
+      count,
+    }));
+  }, [tasks]);
 
   return (
-    <div>
-      {/* Charts Section */}
-      <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-        {/* Tasks by Client */}
-        <Col span={12}>
-          <Card
-            title={
-              <div>
-                <Title level={4} className={styles.chartTitle}>
-                  Tasks by Client
-                </Title>
-                <Text className={styles.chartSubtitle}>
-                  Distribution of tasks across clients (click to view details)
-                </Text>
-              </div>
-            }
-            className={styles.chartCard}
-            bodyStyle={{ padding: '20px 24px' }}
-          >
-            {renderChart(clientChartConfig, 320)}
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row gutter={16}>
+        <Col span={6}>
+          <Card bordered>
+            <Space>
+              <TeamOutlined style={{ fontSize: 32, color: '#1890ff' }} />
+              <Statistic
+                title="Klientë Aktivë"
+                value={stats.totalClients}
+                valueStyle={{ color: '#3f8600' }}
+                prefix={<ArrowUpOutlined />}
+              />
+            </Space>
           </Card>
         </Col>
 
-        {/* Tasks by Project */}
-        <Col span={12}>
-          <Card
-            title={
-              <div>
-                <Title level={4} className={styles.chartTitle}>
-                  Tasks by Project
-                </Title>
-                <Text className={styles.chartSubtitle}>
-                  Task distribution per project (click to view details)
-                </Text>
-              </div>
-            }
-            className={styles.chartCard}
-            bodyStyle={{ padding: '20px 24px' }}
-          >
-            {renderChart(projectChartConfig, 320)}
+        <Col span={6}>
+          <Card bordered>
+            <Space>
+              <ProjectOutlined style={{ fontSize: 32, color: '#52c41a' }} />
+              <Statistic
+                title="Projekte Aktive"
+                value={stats.totalProjects}
+                valueStyle={{ color: '#3f8600' }}
+                prefix={<ArrowUpOutlined />}
+              />
+            </Space>
+          </Card>
+        </Col>
+
+        <Col span={6}>
+          <Card bordered>
+            <Space>
+              <ClockCircleOutlined style={{ fontSize: 32, color: '#faad14' }} />
+              <Statistic
+                title="Ore të Planifikuara"
+                value={stats.plannedHours}
+                suffix="h"
+                valueStyle={{ color: '#3f8600' }}
+                prefix={<ArrowUpOutlined />}
+              />
+            </Space>
+          </Card>
+        </Col>
+
+        <Col span={6}>
+          <Card bordered>
+            <Space>
+              <CheckCircleOutlined style={{ fontSize: 32, color: '#13c2c2' }} />
+              <Statistic
+                title="Ore të Punësuara"
+                value={stats.workedHours}
+                suffix="h"
+                valueStyle={{ color: '#cf1322' }}
+                prefix={<ArrowDownOutlined />}
+              />
+            </Space>
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-        {/* Tasks by Type */}
-        <Col span={8}>
-          <Card
-            title={
-              <div>
-                <Title level={4} className={styles.chartTitle}>
-                  Tasks by Type
-                </Title>
-                <Text className={styles.chartSubtitle}>
-                  Task type distribution (click to view details)
-                </Text>
-              </div>
-            }
-            className={styles.chartCard}
-            bodyStyle={{ padding: '20px 24px' }}
-          >
-            {renderChart(typeChartConfig, 300)}
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card title="Shpërndarja e orëve për klient">
+            <Pie
+              data={hoursByClient}
+              angleField="value"
+              colorField="type"
+              label={{ type: 'spider' }}
+              height={250}
+              innerRadius={0.6}
+            />
           </Card>
         </Col>
+        <Col span={12}>
+          <Card title="Top 5 projektet sipas orëve të shpenzuara">
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              {hoursByProject.map((project, index) => (
+                <div key={index}>
+                  <Text
+                    strong
+                    style={{ display: 'block', marginBottom: '8px' }}
+                  >
+                    {project.name}
+                  </Text>
 
-        {/* Tasks by Priority */}
-        <Col span={8}>
-          <Card
-            title={
-              <div>
-                <Title level={4} className={styles.chartTitle}>
-                  Tasks by Priority
-                </Title>
-                <Text className={styles.chartSubtitle}>
-                  Priority distribution (click to view details)
-                </Text>
-              </div>
-            }
-            className={styles.chartCard}
-            bodyStyle={{ padding: '20px 24px' }}
-          >
-            {renderChart(priorityChartConfig, 300)}
-          </Card>
-        </Col>
+                  <div
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: '11px',
+                        color: '#666',
+                        marginBottom: '2px',
+                        display: 'block',
+                      }}
+                    >
+                      Planned hours
+                    </Text>
+                    <div
+                      style={{
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        maxWidth: '100%',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 'calc(100% - 50px)',
+                          maxWidth: 'calc(100% - 50px)',
+                        }}
+                      >
+                        <Bar
+                          data={[
+                            {
+                              type: '',
+                              hours: Math.max(project.plannedHours || 10, 1),
+                            },
+                          ]}
+                          xField="hours"
+                          yField="type"
+                          height={60}
+                          maxBarWidth={25}
+                          barStyle={{
+                            fill: '#1890ff',
+                            stroke: '#1890ff',
+                            lineWidth: 1,
+                            opacity: 0.8,
+                          }}
+                          scale={{
+                            x: {
+                              nice: false,
+                              min: 0,
+                              max:
+                                Math.max(project.plannedHours || 10, 1) * 1.1,
+                            },
+                          }}
+                          axis={false}
+                          legend={false}
+                          padding={[10, 10, 10, 10]}
+                          tooltip={{
+                            formatter: (datum: any) => ({
+                              name: 'Planned Hours',
+                              value: `${project.plannedHours || 0}h`,
+                            }),
+                          }}
+                        />
+                      </div>
+                      <Text
+                        style={{
+                          fontSize: '12px',
+                          color: '#1890ff',
+                          fontWeight: 'bold',
+                          marginLeft: '8px',
+                          width: '40px',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {project.plannedHours || 0}h
+                      </Text>
+                    </div>
+                  </div>
 
-        {/* Tasks by Stage */}
-        <Col span={8}>
-          <Card
-            title={
-              <div>
-                <Title level={4} className={styles.chartTitle}>
-                  Tasks by Stage
-                </Title>
-                <Text className={styles.chartSubtitle}>
-                  Task completion stages (click to view details)
-                </Text>
-              </div>
-            }
-            className={styles.chartCard}
-            bodyStyle={{ padding: '20px 24px' }}
-          >
-            {renderChart(stageChartConfig, 300)}
+                  <div
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: '11px',
+                        color: '#666',
+                        marginBottom: '2px',
+                        display: 'block',
+                      }}
+                    >
+                      Actual hours
+                    </Text>
+                    <div
+                      style={{
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        maxWidth: '100%',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 'calc(100% - 50px)',
+                          maxWidth: 'calc(100% - 50px)',
+                        }}
+                      >
+                        <Bar
+                          data={[
+                            {
+                              type: '',
+                              hours: Math.max(project.actualHours || 8, 1),
+                            },
+                          ]}
+                          xField="hours"
+                          yField="type"
+                          height={60}
+                          maxBarWidth={25}
+                          barStyle={{
+                            fill: '#1890ff',
+                            stroke: '#1890ff',
+                            lineWidth: 1,
+                            opacity: 0.8,
+                          }}
+                          scale={{
+                            x: {
+                              nice: false,
+                              min: 0,
+                              max: Math.max(project.actualHours || 8, 1) * 1.1,
+                            },
+                          }}
+                          axis={false}
+                          legend={false}
+                          padding={[10, 10, 10, 10]}
+                          tooltip={{
+                            formatter: (datum: any) => ({
+                              name: 'Actual Hours',
+                              value: `${project.actualHours || 0}h`,
+                            }),
+                          }}
+                        />
+                      </div>
+                      <Text
+                        style={{
+                          fontSize: '12px',
+                          color: '#1890ff',
+                          fontWeight: 'bold',
+                          marginLeft: '8px',
+                          width: '40px',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {project.actualHours || 0}h
+                      </Text>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Space>
           </Card>
         </Col>
       </Row>
-    </div>
+
+      <Card title="Statistikat e Tiketave">
+        <Row gutter={16}>
+          {ticketStats.slice(0, 4).map((ticket, index) => (
+            <Col span={6} key={index}>
+              <Card>
+                <Statistic title={ticket.type} value={ticket.count} />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Card>
+    </Space>
   );
 };
 
