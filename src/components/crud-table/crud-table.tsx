@@ -2,11 +2,13 @@ import * as React from 'react';
 import { Table, Space } from 'antd';
 import { List, useTable, useDrawerForm } from '@refinedev/antd';
 import type { FormProps } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 
 import { DrawerForm } from '../drawer-form/drawer-form';
 
 import { PopoverSelect } from '@/components/dropdown-select';
 import { DrawerFormProvider } from '@/components/drawer-form';
+import { ColumnFilter } from '@/components/column-filter';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
@@ -33,8 +35,9 @@ export function CrudTable<TData extends { id: number }>(
     drawerTitles = {},
   } = props;
 
-  const { tableProps } = useTable<TData>({
+  const { tableProps, setFilters } = useTable<TData>({
     filters: { mode: 'server' },
+    sorters: { mode: 'server' },
     syncWithLocation: true,
     resource,
   });
@@ -67,21 +70,56 @@ export function CrudTable<TData extends { id: number }>(
     [handleCreate],
   );
 
-  const [selectedColumns, setSelectedColumns] = React.useState(columns);
+  const filterableColumns = React.useMemo(
+    () => columns.filter((c: any) => c.key !== 'actions' && c.dataIndex),
+    [columns],
+  );
+
+  const augmentedColumns = React.useMemo(
+    () =>
+      columns.map((column: any) => {
+        if (column.key === 'actions') {
+          return {
+            ...column,
+            filterDropdown: undefined,
+          };
+        }
+
+        return {
+          ...column,
+          filterIcon: () => <FilterOutlined />,
+          filterDropdown: () => (
+            <ColumnFilter
+              columns={filterableColumns}
+              setFilters={setFilters}
+              defaultField={column.dataIndex || column.key}
+            />
+          ),
+        };
+      }),
+    [columns, setFilters, filterableColumns],
+  );
+
+  const [selectedColumns, setSelectedColumns] =
+    React.useState(augmentedColumns);
+
+  React.useEffect(() => {
+    setSelectedColumns(augmentedColumns);
+  }, [augmentedColumns]);
 
   const onSelectColumn = (column: any) => {
     setSelectedColumns((prev: any[]) => {
       const map = new Map(prev.map((c) => [c.dataIndex, c]));
       map.has(column.dataIndex)
-        ? map.delete(column.id)
-        : map.set(column.id, column);
+        ? map.delete(column.dataIndex)
+        : map.set(column.dataIndex, column);
       return Array.from(map.values());
     });
   };
 
   const onToggleAll = () => {
     setSelectedColumns((prev: any[]) =>
-      prev.length === columns.length ? [] : [...columns],
+      prev.length === columns.length ? [] : [...augmentedColumns],
     );
   };
 
@@ -92,7 +130,7 @@ export function CrudTable<TData extends { id: number }>(
         headerButtons={({ defaultButtons }) => (
           <Space>
             <PopoverSelect
-              options={columns}
+              options={augmentedColumns}
               selected={selectedColumns}
               onSelect={onSelectColumn}
               onToggleAll={onToggleAll}

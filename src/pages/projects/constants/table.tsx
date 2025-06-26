@@ -1,22 +1,119 @@
 import { ColumnsType } from 'antd/es/table';
-import { Tag, Progress, Space, Typography } from 'antd';
-import dayjs from 'dayjs';
-import { IProject } from '@/interfaces/project';
-import { ProjectStatus } from '@/interfaces/project-status.enum';
-import { ProjectPriority } from '@/interfaces/project-priority.enum';
+import { Progress, Space, Input, Button, Select, Form } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
+import { DateField, NumberField, TagField, TextField } from '@refinedev/antd';
+import type { IProject } from '@/interfaces/project';
 import { EditButton } from '@/components/edit-button';
 import { DeleteButton } from '@/components/delete-button';
+import { ColumnType as AntColumnType } from 'antd/es/table';
 
-const { Text } = Typography;
+function isDataColumn<T>(
+  col: AntColumnType<T>,
+): col is AntColumnType<T> & { dataIndex: string | string[] } {
+  return 'dataIndex' in col;
+}
 
-export const columns: ColumnsType<IProject> = [
+const filterOperators = [
+  { label: 'Equals', value: 'eq' },
+  { label: 'Not Equals', value: 'ne' },
+  { label: 'Like (case-sensitive)', value: 'like' },
+  { label: 'Ilike (case-insensitive)', value: 'ilike' },
+  { label: 'Greater Than', value: 'gt' },
+  { label: 'Less Than', value: 'lt' },
+  { label: 'Greater Than or Equal', value: 'gte' },
+  { label: 'Less Than or Equal', value: 'lte' },
+  { label: 'In', value: 'in' },
+  { label: 'Range', value: 'range' },
+];
+
+const getAdvancedFilterProps = (
+  defaultField: string | string[],
+  allColumns: ColumnsType<IProject>,
+) => ({
+  filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+  }: any) => {
+    const filterableColumns = allColumns
+      .filter(isDataColumn)
+      .filter((c) => c.key !== 'actions');
+
+    const initialValues = selectedKeys[0] || { field: defaultField };
+
+    return (
+      <div style={{ padding: 8, width: 480 }}>
+        <Form
+          onFinish={(values) => {
+            setSelectedKeys(values.field ? [values] : []);
+            confirm();
+          }}
+          initialValues={initialValues}
+          layout="inline"
+        >
+          <Form.Item name="field" style={{ flex: 1 }}>
+            <Select placeholder="Column">
+              {filterableColumns.map((col: any) => (
+                <Select.Option
+                  key={col.key}
+                  value={
+                    Array.isArray(col.dataIndex)
+                      ? col.dataIndex.join('.')
+                      : col.dataIndex
+                  }
+                >
+                  {col.title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="operator" style={{ flex: 1 }}>
+            <Select placeholder="Operator">
+              {filterOperators.map((op) => (
+                <Select.Option key={op.value} value={op.value}>
+                  {op.label}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="value" style={{ flex: 1 }}>
+            <Input placeholder="Value" />
+          </Form.Item>
+          <div style={{ marginTop: 8, textAlign: 'right', width: '100%' }}>
+            <Space>
+              <Button
+                onClick={() => {
+                  clearFilters();
+                  confirm();
+                }}
+                size="small"
+              >
+                Reset
+              </Button>
+              <Button type="primary" htmlType="submit" size="small">
+                Filter
+              </Button>
+            </Space>
+          </div>
+        </Form>
+      </div>
+    );
+  },
+  filterIcon: (filtered: boolean) => (
+    <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+  ),
+  onFilter: (value: any, record: IProject) => true,
+});
+
+const projectColumns: ColumnsType<IProject> = [
   {
     title: 'ID',
     dataIndex: 'id',
     key: 'id',
     width: 80,
     sorter: true,
-    render: (id: number) => id,
+    render: (value) => <NumberField value={value} />,
   },
   {
     title: 'Project Name',
@@ -25,16 +122,16 @@ export const columns: ColumnsType<IProject> = [
     width: 200,
     sorter: true,
     ellipsis: true,
-    render: (name: string) => <Text strong>{name}</Text>,
+    render: (value) => <TextField value={value} strong />,
   },
   {
     title: 'Client',
-    dataIndex: 'clientName',
-    key: 'clientName',
+    dataIndex: ['customer', 'name'],
+    key: 'customerName',
     width: 150,
     sorter: true,
     ellipsis: true,
-    render: (clientName: string) => clientName || '-',
+    render: (value) => <TextField value={value || '-'} />,
   },
   {
     title: 'Status',
@@ -42,7 +139,7 @@ export const columns: ColumnsType<IProject> = [
     key: 'status',
     width: 120,
     sorter: true,
-    render: (status: ProjectStatus) => <Tag>{status}</Tag>,
+    render: (value) => <TagField value={value || 'Unknown'} />,
   },
   {
     title: 'Priority',
@@ -50,7 +147,7 @@ export const columns: ColumnsType<IProject> = [
     key: 'priority',
     width: 100,
     sorter: true,
-    render: (priority: ProjectPriority) => <Tag>{priority}</Tag>,
+    render: (value) => <TagField value={value || 'Medium'} />,
   },
   {
     title: 'Progress',
@@ -58,7 +155,7 @@ export const columns: ColumnsType<IProject> = [
     key: 'progress',
     width: 120,
     sorter: true,
-    render: (progress: number) => <Progress percent={progress} size="small" />,
+    render: (value: number) => <Progress percent={value || 0} size="small" />,
   },
   {
     title: 'Budget',
@@ -66,8 +163,11 @@ export const columns: ColumnsType<IProject> = [
     key: 'budget',
     width: 120,
     sorter: true,
-    render: (budget: number) => (
-      <Text>{budget ? `€${budget.toLocaleString()}` : '-'}</Text>
+    render: (value) => (
+      <NumberField
+        value={value || 0}
+        options={{ style: 'currency', currency: 'EUR' }}
+      />
     ),
   },
   {
@@ -76,7 +176,7 @@ export const columns: ColumnsType<IProject> = [
     key: 'startDate',
     width: 120,
     sorter: true,
-    render: (date: string) => (date ? dayjs(date).format('MMM DD, YYYY') : '-'),
+    render: (value) => <DateField value={value} format="MMM DD, YYYY" />,
   },
   {
     title: 'Deadline',
@@ -84,47 +184,7 @@ export const columns: ColumnsType<IProject> = [
     key: 'deadline',
     width: 120,
     sorter: true,
-    render: (date: string) => (date ? dayjs(date).format('MMM DD, YYYY') : '-'),
-  },
-  {
-    title: 'Technologies',
-    dataIndex: 'technologies',
-    key: 'technologies',
-    width: 150,
-    render: (technologies: string[]) => (
-      <Space size={[0, 4]} wrap>
-        {technologies?.slice(0, 2).map((tech) => (
-          <Tag key={tech} color="blue" style={{ fontSize: '11px' }}>
-            {tech}
-          </Tag>
-        ))}
-        {technologies?.length > 2 && (
-          <Tag color="default" style={{ fontSize: '11px' }}>
-            +{technologies.length - 2}
-          </Tag>
-        )}
-      </Space>
-    ),
-  },
-  {
-    title: 'Tags',
-    dataIndex: 'tags',
-    key: 'tags',
-    width: 150,
-    render: (tags: string[]) => (
-      <Space size={[0, 4]} wrap>
-        {tags?.slice(0, 2).map((tag) => (
-          <Tag key={tag} color="green" style={{ fontSize: '11px' }}>
-            {tag}
-          </Tag>
-        ))}
-        {tags?.length > 2 && (
-          <Tag color="default" style={{ fontSize: '11px' }}>
-            +{tags.length - 2}
-          </Tag>
-        )}
-      </Space>
-    ),
+    render: (value) => <DateField value={value} format="MMM DD, YYYY" />,
   },
   {
     title: 'Created',
@@ -132,13 +192,14 @@ export const columns: ColumnsType<IProject> = [
     key: 'createdAt',
     width: 120,
     sorter: true,
-    render: (date: string) => (date ? dayjs(date).format('MMM DD, YYYY') : '-'),
+    render: (value) => <DateField value={value} format="MMM DD, YYYY" />,
   },
   {
     title: 'Actions',
     dataIndex: 'actions',
     key: 'actions',
     width: 100,
+    fixed: 'right',
     render: (_, record) => (
       <Space size="middle">
         <EditButton
@@ -156,6 +217,18 @@ export const columns: ColumnsType<IProject> = [
         />
       </Space>
     ),
-    fixed: 'right',
   },
 ];
+
+export const columns: ColumnsType<IProject> = projectColumns.map((col) => {
+  if (!isDataColumn(col)) {
+    return col;
+  }
+
+  const field = col.dataIndex || String(col.key);
+
+  return {
+    ...col,
+    ...getAdvancedFilterProps(field, projectColumns),
+  };
+});

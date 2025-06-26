@@ -100,6 +100,11 @@ export interface CreateProjectDto {
   tags?: string[];
   color?: string;
   notes?: string;
+  members?: Array<{
+    userId: number;
+    role: ProjectRole;
+    isActive: boolean;
+  }>;
 }
 
 // Update Project DTO - exactly matching backend
@@ -122,6 +127,11 @@ export interface UpdateProjectDto {
   tags?: string[];
   color?: string;
   notes?: string;
+  members?: Array<{
+    userId: number;
+    role: ProjectRole;
+    isActive: boolean;
+  }>;
 }
 
 // Legacy types for backward compatibility
