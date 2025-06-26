@@ -45,6 +45,13 @@ export const refineProps: RefineProps = {
       },
     },
     {
+      name: 'planning',
+      list: '/planning',
+      meta: {
+        canDelete: true,
+      },
+    },
+    {
       name: 'tasks',
       list: '/tasks',
       create: '/tasks/create',

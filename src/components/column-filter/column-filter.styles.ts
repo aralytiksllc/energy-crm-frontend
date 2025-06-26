@@ -2,15 +2,11 @@ import { createStyles } from 'antd-style';
 
 export const useColumnFilterStyles = createStyles(({ css }) => ({
   container: css`
-    padding: 8px;
+    padding: 12px;
+    min-width: 200px;
   `,
   input: css`
-    min-width: 120px;
-  `,
-  buttonsContainer: css`
-    margin-top: 8px;
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
+    min-width: 180px;
+    margin-bottom: 8px;
   `,
 }));

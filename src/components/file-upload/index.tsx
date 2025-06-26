@@ -1,10 +1,23 @@
 import React from 'react';
-import { Upload, Button, Space, Typography, Card, Image, List } from 'antd';
+import {
+  Upload,
+  Button,
+  Space,
+  Typography,
+  Card,
+  Image,
+  List,
+  Progress,
+  Spin,
+  Popconfirm,
+} from 'antd';
 import {
   UploadOutlined,
   DeleteOutlined,
   EyeOutlined,
   DownloadOutlined,
+  LoadingOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
 import { useFileUploadStyles } from './file-upload.styles';
@@ -30,10 +43,21 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
   const { styles } = useFileUploadStyles();
 
-  const handleUpload: UploadProps['customRequest'] = ({ file, onSuccess }) => {
-    setTimeout(() => {
-      onSuccess?.(file);
-    }, 1000);
+  const handleUpload: UploadProps['customRequest'] = ({
+    file,
+    onSuccess,
+    onProgress,
+  }) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      onProgress?.({ percent: progress });
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        onSuccess?.(file);
+      }
+    }, 200);
   };
 
   const handleChange: UploadProps['onChange'] = ({ fileList }) => {
@@ -43,6 +67,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const handleRemove = (file: UploadFile) => {
     const newFiles = files.filter((f) => f.uid !== file.uid);
     onChange?.(newFiles);
+    return true;
   };
 
   const beforeUpload = (file: File) => {
@@ -77,12 +102,28 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     );
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'uploading':
+        return '#1890ff';
+      case 'done':
+        return '#52c41a';
+      case 'error':
+        return '#ff4d4f';
+      default:
+        return '#d9d9d9';
+    }
+  };
+
+  const isUploading = (file: UploadFile) => file.status === 'uploading';
+
   return (
     <div className={styles.container}>
       <Upload
         fileList={files}
         customRequest={handleUpload}
         onChange={handleChange}
+        onRemove={handleRemove}
         beforeUpload={beforeUpload}
         disabled={disabled}
         maxCount={maxCount}
@@ -91,11 +132,20 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         className={styles.upload}
       >
         <Button
-          icon={<UploadOutlined />}
+          icon={
+            files.some((f) => f.status === 'uploading') ? (
+              <LoadingOutlined />
+            ) : (
+              <UploadOutlined />
+            )
+          }
           disabled={disabled || files.length >= maxCount}
           className={styles.uploadButton}
+          loading={files.some((f) => f.status === 'uploading')}
         >
-          Upload Files
+          {files.some((f) => f.status === 'uploading')
+            ? 'Uploading...'
+            : 'Upload Files'}
         </Button>
       </Upload>
 
@@ -108,52 +158,98 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             dataSource={files}
             renderItem={(file) => (
               <List.Item className={styles.fileItem}>
-                <Card size="small" className={styles.fileCard}>
-                  <Space align="start" className={styles.fileContent}>
-                    {isImage(file) && file.thumbUrl ? (
-                      <Image
-                        src={file.thumbUrl}
-                        alt={file.name}
-                        width={40}
-                        height={40}
-                        className={styles.filePreview}
-                        preview={{
-                          mask: <EyeOutlined />,
-                        }}
-                      />
-                    ) : (
-                      <div className={styles.fileIcon}>{getFileIcon(file)}</div>
-                    )}
+                <Card
+                  size="small"
+                  className={`${styles.fileCard} ${isUploading(file) ? styles.uploadingCard : ''}`}
+                >
+                  <Space
+                    align="start"
+                    className={styles.fileContent}
+                    direction="vertical"
+                    style={{ width: '100%' }}
+                  >
+                    <Space align="start" style={{ width: '100%' }}>
+                      {isUploading(file) ? (
+                        <div className={styles.fileIcon}>
+                          <Spin size="small" />
+                        </div>
+                      ) : isImage(file) && file.thumbUrl ? (
+                        <Image
+                          src={file.thumbUrl}
+                          alt={file.name}
+                          width={40}
+                          height={40}
+                          className={styles.filePreview}
+                          preview={{
+                            mask: <EyeOutlined />,
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.fileIcon}>
+                          {getFileIcon(file)}
+                        </div>
+                      )}
 
-                    <div className={styles.fileInfo}>
-                      <Text className={styles.fileName}>{file.name}</Text>
-                      <Text type="secondary" className={styles.fileSize}>
-                        {file.size
-                          ? `${(file.size / 1024 / 1024).toFixed(2)} MB`
-                          : 'Unknown size'}
-                      </Text>
-                    </div>
+                      <div className={styles.fileInfo}>
+                        <Text className={styles.fileName}>{file.name}</Text>
+                        <Text type="secondary" className={styles.fileSize}>
+                          {file.size
+                            ? `${(file.size / 1024 / 1024).toFixed(2)} MB`
+                            : 'Unknown size'}
+                          {file.status === 'uploading' && ' - Uploading...'}
+                          {file.status === 'error' && ' - Upload Failed'}
+                          {file.status === 'done' && ' - Upload Complete'}
+                        </Text>
+                      </div>
 
-                    <Space>
-                      <Button
-                        type="text"
-                        size="small"
-                        icon={<DownloadOutlined />}
-                        disabled={disabled}
-                        className={styles.actionButton}
-                        title="Download"
-                      />
-                      <Button
-                        type="text"
-                        size="small"
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleRemove(file)}
-                        disabled={disabled}
-                        danger
-                        className={styles.actionButton}
-                        title="Remove"
-                      />
+                      <Space>
+                        <Button
+                          type="text"
+                          size="small"
+                          icon={<DownloadOutlined />}
+                          disabled={disabled || isUploading(file)}
+                          className={styles.actionButton}
+                          title="Download"
+                        />
+                        <Popconfirm
+                          title="Delete file"
+                          description={`Are you sure you want to delete "${file.name}"?`}
+                          icon={
+                            <QuestionCircleOutlined style={{ color: 'red' }} />
+                          }
+                          onConfirm={() => handleRemove(file)}
+                          okText="Yes, Delete"
+                          cancelText="Cancel"
+                          okType="danger"
+                          disabled={disabled || isUploading(file)}
+                        >
+                          <Button
+                            type="text"
+                            size="small"
+                            icon={<DeleteOutlined />}
+                            disabled={disabled || isUploading(file)}
+                            danger
+                            className={styles.actionButton}
+                            title="Remove"
+                          />
+                        </Popconfirm>
+                      </Space>
                     </Space>
+                    {isUploading(file) && (
+                      <Progress
+                        percent={file.percent || 0}
+                        size="small"
+                        status="active"
+                        strokeColor={getStatusColor(file.status || '')}
+                        showInfo={false}
+                        style={{ width: '100%' }}
+                      />
+                    )}
+                    {file.status === 'error' && (
+                      <Text type="danger" style={{ fontSize: '12px' }}>
+                        Upload failed. Please try again.
+                      </Text>
+                    )}
                   </Space>
                 </Card>
               </List.Item>

@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { Form, FormProps } from 'antd';
-import { DrawerTabs, DrawerTabItem } from '@/components/drawer-tabs';
+import {
+  FileOutlined,
+  TeamOutlined,
+  PaperClipOutlined,
+  FileTextOutlined,
+  CommentOutlined,
+} from '@ant-design/icons';
+import { GenericTabs, GenericTabItem } from '@/components/generic-tabs';
 import { ProjectOverviewForm } from './project-overview-form';
 import { ProjectMembersForm } from './project-members-form';
+import { ProjectAttachmentsForm } from './project-attachments-form';
+import { ProjectPagesForm } from './project-pages-form';
+import { ProjectCommentsForm } from './project-comments-form';
 
 export interface ProjectFormProps {
   formProps: FormProps;
@@ -12,22 +22,42 @@ export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
   const { formProps } = props;
   const [activeTab, setActiveTab] = useState<string>('overview');
 
-  const tabs: DrawerTabItem[] = [
+  const tabs: GenericTabItem[] = [
     {
       key: 'overview',
       label: 'Overview',
+      icon: <FileOutlined />,
       children: <ProjectOverviewForm formProps={formProps} />,
     },
     {
       key: 'members',
       label: 'Members',
+      icon: <TeamOutlined />,
       children: <ProjectMembersForm formProps={formProps} />,
+    },
+    {
+      key: 'attachments',
+      label: 'Attachments',
+      icon: <PaperClipOutlined />,
+      children: <ProjectAttachmentsForm formProps={formProps} />,
+    },
+    {
+      key: 'pages',
+      label: 'Pages',
+      icon: <FileTextOutlined />,
+      children: <ProjectPagesForm formProps={formProps} />,
+    },
+    {
+      key: 'comments',
+      label: 'Comments',
+      icon: <CommentOutlined />,
+      children: <ProjectCommentsForm formProps={formProps} />,
     },
   ];
 
   return (
     <Form layout="vertical" {...formProps}>
-      <DrawerTabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
+      <GenericTabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
     </Form>
   );
 };

@@ -21,13 +21,29 @@ export const UserSelect: React.FC<SelectProps> = (props) => {
         </Space>
       ),
       searchText: fullName,
+      title: fullName,
     };
   });
+  const labelRender = (option: any) => {
+    const selectedUser = users.find((user) => user.id === option.value);
+    if (selectedUser) {
+      const fullName =
+        `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim();
+      return (
+        <Space>
+          <UserAvatar user={selectedUser} size="small" />
+          {fullName}
+        </Space>
+      );
+    }
+    return option.label;
+  };
 
   return (
     <Select
       loading={isLoading}
       options={options}
+      labelRender={labelRender}
       filterOption={(input, option) =>
         (option?.searchText ?? '').toLowerCase().includes(input.toLowerCase())
       }
