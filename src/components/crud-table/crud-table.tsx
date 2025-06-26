@@ -1,25 +1,21 @@
 import * as React from 'react';
-import { Table, Typography, TableProps, Space } from 'antd';
+import { Table, Space } from 'antd';
 import { List, useTable, useDrawerForm } from '@refinedev/antd';
-import { useDelete, useShow, HttpError } from '@refinedev/core';
 import type { FormProps } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 
 import { DrawerForm } from '../drawer-form/drawer-form';
 
-import { EditButton } from '@/components/edit-button';
-import { DeleteButton } from '@/components/delete-button';
-
 import { PopoverSelect } from '@/components/dropdown-select';
-import { useSelections } from '@/hooks/use-selections';
 import { DrawerFormProvider } from '@/components/drawer-form';
-
-const { Text } = Typography;
+import { ColumnFilter } from '@/components/column-filter';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
   columns: any;
   renderForm: (formProps: FormProps) => React.ReactNode;
   drawerWidth?: number;
+  createInitialValues?: Partial<TData>;
   drawerTitles?: {
     create?: string;
     edit?: string;
@@ -35,11 +31,13 @@ export function CrudTable<TData extends { id: number }>(
     columns,
     renderForm,
     drawerWidth = 720,
+    createInitialValues,
     drawerTitles = {},
   } = props;
 
-  const { tableProps } = useTable<TData>({
+  const { tableProps, setFilters } = useTable<TData>({
     filters: { mode: 'server' },
+    sorters: { mode: 'server' },
     syncWithLocation: true,
     resource,
   });
@@ -48,6 +46,14 @@ export function CrudTable<TData extends { id: number }>(
     action: 'create',
     resource,
   });
+
+  const augmentedCreateDrawerForm = {
+    ...createDrawerForm,
+    formProps: {
+      ...createDrawerForm.formProps,
+      initialValues: createInitialValues,
+    },
+  };
 
   const editDrawerForm = useDrawerForm({
     action: 'edit',
@@ -64,21 +70,56 @@ export function CrudTable<TData extends { id: number }>(
     [handleCreate],
   );
 
-  const [selectedColumns, setSelectedColumns] = React.useState(columns);
+  const filterableColumns = React.useMemo(
+    () => columns.filter((c: any) => c.key !== 'actions' && c.dataIndex),
+    [columns],
+  );
+
+  const augmentedColumns = React.useMemo(
+    () =>
+      columns.map((column: any) => {
+        if (column.key === 'actions') {
+          return {
+            ...column,
+            filterDropdown: undefined,
+          };
+        }
+
+        return {
+          ...column,
+          filterIcon: () => <FilterOutlined />,
+          filterDropdown: () => (
+            <ColumnFilter
+              columns={filterableColumns}
+              setFilters={setFilters}
+              defaultField={column.dataIndex || column.key}
+            />
+          ),
+        };
+      }),
+    [columns, setFilters, filterableColumns],
+  );
+
+  const [selectedColumns, setSelectedColumns] =
+    React.useState(augmentedColumns);
+
+  React.useEffect(() => {
+    setSelectedColumns(augmentedColumns);
+  }, [augmentedColumns]);
 
   const onSelectColumn = (column: any) => {
     setSelectedColumns((prev: any[]) => {
       const map = new Map(prev.map((c) => [c.dataIndex, c]));
       map.has(column.dataIndex)
-        ? map.delete(column.id)
-        : map.set(column.id, column);
+        ? map.delete(column.dataIndex)
+        : map.set(column.dataIndex, column);
       return Array.from(map.values());
     });
   };
 
   const onToggleAll = () => {
     setSelectedColumns((prev: any[]) =>
-      prev.length === columns.length ? [] : [...columns],
+      prev.length === columns.length ? [] : [...augmentedColumns],
     );
   };
 
@@ -89,21 +130,26 @@ export function CrudTable<TData extends { id: number }>(
         headerButtons={({ defaultButtons }) => (
           <Space>
             <PopoverSelect
-              options={columns}
+              options={augmentedColumns}
               selected={selectedColumns}
               onSelect={onSelectColumn}
               onToggleAll={onToggleAll}
               optionKey={(col: any) => col.dataIndex}
               optionLabel={(col: any) => col.title}
-              buttonLabel="Selecte Columns"
+              buttonLabel="Select Columns"
             />
             {defaultButtons}
           </Space>
         )}
       >
-        <Table {...tableProps} columns={selectedColumns} />
+        <Table
+          {...tableProps}
+          rowKey="id"
+          columns={selectedColumns}
+          scroll={{ x: true }}
+        />
         <DrawerForm
-          {...createDrawerForm}
+          {...augmentedCreateDrawerForm}
           renderForm={renderForm}
           title={drawerTitles.create}
           width={drawerWidth}

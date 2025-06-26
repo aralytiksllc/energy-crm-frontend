@@ -1,32 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Form, FormProps } from 'antd';
 import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  DatePicker,
-  Switch,
-  Typography,
-  Row,
-  Col,
-  FormProps,
-  Checkbox,
-} from 'antd';
-import { ProjectStatus } from '@/interfaces/project-status.enum';
-import { ProjectPriority } from '@/interfaces/project-priority.enum';
-import { Wysiwyg } from '@/components/rich-text-editor';
-import { DayjsForm } from '@/helpers/dayjs-transformer';
-import { RemoteSelect } from '@/components/remote-select';
-
-const statusOptions = Object.values(ProjectStatus).map((status) => ({
-  label: status,
-  value: status,
-}));
-
-const priorityOptions = Object.values(ProjectPriority).map((priority) => ({
-  label: priority,
-  value: priority,
-}));
+  FileOutlined,
+  TeamOutlined,
+  PaperClipOutlined,
+  FileTextOutlined,
+  CommentOutlined,
+} from '@ant-design/icons';
+import { GenericTabs, GenericTabItem } from '@/components/generic-tabs';
+import { ProjectOverviewForm } from './project-overview-form';
+import { ProjectMembersForm } from './project-members-form';
+import { ProjectAttachmentsForm } from './project-attachments-form';
+import { ProjectPagesForm } from './project-pages-form';
+import { ProjectCommentsForm } from './project-comments-form';
 
 export interface ProjectFormProps {
   formProps: FormProps;
@@ -34,134 +20,44 @@ export interface ProjectFormProps {
 
 export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
   const { formProps } = props;
+  const [activeTab, setActiveTab] = useState<string>('overview');
 
-  console.log('formProps.defaultValue', formProps.initialValues);
+  const tabs: GenericTabItem[] = [
+    {
+      key: 'overview',
+      label: 'Overview',
+      icon: <FileOutlined />,
+      children: <ProjectOverviewForm formProps={formProps} />,
+    },
+    {
+      key: 'members',
+      label: 'Members',
+      icon: <TeamOutlined />,
+      children: <ProjectMembersForm formProps={formProps} />,
+    },
+    {
+      key: 'attachments',
+      label: 'Attachments',
+      icon: <PaperClipOutlined />,
+      children: <ProjectAttachmentsForm formProps={formProps} />,
+    },
+    {
+      key: 'pages',
+      label: 'Pages',
+      icon: <FileTextOutlined />,
+      children: <ProjectPagesForm formProps={formProps} />,
+    },
+    {
+      key: 'comments',
+      label: 'Comments',
+      icon: <CommentOutlined />,
+      children: <ProjectCommentsForm formProps={formProps} />,
+    },
+  ];
 
   return (
     <Form layout="vertical" {...formProps}>
-      <Form.Item
-        name="customerId"
-        label="Customer"
-        rules={[{ required: true, message: 'Please select a customer' }]}
-      >
-        <RemoteSelect
-          resource="customers"
-          optionValue="id"
-          optionLabel="name"
-          placeholder="Select customer"
-        />
-      </Form.Item>
-
-      <Form.Item name="name" label="Project Name" rules={[{ required: true }]}>
-        <Input placeholder="Enter project name" />
-      </Form.Item>
-
-      <Form.Item
-        name="description"
-        label="Description"
-        rules={[{ required: true }]}
-      >
-        <Wysiwyg />
-      </Form.Item>
-
-      <Form.Item
-        name="description"
-        label="Description"
-        rules={[{ required: true }]}
-      >
-        <Input.TextArea
-          placeholder="Enter project description"
-          autoSize={{ minRows: 5 }}
-        />
-      </Form.Item>
-
-      <Form.Item name="budget" label="Budget" rules={[{ required: true }]}>
-        <InputNumber
-          placeholder="Enter budget amount"
-          min={0}
-          precision={2}
-          prefix="€"
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item name="status" label="Status" rules={[{ required: true }]}>
-            <Select placeholder="Select status" options={statusOptions} />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="priority"
-            label="Priority"
-            rules={[{ required: true }]}
-          >
-            <Select placeholder="Select priority" options={priorityOptions} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            name="startDate"
-            label="Start Date"
-            getValueProps={DayjsTransformer.toValueProps}
-            normalize={DayjsTransformer.toNormalizedDate}
-            rules={[{ required: true }]}
-          >
-            <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="deadline"
-            label="End Date"
-            getValueProps={DayjsTransformer.toValueProps}
-            normalize={DayjsTransformer.toNormalizedDate}
-          >
-            <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item name="tags" label="Tags">
-            <Select
-              mode="tags"
-              placeholder="Add tags"
-              tokenSeparators={[',']}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item name="technologies" label="Technologies">
-            <Select
-              mode="tags"
-              placeholder="Add technologies"
-              tokenSeparators={[',']}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Form.Item
-        label="Archive this project"
-        name="isArchived"
-        valuePropName="checked"
-      >
-        <Checkbox />
-      </Form.Item>
-
-      <Form.Item
-        label="Make this project private"
-        name="isPrivate"
-        valuePropName="checked"
-      >
-        <Switch />
-      </Form.Item>
+      <GenericTabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
     </Form>
   );
 };

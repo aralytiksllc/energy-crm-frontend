@@ -5,7 +5,6 @@ import {
   Select,
   DatePicker,
   Switch,
-  Typography,
   Row,
   Col,
   FormProps,
@@ -13,8 +12,9 @@ import {
 import { TaskPriority } from '@/interfaces/task-priority.enum';
 import { TaskType } from '@/interfaces/task-type.enum';
 import { RemoteSelect } from '@/components/remote-select';
-import { DayjsForm } from '@/helpers/dayjs-transformer';
+import { DayjsTransformer } from '@/helpers/dayjs-transformer';
 import { Wysiwyg } from '@/components/rich-text-editor';
+import { AssigneeManager } from '@/components/assignee-manager/assignee-manager';
 
 const priorityOptions = Object.values(TaskPriority).map((priority) => ({
   label: priority,
@@ -30,9 +30,7 @@ export interface TaskFormProps {
   formProps: FormProps;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = (props) => {
-  const { formProps } = props;
-
+export const TaskForm: React.FC<TaskFormProps> = ({ formProps }) => {
   return (
     <Form layout="vertical" {...formProps}>
       <Form.Item
@@ -57,7 +55,7 @@ export const TaskForm: React.FC<TaskFormProps> = (props) => {
       </Form.Item>
 
       <Form.Item name="description" label="Description">
-        <Input placeholder="Enter task title" />
+        <Wysiwyg />
       </Form.Item>
 
       <Row gutter={16}>
@@ -86,36 +84,11 @@ export const TaskForm: React.FC<TaskFormProps> = (props) => {
         <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
       </Form.Item>
 
-      <Form.Item
-        name="isCompleted"
-        label="Is Completed"
-        valuePropName="checked"
-      >
-        <Switch />
-      </Form.Item>
-
-      <Form.Item
-        name="completedDate"
-        label="Completed Date"
-        getValueProps={DayjsTransformer.toValueProps}
-        normalize={DayjsTransformer.toNormalizedDate}
-      >
-        <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
-      </Form.Item>
-
-      <Form.Item
-        name="assignees"
-        label="Assignees"
-        extra="You can select multiple users to assign this task"
-      >
-        <RemoteSelect
-          resource="users"
-          optionValue="id"
-          optionLabel="fullName"
-          placeholder="Select assignees"
-          mode="multiple"
-        />
-      </Form.Item>
+      <Form.List name="assignees">
+        {(fields, { add, remove }) => (
+          <AssigneeManager fields={fields} add={add} remove={remove} />
+        )}
+      </Form.List>
     </Form>
   );
 };

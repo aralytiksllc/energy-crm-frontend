@@ -4,6 +4,7 @@ import { Drawer, Space, Button } from 'antd';
 
 // Internal dependencies
 import type { DrawerFormProps } from './drawer-form.types';
+import { DrawerTabs } from '../drawer-tabs';
 
 export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
   const {
@@ -14,6 +15,9 @@ export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
     formProps,
     renderForm,
     close,
+    tabs,
+    activeTab,
+    onTabChange,
   } = props;
 
   const footer = (
@@ -27,9 +31,21 @@ export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
     </Space>
   );
 
+  const content = tabs ? (
+    <DrawerTabs items={tabs} activeKey={activeTab} onChange={onTabChange} />
+  ) : (
+    renderForm(formProps)
+  );
+
   return (
-    <Drawer {...drawerProps} title={title} footer={footer} width={width}>
-      {renderForm(formProps)}
+    <Drawer
+      {...drawerProps}
+      title={title}
+      footer={footer}
+      width={width}
+      destroyOnHidden
+    >
+      {content}
     </Drawer>
   );
 };

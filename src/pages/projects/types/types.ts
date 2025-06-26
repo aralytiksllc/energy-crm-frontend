@@ -100,6 +100,11 @@ export interface CreateProjectDto {
   tags?: string[];
   color?: string;
   notes?: string;
+  members?: Array<{
+    userId: number;
+    role: ProjectRole;
+    isActive: boolean;
+  }>;
 }
 
 // Update Project DTO - exactly matching backend
@@ -122,6 +127,11 @@ export interface UpdateProjectDto {
   tags?: string[];
   color?: string;
   notes?: string;
+  members?: Array<{
+    userId: number;
+    role: ProjectRole;
+    isActive: boolean;
+  }>;
 }
 
 // Legacy types for backward compatibility
@@ -152,4 +162,35 @@ export interface IDocument {
 export interface INote {
   id: number;
   content: string;
+}
+
+export interface IComment {
+  id: number;
+  content: string;
+  author: string;
+  authorId: number;
+  authorAvatar?: string;
+  createdAt: Date;
+  projectId: number;
+}
+
+export interface IAttachment {
+  id: number;
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+  projectId: number;
+  uploadedBy: number;
+  createdAt: Date;
+}
+
+export interface IProjectPage {
+  id: number;
+  title: string;
+  content: string;
+  projectId: number;
+  createdBy: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

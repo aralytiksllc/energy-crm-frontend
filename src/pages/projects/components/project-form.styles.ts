@@ -1,6 +1,6 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ token }) => ({
+export const useStyles = createStyles(() => ({
   form: {
     maxWidth: 1000,
   },

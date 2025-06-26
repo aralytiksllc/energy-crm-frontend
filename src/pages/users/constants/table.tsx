@@ -50,9 +50,10 @@ export const columns: ColumnsType<IUser> = [
     sorter: true,
   },
   {
-    dataIndex: 'createdAt',
-    title: 'Created At',
-    sorter: false,
+    title: 'Actions',
+    dataIndex: 'actions',
+    fixed: 'right',
+    width: 100,
     render: (_, record) => (
       <Space size={8}>
         <EditButton

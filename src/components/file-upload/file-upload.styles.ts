@@ -54,6 +54,15 @@ export const useFileUploadStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  uploadingCard: css`
+    border: 1px solid ${token.colorPrimary};
+    background: ${token.colorPrimaryBg};
+
+    .ant-card-body {
+      padding: 12px;
+    }
+  `,
+
   fileContent: css`
     width: 100%;
     justify-content: space-between;

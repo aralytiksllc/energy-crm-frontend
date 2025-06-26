@@ -8,7 +8,7 @@ import { useFullname } from './use-fullname';
 import { useInitials } from './use-initials';
 
 export const UserAvatar: React.FC<UserAvatarProps> = (props) => {
-  const { user } = props;
+  const { user, ...rest } = props;
 
   const fullname = useFullname(user);
   const initials = useInitials(user);
@@ -17,7 +17,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = (props) => {
 
   return (
     <Tooltip title={fullname}>
-      <Avatar src={user.avatar}>{text}</Avatar>
+      <Avatar src={user.avatar} {...rest}>
+        {text}
+      </Avatar>
     </Tooltip>
   );
 };

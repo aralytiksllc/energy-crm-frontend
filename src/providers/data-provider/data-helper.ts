@@ -5,6 +5,7 @@ import type {
   GetListParams,
   LogicalFilter,
 } from '@refinedev/core';
+import qs from 'qs';
 
 export interface QueryParams extends GetListParams {
   filters?: CrudFilters;
@@ -15,47 +16,56 @@ export interface QueryParams extends GetListParams {
   };
 }
 
-// Transform Refine filters to backend format
-const transformFilters = (filters: CrudFilters) => {
-  return filters
-    .filter((filter): filter is LogicalFilter => 'field' in filter)
-    .map((filter) => ({
-      field: filter.field,
-      operator: filter.operator,
-      value: filter.value,
-    }));
+const transformFilters = (filters?: CrudFilters) => {
+  if (!filters) return;
+
+  const transformed: { [key: string]: any } = {};
+  let i = 0;
+  for (const filter of filters) {
+    if ('field' in filter) {
+      const { field, operator, value } = filter as LogicalFilter;
+      transformed[`filters[${i}][field]`] = field;
+      transformed[`filters[${i}][operator]`] = operator;
+      if (value !== undefined && value !== null) {
+        transformed[`filters[${i}][value]`] = value;
+      }
+      i++;
+    }
+  }
+  return transformed;
 };
 
-// Transform Refine sorters to backend format
-const transformSorters = (sorters: CrudSort[]) => {
-  return sorters.map((sorter) => ({
-    field: sorter.field,
-    order: sorter.order?.toUpperCase() || 'ASC',
-  }));
+const transformSorters = (sorters?: CrudSort[]) => {
+  if (!sorters) return;
+
+  const transformed: { [key: string]: any } = {};
+  sorters.forEach((sorter, i) => {
+    transformed[`sorters[${i}][field]`] = sorter.field;
+    transformed[`sorters[${i}][order]`] = sorter.order.toUpperCase();
+  });
+  return transformed;
 };
 
 export const dataHelper = {
   buildQueryString(params: GetListParams): string {
-    const queryParams = new URLSearchParams();
+    const query: { [key: string]: any } = {};
 
-    // Handle pagination
     if (params.pagination) {
-      queryParams.append('current', String(params.pagination.current || 1));
-      queryParams.append('pageSize', String(params.pagination.pageSize || 20));
+      query.current = params.pagination.current;
+      query.pageSize = params.pagination.pageSize;
     }
 
-    // Handle sorting
-    if (params.sorters && params.sorters.length > 0) {
-      const transformedSorters = transformSorters(params.sorters);
-      queryParams.append('sorters', JSON.stringify(transformedSorters));
+    if (params.sorters?.length) {
+      Object.assign(query, transformSorters(params.sorters));
     }
 
-    // Handle filtering
-    if (params.filters && params.filters.length > 0) {
-      const transformedFilters = transformFilters(params.filters);
-      queryParams.append('filters', JSON.stringify(transformedFilters));
+    if (params.filters?.length) {
+      Object.assign(query, transformFilters(params.filters));
     }
 
-    return queryParams.toString();
+    return qs.stringify(query, {
+      arrayFormat: 'indices',
+      encode: false,
+    });
   },
 };

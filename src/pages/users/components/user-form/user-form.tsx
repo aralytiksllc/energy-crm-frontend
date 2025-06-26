@@ -19,7 +19,7 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
   const { styles } = useStyles();
 
   return (
-    <Form {...formProps} layout="vertical">
+    <Form {...formProps} layout="vertical" autoComplete="off">
       <Form.Item
         label="First Name"
         name="firstName"
@@ -44,7 +44,7 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
         rules={rules.email}
         className={styles.formItem}
       >
-        <Input />
+        <Input autoComplete="off" />
       </Form.Item>
 
       <Form.Item
@@ -53,7 +53,7 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
         rules={rules.password}
         className={styles.formItem}
       >
-        <Input.Password />
+        <Input.Password autoComplete="new-password" />
       </Form.Item>
 
       <Form.Item

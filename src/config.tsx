@@ -30,9 +30,23 @@ export const refineProps: RefineProps = {
       },
     },
     {
+      name: 'customers',
+      list: '/customers',
+      meta: {
+        canDelete: true,
+      },
+    },
+    {
       name: 'projects',
       list: '/projects',
       edit: '/projects/edit/:id',
+      meta: {
+        canDelete: true,
+      },
+    },
+    {
+      name: 'planning',
+      list: '/planning',
       meta: {
         canDelete: true,
       },

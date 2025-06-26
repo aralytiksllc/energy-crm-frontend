@@ -19,6 +19,7 @@ import type {
 // Internal imports
 import { API_URL } from '../../helpers/http-client/http-constants';
 import { httpClient } from '../../helpers/http-client/http-client';
+import { dataHelper } from './data-helper';
 
 export const dataProvider: DataProvider = {
   getApiUrl() {
@@ -28,22 +29,32 @@ export const dataProvider: DataProvider = {
   async getList<TData extends BaseRecord>(
     params: GetListParams,
   ): Promise<GetListResponse<TData>> {
-    const url = params.resource;
+    const queryString = dataHelper.buildQueryString(params);
+    const url = queryString
+      ? `${params.resource}?${queryString}`
+      : params.resource;
 
     try {
       const response = await httpClient.get(url).json<any>();
+
+      if (!response) {
+        return {
+          data: [],
+          total: 0,
+        };
+      }
 
       // Handle different response formats
       if (response.items && typeof response.total === 'number') {
         // Format: { items: TData[], total: number }
         return {
-          data: response.items,
+          data: Array.isArray(response.items) ? response.items : [],
           total: response.total,
         };
       } else if (response.data && typeof response.total === 'number') {
         // Format: { data: TData[], total: number }
         return {
-          data: response.data,
+          data: Array.isArray(response.data) ? response.data : [],
           total: response.total,
         };
       } else if (Array.isArray(response)) {
@@ -55,7 +66,7 @@ export const dataProvider: DataProvider = {
       } else if (response.results && typeof response.count === 'number') {
         // Format: { results: TData[], count: number }
         return {
-          data: response.results,
+          data: Array.isArray(response.results) ? response.results : [],
           total: response.count,
         };
       } else {
@@ -66,7 +77,10 @@ export const dataProvider: DataProvider = {
       }
     } catch (error) {
       console.error(`Error fetching ${params.resource}:`, error);
-      throw error;
+      return {
+        data: [],
+        total: 0,
+      };
     }
   },
 
