@@ -1,4 +1,3 @@
-// This is a new file
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Select, Space } from 'antd';
 import { LogicalFilter } from '@refinedev/core';

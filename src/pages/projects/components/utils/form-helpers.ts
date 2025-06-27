@@ -1,5 +1,5 @@
 import { FormProps } from 'antd';
-import { MemberValue, TransformedMember } from '../../types';
+import { MemberValue, TransformedMember } from '@modules/projects/types';
 
 export const transformProjectFormValues = (values: any): any => {
   const transformedValues = { ...values };

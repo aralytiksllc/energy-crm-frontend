@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, Row, Col, Typography } from 'antd';
-import type { Task } from '../../tasks/types';
-import type { ProjectSummary } from '../../projects/api/projects';
+import type { Task } from '@modules/tasks/types';
+import type { ProjectSummary } from '@modules/projects/api/projects';
 
 const { Title, Text } = Typography;
 

@@ -2,7 +2,7 @@
 import ky from 'ky';
 
 // Internal dependencies
-import { authStorage } from '@/helpers/auth-storage';
+import { authStorage } from '@helpers/auth-storage';
 import { API_URL } from './http-constants';
 
 export const httpClient = ky.create({

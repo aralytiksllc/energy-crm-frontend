@@ -1,8 +1,8 @@
 import React from 'react';
 import { Form, Input, DatePicker, Row, Col, Button, Space } from 'antd';
-import { UserSelect } from '@/components/user-select/user-select';
-import { RemoteSelect } from '@/components/remote-select';
-import { planningValidationRules } from '../validation';
+import { UserSelect } from '@components/user-select/user-select';
+import { RemoteSelect } from '@components/remote-select';
+import { planningValidationRules } from '@modules/planning/validation';
 
 const { TextArea } = Input;
 

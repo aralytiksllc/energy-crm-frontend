@@ -4,11 +4,11 @@ import { List, useTable, useDrawerForm } from '@refinedev/antd';
 import type { FormProps } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 
-import { DrawerForm } from '../drawer-form/drawer-form';
+import { DrawerForm } from '@components/drawer-form/drawer-form';
 
-import { PopoverSelect } from '@/components/dropdown-select';
-import { DrawerFormProvider } from '@/components/drawer-form';
-import { ColumnFilter } from '@/components/column-filter';
+import { PopoverSelect } from '@components/dropdown-select';
+import { DrawerFormProvider } from '@components/drawer-form';
+import { ColumnFilter } from '@components/column-filter';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;

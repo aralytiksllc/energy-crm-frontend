@@ -15,7 +15,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { IDocument } from '../types/types';
+import { IDocument } from '@modules/projects/types/types';
 
 const { Title, Text } = Typography;
 

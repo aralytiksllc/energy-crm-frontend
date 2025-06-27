@@ -1,9 +1,9 @@
-import { httpClient } from '@/helpers/http-client';
+import { httpClient } from '@helpers/http-client';
 import type {
   IProject,
   CreateProjectDto,
   UpdateProjectDto,
-} from '../types/types';
+} from '@modules/projects/types/types';
 
 export interface ProjectSummary {
   id: number;

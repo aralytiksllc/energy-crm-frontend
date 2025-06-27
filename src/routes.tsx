@@ -6,19 +6,19 @@ import { CatchAllNavigate, NavigateToResource } from '@refinedev/react-router';
 import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 
 // Internal imports
-import { Header } from './components/header';
+import { Header } from '@components/header';
 import {
   Register,
   Login,
   ForgotPassword,
   UpdatePassword,
-} from './pages/authentication';
-import { Users } from './pages/users';
-import { Tasks } from './pages/tasks';
-import { Dashboard } from './pages/dashboard';
-import { Planning } from './pages/planning';
-import { Projects } from './pages/projects';
-import { Customers } from './pages/customers';
+} from '@modules/authentication';
+import { Users } from '@modules/users';
+import { Tasks } from '@modules/tasks';
+import { Dashboard } from '@modules/dashboard';
+import { Planning } from '@modules/planning';
+import { Projects } from '@modules/projects';
+import { Customers } from '@modules/customers';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>

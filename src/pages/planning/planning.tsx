@@ -20,11 +20,12 @@ import {
 } from '@ant-design/icons';
 import { useList } from '@refinedev/core';
 import { EmailField, TextField } from '@refinedev/antd';
-import dayjs, { type Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
-import { Calendar, type CalendarAssignment } from '../../components/calendar';
-import { type IUser } from '../../interfaces/users';
-import { type IProject } from '../../interfaces/project';
+// Form validation
+import { Calendar, type CalendarAssignment } from '@components/calendar';
+import { type IUser } from '@interfaces/users';
+import { type IProject } from '@interfaces/project';
 import PlanningForm from './components/planning-form';
 import { createStyles } from './planning.styles';
 import { mockPlanningAssignments } from './mock-data';

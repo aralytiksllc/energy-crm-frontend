@@ -5,7 +5,6 @@ import { useSelect } from '@refinedev/core';
 import { LiveSearchProps } from './live-search.types';
 import { createStyles } from './live-search.styles';
 
-// Updated to use Refine's built-in debouncing from useSelect
 export const LiveSearch: FC<LiveSearchProps> = ({
   resource,
   searchField = 'title',

@@ -4,9 +4,8 @@ import { useNotificationProvider } from '@refinedev/antd';
 import routerBindings from '@refinedev/react-router';
 
 // Internal imports
-import { authProvider } from './providers/auth-provider';
-import { dataProvider } from './providers/data-provider';
-import { LogoSvg } from './components/logo-svg';
+import { authProvider, dataProvider } from '@providers';
+import { LogoSvg } from '@components/logo-svg';
 
 export const refineProps: RefineProps = {
   authProvider: authProvider,

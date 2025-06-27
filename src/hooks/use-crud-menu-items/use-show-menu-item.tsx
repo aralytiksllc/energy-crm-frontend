@@ -5,7 +5,7 @@ import { useGo, useShowButton } from '@refinedev/core';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
 // Internal imports
-import { useLatestRef } from '../use-latest-ref';
+import { useLatestRef } from '@hooks/use-latest-ref';
 import type {
   UseShowMenuItemProps,
   UseShowMenuItem,

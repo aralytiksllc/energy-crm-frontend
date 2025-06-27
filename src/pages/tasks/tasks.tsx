@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import type { FormProps } from 'antd';
-import type { Task } from '@/interfaces/task';
-import { CrudTable } from '@/components/crud-table/crud-table';
+import type { Task } from '@interfaces/task';
+import { CrudTable } from '@components/crud-table/crud-table';
 import { TaskForm } from './components/task-form';
 import { columns } from './constants/table';
 

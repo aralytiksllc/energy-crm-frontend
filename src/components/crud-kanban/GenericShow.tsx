@@ -1,5 +1,3 @@
-// generic-show.tsx
-
 import React from 'react';
 import { Descriptions } from 'antd';
 import type { ColumnsType } from 'antd/es/table';

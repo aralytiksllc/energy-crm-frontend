@@ -1,15 +1,23 @@
-// External dependencies
 import React from 'react';
-import { Select, SelectProps, Space } from 'antd';
-import { useList } from '@refinedev/core';
-import type { IUser } from '@interfaces/users';
+import { Select, Space } from 'antd';
+import { IUser } from '@interfaces/users';
 import { UserAvatar } from '@components/user-avatar';
 
-export const UserSelect: React.FC<SelectProps> = (props) => {
-  const { data, isLoading } = useList<IUser>({ resource: 'users' });
+export interface UserSelectorProps {
+  value?: number[];
+  onChange?: (userIds: number[]) => void;
+  users: IUser[];
+  disabled?: boolean;
+  placeholder?: string;
+}
 
-  const users = data?.data || [];
-
+export const UserSelector: React.FC<UserSelectorProps> = ({
+  value = [],
+  onChange,
+  users,
+  disabled = false,
+  placeholder = 'Select users',
+}) => {
   const options = users.map((user) => {
     const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
     return {
@@ -21,9 +29,9 @@ export const UserSelect: React.FC<SelectProps> = (props) => {
         </Space>
       ),
       searchText: fullName,
-      title: fullName,
     };
   });
+
   const labelRender = (option: any) => {
     const selectedUser = users.find((user) => user.id === option.value);
     if (selectedUser) {
@@ -41,13 +49,17 @@ export const UserSelect: React.FC<SelectProps> = (props) => {
 
   return (
     <Select
-      loading={isLoading}
+      mode="multiple"
+      value={value}
+      onChange={onChange}
       options={options}
       labelRender={labelRender}
+      disabled={disabled}
+      placeholder={placeholder}
+      style={{ width: '100%' }}
       filterOption={(input, option) =>
         (option?.searchText ?? '').toLowerCase().includes(input.toLowerCase())
       }
-      {...props}
     />
   );
 };

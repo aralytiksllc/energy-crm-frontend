@@ -6,10 +6,10 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 
-import { UserAvatars } from '@/components/user-avatars';
-import { useCrudMenuItems } from '@/hooks/use-crud-menu-items';
-import { DropdownActions } from '@/components/dropdown-actions';
-import { IUser } from '@/interfaces/users';
+import { UserAvatars } from '@components/user-avatars';
+import { useCrudMenuItems } from '@hooks/use-crud-menu-items';
+import { DropdownActions } from '@components/dropdown-actions';
+import { IUser } from '@interfaces/users';
 
 const { Text, Paragraph } = Typography;
 

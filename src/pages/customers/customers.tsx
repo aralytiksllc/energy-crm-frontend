@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { FormProps } from 'antd';
 
 import type { Customer } from './types/customer.types';
-import { CrudTable } from '@/components/crud-table/crud-table';
+import { CrudTable } from '@components/crud-table/crud-table';
 import { CustomerForm } from './components/customer-form';
 import { columns } from './constants/table';
 

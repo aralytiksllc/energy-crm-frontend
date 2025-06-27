@@ -20,12 +20,12 @@ import {
   ArrowUpOutlined,
   ArrowDownOutlined,
 } from '@ant-design/icons';
-import type { Task } from '../../tasks/types';
-import type { ProjectSummary } from '../../projects/api/projects';
-import type { Customer } from '../../customers/types/customer.types';
+import type { Task } from '@modules/tasks/types';
+import type { ProjectSummary } from '@modules/projects/api/projects';
+import type { Customer } from '@modules/customers/types/customer.types';
 import { type Dayjs } from 'dayjs';
-import { useDashboardStyles } from '../dashboard.styles';
-import WordWrapLabel from '../../../components/charts/WordWrapLabel';
+import { useDashboardStyles } from '@modules/dashboard/dashboard.styles';
+import WordWrapLabel from '@components/charts/WordWrapLabel';
 
 interface DateRange {
   startDate: Dayjs | null;

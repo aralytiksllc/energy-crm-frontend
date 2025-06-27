@@ -9,12 +9,12 @@ import {
   Col,
   FormProps,
 } from 'antd';
-import { TaskPriority } from '@/interfaces/task-priority.enum';
-import { TaskType } from '@/interfaces/task-type.enum';
-import { RemoteSelect } from '@/components/remote-select';
-import { DayjsTransformer } from '@/helpers/dayjs-transformer';
-import { Wysiwyg } from '@/components/rich-text-editor';
-import { AssigneeManager } from '@/components/assignee-manager/assignee-manager';
+import { TaskPriority } from '@interfaces/task-priority.enum';
+import { TaskType } from '@interfaces/task-type.enum';
+import { RemoteSelect } from '@components/remote-select';
+import { DayjsTransformer } from '@helpers/dayjs-transformer';
+import { Wysiwyg } from '@components/rich-text-editor';
+import { AssigneeManager } from '@components/assignee-manager/assignee-manager';
 
 const priorityOptions = Object.values(TaskPriority).map((priority) => ({
   label: priority,

@@ -2,9 +2,9 @@ import type { ColumnsType } from 'antd/es/table';
 import { Space, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 
-import type { Task } from '@/interfaces/task';
-import { EditButton } from '@/components/edit-button';
-import { DeleteButton } from '@/components/delete-button';
+import type { Task } from '@interfaces/task';
+import { EditButton } from '@components/edit-button';
+import { DeleteButton } from '@components/delete-button';
 
 const { Text } = Typography;
 

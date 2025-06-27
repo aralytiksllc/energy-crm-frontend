@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Row, Col, Button, InputNumber, Typography } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { UserSelect } from '@/components/user-select/user-select';
+import { UserSelect } from '@components/user-select/user-select';
 import { FormListFieldData } from 'antd/es/form';
 import { assigneeManagerStyles } from './styles';
 

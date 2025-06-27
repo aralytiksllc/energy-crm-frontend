@@ -6,11 +6,11 @@ import { useDeleteButton } from '@refinedev/core';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
 // Internal imports
-import { useLatestRef } from '../use-latest-ref';
+import { useLatestRef } from '@hooks/use-latest-ref';
 import type {
   UseDeleteMenuItem,
   UseDeleteMenuItemProps,
-} from '../use-delete-menu-item/use-delete-menu-item.types';
+} from './use-delete-menu-item.types';
 
 export const useDeleteMenuItem = (
   props: UseDeleteMenuItemProps,

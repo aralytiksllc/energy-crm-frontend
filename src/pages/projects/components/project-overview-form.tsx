@@ -11,11 +11,11 @@ import {
   FormProps,
   Checkbox,
 } from 'antd';
-import { ProjectStatus } from '@/interfaces/project-status.enum';
-import { ProjectPriority } from '@/interfaces/project-priority.enum';
-import { Wysiwyg } from '@/components/rich-text-editor';
-import { DayjsTransformer } from '@/helpers/dayjs-transformer';
-import { RemoteSelect } from '@/components/remote-select';
+import { ProjectStatus } from '@interfaces/project-status.enum';
+import { ProjectPriority } from '@interfaces/project-priority.enum';
+import { Wysiwyg } from '@components/rich-text-editor';
+import { DayjsTransformer } from '@helpers/dayjs-transformer';
+import { RemoteSelect } from '@components/remote-select';
 
 const statusOptions = Object.values(ProjectStatus).map((status) => ({
   label: status,

@@ -5,11 +5,11 @@ import { useGo, useEditButton } from '@refinedev/core';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
 // Internal imports
-import { useLatestRef } from '../use-latest-ref';
+import { useLatestRef } from '@hooks/use-latest-ref';
 import type {
   UseEditMenuItemProps,
   UseEditMenuItem,
-} from '../use-edit-menu-item/use-edit-menu-item.types';
+} from './use-edit-menu-item.types';
 
 export const useEditMenuItem = (
   props: UseEditMenuItemProps,
