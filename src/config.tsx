@@ -2,6 +2,14 @@
 import { RefineProps } from '@refinedev/core';
 import { useNotificationProvider } from '@refinedev/antd';
 import routerBindings from '@refinedev/react-router';
+import {
+  UserOutlined,
+  BarChartOutlined,
+  GlobalOutlined,
+  ProfileOutlined,
+  CalendarOutlined,
+  CheckSquareOutlined,
+} from '@ant-design/icons';
 
 // Internal imports
 import { authProvider, dataProvider } from '@providers';
@@ -14,18 +22,20 @@ export const refineProps: RefineProps = {
   notificationProvider: useNotificationProvider,
   resources: [
     {
+      name: 'dashboard',
+      list: '/dashboard',
+      meta: {
+        label: 'Dashboard',
+        icon: <BarChartOutlined />,
+      },
+    },
+    {
       name: 'users',
       list: '/users',
       meta: {
         canDelete: true,
         canEdit: false,
-      },
-    },
-    {
-      name: 'dashboard',
-      list: '/dashboard',
-      meta: {
-        canDelete: true,
+        icon: <UserOutlined />,
       },
     },
     {
@@ -33,6 +43,7 @@ export const refineProps: RefineProps = {
       list: '/customers',
       meta: {
         canDelete: true,
+        icon: <GlobalOutlined />,
       },
     },
     {
@@ -41,13 +52,7 @@ export const refineProps: RefineProps = {
       edit: '/projects/edit/:id',
       meta: {
         canDelete: true,
-      },
-    },
-    {
-      name: 'planning',
-      list: '/planning',
-      meta: {
-        canDelete: true,
+        icon: <ProfileOutlined />,
       },
     },
     {
@@ -58,13 +63,15 @@ export const refineProps: RefineProps = {
       show: '/tasks/show/:id',
       meta: {
         canDelete: true,
+        icon: <CheckSquareOutlined />,
       },
     },
     {
-      name: 'dashboard',
-      list: '/dashboard',
+      name: 'planning',
+      list: '/planning',
       meta: {
-        label: 'Dashboard',
+        canDelete: true,
+        icon: <CalendarOutlined />,
       },
     },
   ],

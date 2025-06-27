@@ -9,49 +9,58 @@ import { DeleteButton } from '@components/delete-button';
 
 export const columns: ColumnsType<IUser> = [
   {
-    dataIndex: 'id',
     title: 'ID',
+    dataIndex: 'id',
+    key: 'id',
     sorter: true,
   },
   {
-    dataIndex: 'firstName',
     title: 'First Name',
+    dataIndex: 'firstName',
+    key: 'firstName',
     sorter: true,
   },
   {
-    dataIndex: 'lastName',
     title: 'Last Name',
+    dataIndex: 'lastName',
+    key: 'lastName',
     sorter: true,
   },
   {
-    dataIndex: 'email',
     title: 'Email',
+    dataIndex: 'email',
+    key: 'email',
     sorter: true,
   },
   {
-    dataIndex: 'dateOfBirth',
     title: 'Date of Birth',
+    dataIndex: 'dateOfBirth',
+    key: 'dateOfBirth',
     sorter: true,
   },
   {
-    dataIndex: 'dateOfJoining',
     title: 'Date of Joining',
+    dataIndex: 'dateOfJoining',
+    key: 'dateOfJoining',
     sorter: true,
   },
   {
-    dataIndex: 'isActive',
     title: 'Active',
+    dataIndex: 'isActive',
+    key: 'isActive',
     sorter: true,
     render: (value: boolean) => (value ? 'Yes' : 'No'),
   },
   {
-    dataIndex: 'createdAt',
     title: 'Created At',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
     sorter: true,
   },
   {
     title: 'Actions',
     dataIndex: 'actions',
+    key: 'actions',
     fixed: 'right',
     width: 100,
     render: (_, record) => (
