@@ -1,14 +1,6 @@
 import React from 'react';
 import { Row, Col, Card, Statistic, Typography, Space } from 'antd';
-import { Pie, Bar } from '@ant-design/plots'; // për charts
-import {
-  TeamOutlined,
-  ProjectOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-} from '@ant-design/icons';
+import DashboardCharts from './components/dashboard-charts';
 
 const stats = {
   totalClients: 12,
@@ -41,96 +33,89 @@ const ticketStats = [
   { type: 'Feature', status: 'Completed', count: 10 },
 ];
 
+// Complete mock data to make the pie chart work
+const mockTasks = [
+  {
+    id: 1,
+    projectId: 1,
+    title: 'Task 1',
+    type: 'Bug',
+    isCompleted: false,
+    project: { id: 1, name: 'Project A' },
+    assignees: [{ id: 1, name: 'John', estimatedHours: 100 }],
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    dueDate: new Date('2024-02-01'),
+  },
+  {
+    id: 2,
+    projectId: 2,
+    title: 'Task 2',
+    type: 'Feature',
+    isCompleted: true,
+    project: { id: 2, name: 'Project B' },
+    assignees: [{ id: 2, name: 'Jane', estimatedHours: 60 }],
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    dueDate: new Date('2024-02-01'),
+  },
+  {
+    id: 3,
+    projectId: 3,
+    title: 'Task 3',
+    type: 'Task',
+    isCompleted: false,
+    project: { id: 3, name: 'Project C' },
+    assignees: [{ id: 3, name: 'Bob', estimatedHours: 45 }],
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    dueDate: new Date('2024-02-01'),
+  },
+];
+
+const mockProjects = [
+  { id: 1, customerId: 1, name: 'Project A', status: 'active', isActive: true },
+  { id: 2, customerId: 2, name: 'Project B', status: 'active', isActive: true },
+  { id: 3, customerId: 3, name: 'Project C', status: 'active', isActive: true },
+];
+
+const mockCustomers = [
+  {
+    id: 1,
+    name: 'Client A',
+    isActive: true,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+  },
+  {
+    id: 2,
+    name: 'Client B',
+    isActive: true,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+  },
+  {
+    id: 3,
+    name: 'Client C',
+    isActive: true,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+  },
+];
+
 export function Dashboard() {
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      {/* 1. Rreshti i parë */}
-      <Row gutter={16}>
-        <Col span={6}>
-          <Card bordered>
-            <Space>
-              <TeamOutlined style={{ fontSize: 32, color: '#1890ff' }} />
-              <Statistic
-                title="Klientë Aktivë"
-                value={12}
-                valueStyle={{ color: '#3f8600' }}
-                prefix={<ArrowUpOutlined />}
-              />
-            </Space>
-          </Card>
-        </Col>
-
-        <Col span={6}>
-          <Card bordered>
-            <Space>
-              <ProjectOutlined style={{ fontSize: 32, color: '#52c41a' }} />
-              <Statistic
-                title="Projekte Aktive"
-                value={7}
-                valueStyle={{ color: '#3f8600' }}
-                prefix={<ArrowUpOutlined />}
-              />
-            </Space>
-          </Card>
-        </Col>
-
-        <Col span={6}>
-          <Card bordered>
-            <Space>
-              <ClockCircleOutlined style={{ fontSize: 32, color: '#faad14' }} />
-              <Statistic
-                title="Ore të Planifikuara"
-                value={320}
-                suffix="h"
-                valueStyle={{ color: '#3f8600' }}
-                prefix={<ArrowUpOutlined />}
-              />
-            </Space>
-          </Card>
-        </Col>
-
-        <Col span={6}>
-          <Card bordered>
-            <Space>
-              <CheckCircleOutlined style={{ fontSize: 32, color: '#13c2c2' }} />
-              <Statistic
-                title="Ore të Punësuara"
-                value={278}
-                suffix="h"
-                valueStyle={{ color: '#cf1322' }}
-                prefix={<ArrowDownOutlined />}
-              />
-            </Space>
-          </Card>
-        </Col>
-      </Row>
-
       {/* 2. Rreshti i dytë */}
-      <Row gutter={16}>
-        <Col span={12}>
-          <Card title="Shpërndarja e orëve për klient">
-            <Pie
-              data={hoursByClient}
-              angleField="value"
-              colorField="type"
-              label={{ type: 'spider' }}
-              height={250}
-            />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="Top 5 projektet sipas orëve të shpenzuara">
-            <Bar
-              data={hoursByProject}
-              xField="hours"
-              yField="name"
-              seriesField="name"
-              height={250}
-              layout="horizontal"
-            />
-          </Card>
-        </Col>
-      </Row>
+      <DashboardCharts
+        tasks={mockTasks}
+        projects={mockProjects}
+        customers={mockCustomers}
+        dateRange={{ startDate: null, endDate: null }}
+        onDateRangeChange={(_dates) => {
+          // Handle date range change
+        }}
+      />
 
       {/* 3. Rreshti i tretë */}
       <Card title="Statistikat e Tiketave">
