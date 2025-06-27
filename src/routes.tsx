@@ -16,6 +16,9 @@ import {
 import { Users } from './pages/users';
 import { Tasks } from './pages/tasks';
 import { Dashboard } from './pages/dashboard';
+import { Planning } from './pages/planning';
+import { Projects } from './pages/projects';
+import { Customers } from './pages/customers';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
@@ -37,10 +40,10 @@ export const Routes: React.FC = () => (
       <Route index element={<NavigateToResource resource="users" />} />
       <Route index path="/dashboard" element={<Dashboard />} />
       <Route index path="/users" element={<Users />} />
-      <Route path="/projects" element={<ProjectsList />}>
-        <Route index path="/projects/edit/:id" element={<ProjectsEdit />} />
-      </Route>
       <Route index path="/tasks" element={<Tasks />} />
+      <Route index path="/planning" element={<Planning />} />
+      <Route index path="/projects" element={<Projects />} />
+      <Route index path="/customers" element={<Customers />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route

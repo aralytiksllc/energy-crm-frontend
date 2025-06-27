@@ -1,4 +1,4 @@
-import { ProjectRole } from '../enums/project-role.enum';
+import { ProjectRole } from './project-role.enum';
 import { IUser } from './users';
 
 export interface IProjectMember {
