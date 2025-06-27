@@ -355,18 +355,6 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
           </Card>
         </Col>
       </Row>
-
-      <Card title="Statistikat e Tiketave">
-        <Row gutter={16}>
-          {ticketStats.slice(0, 4).map((ticket, index) => (
-            <Col span={6} key={index}>
-              <Card>
-                <Statistic title={ticket.type} value={ticket.count} />
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </Card>
     </Space>
   );
 };
