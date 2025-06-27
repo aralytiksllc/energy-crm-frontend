@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col, Card, Statistic, Typography, Space } from 'antd';
-import DashboardCharts from './components/dashboard-charts';
+import { DashboardChartsDefault } from '@modules/dashboard';
 
 const stats = {
   totalClients: 12,
@@ -107,7 +107,7 @@ export function Dashboard() {
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       {/* 2. Rreshti i dytë */}
-      <DashboardCharts
+      <DashboardChartsDefault
         tasks={mockTasks}
         projects={mockProjects}
         customers={mockCustomers}

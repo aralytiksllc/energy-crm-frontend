@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, FormProps } from 'antd';
-import { ProjectMemberManager } from '@/components/project-member-manager';
+import { ProjectMemberManager } from '@components/project-member-manager';
 
 export interface ProjectMembersFormProps {
   formProps?: FormProps;

@@ -4,8 +4,8 @@ import { Form, Input, DatePicker, Switch } from 'antd';
 import type { FormProps } from 'antd/lib/form';
 
 // Internal imports
-import type { IUser } from '@/interfaces/users';
-import { DayjsTransformer } from '@/helpers/dayjs-transformer';
+import type { IUser } from '@interfaces/users';
+import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
 import { rules } from './user-form.rules';
 

@@ -3,9 +3,9 @@ import type { ColumnsType } from 'antd/es/table';
 import { Space } from 'antd';
 
 // Internal dependencies
-import { IUser } from '@/interfaces/users';
-import { EditButton } from '@/components/edit-button';
-import { DeleteButton } from '@/components/delete-button';
+import { IUser } from '@interfaces/users';
+import { EditButton } from '@components/edit-button';
+import { DeleteButton } from '@components/delete-button';
 
 export const columns: ColumnsType<IUser> = [
   {

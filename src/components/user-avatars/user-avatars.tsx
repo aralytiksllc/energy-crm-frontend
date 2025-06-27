@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Avatar } from 'antd';
 
 // Internal dependencies
-import { UserAvatar } from '@/components/user-avatar';
-import type { IUser } from '@/interfaces/users';
+import { UserAvatar } from '@components/user-avatar';
+import type { IUser } from '@interfaces/users';
 import type { UserAvatarsProps } from './user-avatars.types';
 
 export const UserAvatars: React.FC<UserAvatarsProps> = (props) => {

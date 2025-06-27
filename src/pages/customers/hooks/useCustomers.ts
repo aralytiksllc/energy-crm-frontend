@@ -7,14 +7,14 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
-} from '../api/customers';
+} from '@modules/customers/api/customers';
 import type {
   Customer,
   CreateCustomerDto,
   UpdateCustomerDto,
   CustomerQueryParams,
   CustomerPagedResponse,
-} from '../types/customer.types';
+} from '@modules/customers/types/customer.types';
 
 // Query keys
 export const customerKeys = {

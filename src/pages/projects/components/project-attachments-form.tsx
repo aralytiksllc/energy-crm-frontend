@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormProps, Form, Typography, Alert } from 'antd';
 import type { UploadFile } from 'antd';
-import { FileUpload } from '@/components/file-upload';
+import { FileUpload } from '@components/file-upload';
 
 const { Title, Text } = Typography;
 

@@ -7,7 +7,7 @@ import {
   FileTextOutlined,
   CommentOutlined,
 } from '@ant-design/icons';
-import { GenericTabs, GenericTabItem } from '@/components/generic-tabs';
+import { GenericTabs, GenericTabItem } from '@components/generic-tabs';
 import { ProjectOverviewForm } from './project-overview-form';
 import { ProjectMembersForm } from './project-members-form';
 import { ProjectAttachmentsForm } from './project-attachments-form';

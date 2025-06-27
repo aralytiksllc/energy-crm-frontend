@@ -1,12 +1,12 @@
 // External imports
-import * as React from 'react';
+import React from 'react';
 import type { FormProps } from 'antd';
 
 // Internal imports
-import type { IUser } from '@/interfaces/users';
-import { CrudTable } from '@/components/crud-table/crud-table';
+import { IUser } from '@interfaces/users';
 import { UsersForm } from './components/user-form';
 import { columns } from './constants/table';
+import { CrudTable } from '@components/crud-table';
 
 export const Users = () => {
   const renderForm = React.useCallback(

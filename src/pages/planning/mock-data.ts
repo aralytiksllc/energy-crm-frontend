@@ -1,4 +1,4 @@
-import { type CalendarAssignment } from '../../components/calendar';
+import { type CalendarAssignment } from '@components/calendar';
 
 interface PlanningAssignment extends CalendarAssignment {
   projectId: string | number;

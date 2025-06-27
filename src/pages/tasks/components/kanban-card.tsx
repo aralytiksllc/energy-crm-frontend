@@ -9,10 +9,9 @@ import dayjs from 'dayjs';
 
 import './animations.css';
 
-import { UserAvatars } from '@/components/user-avatars';
-import { useCrudMenuItems } from '@/hooks/use-crud-menu-items';
-import { DropdownActions } from '@/components/dropdown-actions';
-import { IUser } from '@/interfaces/users';
+import { UserAvatars } from '@components/user-avatars';
+import { useCrudMenuItems } from '@hooks/use-crud-menu-items';
+import { DropdownActions } from '@components/dropdown-actions';
 
 import { useStyles } from './kanban-card.styles';
 

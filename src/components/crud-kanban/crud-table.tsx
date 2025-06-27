@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Button, Drawer, Space } from 'antd';
 import { useDrawerForm, DeleteButton, List } from '@refinedev/antd';
 import { useDelete, useShow as useShowCore, HttpError } from '@refinedev/core';
-import { KanbanBoard } from '@/components/kanban/kanban-board';
-import type { KanbanSection } from '@/components/kanban/kanban-board.types';
+import { KanbanBoard } from '@components/kanban/kanban-board';
+import type { KanbanSection } from '@components/kanban/kanban-board.types';
 
 export interface CrudKanbanProps<TData extends { id: number; status: string }> {
   resource: string;

@@ -2,10 +2,10 @@
 import type { AuthProvider } from '@refinedev/core';
 
 // Internal imports
-import type { IAuthResponse } from '@/interfaces/authentication';
-import type { IUser } from '@/interfaces/users';
-import { httpClient } from '@/helpers/http-client';
-import { authStorage } from '@/helpers/auth-storage';
+import type { IAuthResponse } from '@interfaces/authentication';
+import type { IUser } from '@interfaces/users';
+import { httpClient } from '@helpers/http-client';
+import { authStorage } from '@helpers/auth-storage';
 
 export const authProvider: AuthProvider = {
   async login(params) {

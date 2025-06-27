@@ -1,3 +1,5 @@
+import React from 'react';
+
 // External imports
 import '@refinedev/antd/dist/reset.css';
 import { App as AntdApp } from 'antd';
@@ -11,11 +13,10 @@ import {
 } from '@refinedev/react-router';
 
 // Internal imports
-import { ColorModeContextProvider } from './contexts/color-mode';
-import { refineProps } from './config';
-import { Routes } from './routes';
+import { ColorModeContextProvider } from '@contexts/color-mode';
+import { refineProps } from '@config';
+import { Routes } from '@routes';
 
-// Remove empty interface and replace with type alias
 type AppProps = Record<string, never>;
 
 export const App: React.FC<AppProps> = () => (

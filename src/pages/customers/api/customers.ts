@@ -1,11 +1,11 @@
-import { httpClient } from '@/helpers/http-client';
+import { httpClient } from '@helpers/http-client';
 import type {
   Customer,
   CreateCustomerDto,
   UpdateCustomerDto,
   CustomerQueryParams,
   CustomerPagedResponse,
-} from '../types/customer.types';
+} from '@modules/customers/types/customer.types';
 
 // Get all customers with pagination and filtering
 export const getCustomers = async (

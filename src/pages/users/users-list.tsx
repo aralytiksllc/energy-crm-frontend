@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Table, Space, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { List, useTable } from '@refinedev/antd';
-import { IUser } from '@/interfaces/users';
+import { IUser } from '@interfaces/users';
 import { columns as allColumns } from './constants/table';
-import { ColumnVisibilitySelector } from '@/components/column-visibility-selector';
-import { useColumnVisibility } from '@/hooks/useColumnVisibility';
+import { ColumnVisibilitySelector } from '@components/column-visibility-selector';
+import { useColumnVisibility } from '@hooks/useColumnVisibility';
 
 export const UsersList: React.FC = () => {
   const { tableProps } = useTable<IUser>({

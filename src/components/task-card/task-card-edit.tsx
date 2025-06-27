@@ -10,8 +10,9 @@ import {
   Select,
 } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import type { TaskCardEditProps } from './task-card.types';
-import { TaskType } from '../task-form/task-form.types';
+import type { TaskCardEditProps, Task, TaskAssignee } from './task-card.types';
+import { TaskType } from '@interfaces/task-type.enum';
+import { IUser } from '@interfaces/users';
 import { UserSelector } from './user-selector';
 import dayjs from 'dayjs';
 
@@ -47,17 +48,15 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
   className,
   style,
 }) => {
-  const [editedTask, setEditedTask] = useState(task);
-  const [isEditing, setIsEditing] = useState<keyof typeof task | null>(
-    editingField,
-  );
+  const [editedTask, setEditedTask] = useState<Task>(task);
+  const [isEditing, setIsEditing] = useState<keyof Task | null>(editingField);
 
   useEffect(() => {
     setIsEditing(editingField);
   }, [editingField]);
 
-  const handleFieldChange = (field: keyof typeof task, value: any) => {
-    setEditedTask((prev) => ({
+  const handleFieldChange = (field: keyof Task, value: any) => {
+    setEditedTask((prev: Task) => ({
       ...prev,
       [field]: value,
     }));
@@ -78,12 +77,12 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
     }
   };
 
-  const handleFieldEdit = (field: keyof typeof task) => {
+  const handleFieldEdit = (field: keyof Task) => {
     setIsEditing(field);
   };
 
   const renderEditableField = (
-    field: keyof typeof task,
+    field: keyof Task,
     component: React.ReactNode,
     actions = true,
   ) => {
@@ -296,20 +295,23 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
               <UserSelector
                 value={
                   editedTask.assignees?.map(
-                    (assignee) => assignee.user?.id || assignee.userId,
+                    (assignee: TaskAssignee) =>
+                      assignee.user?.id || assignee.userId,
                   ) || []
                 }
-                onChange={(userIds) => {
-                  const selectedUsers = users.filter((user) =>
+                onChange={(userIds: number[]) => {
+                  const selectedUsers = users.filter((user: IUser) =>
                     userIds.includes(user.id),
                   );
-                  const assignees = selectedUsers.map((user) => ({
-                    user,
-                    userId: user.id,
-                    taskId: editedTask.id,
-                    estimatedHours: 0,
-                    actualHours: 0,
-                  }));
+                  const assignees: TaskAssignee[] = selectedUsers.map(
+                    (user: IUser) => ({
+                      user,
+                      userId: user.id,
+                      taskId: editedTask.id,
+                      estimatedHours: 0,
+                      actualHours: 0,
+                    }),
+                  );
                   handleFieldChange('assignees', assignees);
                 }}
                 users={users}

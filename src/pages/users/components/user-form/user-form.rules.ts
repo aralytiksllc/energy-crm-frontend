@@ -1,5 +1,5 @@
 import { Rule } from 'antd/lib/form';
-import { IUser } from '@/interfaces/users';
+import { IUser } from '@interfaces/users';
 
 export const rules: Partial<Record<keyof IUser, Rule[]>> = {
   firstName: [

@@ -2,9 +2,9 @@ import { ColumnsType } from 'antd/es/table';
 import { Progress, Space, Input, Button, Select, Form } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import { DateField, NumberField, TagField, TextField } from '@refinedev/antd';
-import type { IProject } from '@/interfaces/project';
-import { EditButton } from '@/components/edit-button';
-import { DeleteButton } from '@/components/delete-button';
+import type { IProject } from '@interfaces/project';
+import { EditButton } from '@components/edit-button';
+import { DeleteButton } from '@components/delete-button';
 import { ColumnType as AntColumnType } from 'antd/es/table';
 
 function isDataColumn<T>(

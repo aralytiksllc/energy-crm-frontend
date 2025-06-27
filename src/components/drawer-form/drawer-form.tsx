@@ -4,7 +4,7 @@ import { Drawer, Space, Button } from 'antd';
 
 // Internal dependencies
 import type { DrawerFormProps } from './drawer-form.types';
-import { DrawerTabs } from '../drawer-tabs';
+import { DrawerTabs } from '@components/drawer-tabs';
 
 export const DrawerForm: React.FC<DrawerFormProps> = (props) => {
   const {

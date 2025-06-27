@@ -7,8 +7,7 @@ import { EditOutlined } from '@ant-design/icons';
 // Internal dependencies
 import type { EditButtonProps } from './edit-button.types';
 
-// TODO: FIX THIS
-import { useDrawerFormContext } from '@/components/drawer-form';
+import { useDrawerFormContext } from '@components/drawer-form';
 
 export const EditButton: React.FC<EditButtonProps> = (props) => {
   const { resource, resourceId, ...restProps } = props;
