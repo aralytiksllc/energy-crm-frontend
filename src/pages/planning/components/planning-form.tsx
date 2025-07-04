@@ -11,9 +11,10 @@ const { TextArea } = Input;
 
 interface PlanningFormProps {
   onSuccess: () => void;
+  onCancel: () => void;
 }
 
-const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
+const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
   const [form] = Form.useForm();
   const { mutate: createPlanning, isLoading } = useCreate();
 
@@ -48,7 +49,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
 
   const handleCancel = () => {
     form.resetFields();
-    onSuccess();
+    onCancel();
   };
 
   const handleCompletedChange = (checked: boolean) => {

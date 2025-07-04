@@ -7,6 +7,8 @@ import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 
 // Internal imports
 import { Header } from '@components/header';
+import { ColorModeContextProvider } from '@contexts/color-mode';
+import { ViewModeProvider } from '@contexts/ViewModeContext';
 import {
   Register,
   Login,
@@ -24,17 +26,21 @@ export const Routes: React.FC = () => (
   <ReactRoutes>
     <Route
       element={
-        <Authenticated
-          key="authenticated-inner"
-          fallback={<CatchAllNavigate to="/login" />}
-        >
-          <ThemedLayoutV2
-            Header={Header}
-            Sider={(props) => <ThemedSiderV2 {...props} fixed />}
-          >
-            <Outlet />
-          </ThemedLayoutV2>
-        </Authenticated>
+        <ColorModeContextProvider>
+          <ViewModeProvider>
+            <Authenticated
+              key="authenticated-inner"
+              fallback={<CatchAllNavigate to="/login" />}
+            >
+              <ThemedLayoutV2
+                Header={Header}
+                Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+              >
+                <Outlet />
+              </ThemedLayoutV2>
+            </Authenticated>
+          </ViewModeProvider>
+        </ColorModeContextProvider>
       }
     >
       <Route index element={<NavigateToResource resource="users" />} />

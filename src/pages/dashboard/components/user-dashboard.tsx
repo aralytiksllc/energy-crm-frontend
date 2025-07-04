@@ -6,16 +6,15 @@ import {
   Space,
   Typography,
   Spin,
-  Switch,
   DatePicker,
   Select,
 } from 'antd';
-import { UserOutlined, TeamOutlined } from '@ant-design/icons';
 import { useList, useGetIdentity } from '@refinedev/core';
 import { IUser, IPlanning, IProject, ICustomer, Task } from '@interfaces/index';
 import dayjs, { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 
+import { useViewMode } from '@contexts/ViewModeContext';
 import {
   getDateRangeFromFilter,
   filterDataByDateRange,
@@ -46,7 +45,7 @@ const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export const UserDashboard: React.FC = () => {
-  const [isManagerMode, setIsManagerMode] = useState(false);
+  const { viewMode } = useViewMode();
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [quickFilter, setQuickFilter] = useState<string>('month');
 
@@ -84,26 +83,28 @@ export const UserDashboard: React.FC = () => {
   );
 
   const userTasks = useMemo(() => {
-    if (isManagerMode || !currentUser?.id) {
+    if (viewMode === 'manager' || !currentUser?.id) {
       return filteredTasks;
     }
-    return filteredTasks.filter((task) =>
-      task.assignees?.some((assignee) => assignee.userId === currentUser.id),
+    return filteredTasks.filter((task: Task) =>
+      task.assignees?.some(
+        (assignee: any) => assignee.userId === currentUser.id,
+      ),
     );
-  }, [filteredTasks, currentUser?.id, isManagerMode]);
+  }, [filteredTasks, currentUser?.id, viewMode]);
 
   const userProjects = useMemo(() => {
-    if (isManagerMode) return allProjects;
+    if (viewMode === 'manager') return allProjects;
     if (!currentUser?.id) return [];
-    const userProjectIds = new Set(userTasks.map((t) => t.projectId));
+    const userProjectIds = new Set(userTasks.map((t: Task) => t.projectId));
     return allProjects.filter((project) => userProjectIds.has(project.id));
-  }, [allProjects, userTasks, currentUser?.id, isManagerMode]);
+  }, [allProjects, userTasks, currentUser?.id, viewMode]);
 
   const userCustomers = useMemo(() => {
-    if (isManagerMode) return allCustomers;
+    if (viewMode === 'manager') return allCustomers;
     const userCustomerIds = new Set(userProjects.map((p) => p.customerId));
     return allCustomers.filter((customer) => userCustomerIds.has(customer.id));
-  }, [userProjects, allCustomers, isManagerMode]);
+  }, [userProjects, allCustomers, viewMode]);
 
   const stats = useMemo(
     () =>
@@ -111,10 +112,10 @@ export const UserDashboard: React.FC = () => {
         userCustomers,
         userProjects,
         userTasks,
-        isManagerMode,
+        viewMode === 'manager',
         currentUser?.id,
       ),
-    [userCustomers, userProjects, userTasks, isManagerMode, currentUser?.id],
+    [userCustomers, userProjects, userTasks, viewMode, currentUser?.id],
   );
 
   const hoursByClient = useMemo(
@@ -123,10 +124,10 @@ export const UserDashboard: React.FC = () => {
         userProjects,
         userCustomers,
         userTasks,
-        isManagerMode,
+        viewMode === 'manager',
         currentUser?.id,
       ),
-    [userProjects, userCustomers, userTasks, isManagerMode, currentUser?.id],
+    [userProjects, userCustomers, userTasks, viewMode, currentUser?.id],
   );
 
   const hoursByProject = useMemo(
@@ -134,10 +135,10 @@ export const UserDashboard: React.FC = () => {
       processProjectHours(
         userProjects,
         userTasks,
-        isManagerMode,
+        viewMode === 'manager',
         currentUser?.id,
       ),
-    [userProjects, userTasks, isManagerMode, currentUser?.id],
+    [userProjects, userTasks, viewMode, currentUser?.id],
   );
 
   const ticketStats: TicketStats = useMemo(
@@ -151,8 +152,8 @@ export const UserDashboard: React.FC = () => {
   );
 
   const upcomingDeadlines: DeadlineInfo[] = useMemo(
-    () => getUpcomingDeadlines(userTasks, allPlannings, userProjects),
-    [userTasks, allPlannings, userProjects],
+    () => getUpcomingDeadlines(userTasks, userProjects),
+    [userTasks, userProjects],
   );
 
   const productivityMetrics: ProductivityMetrics = useMemo(() => {
@@ -164,6 +165,7 @@ export const UserDashboard: React.FC = () => {
         completedTasks: 0,
         overdueTasks: 0,
         thisWeekTasks: 0,
+        mostActiveProject: { name: 'N/A', hours: 0 },
       };
     return calculateProductivityMetrics(
       userTasks,
@@ -209,13 +211,13 @@ export const UserDashboard: React.FC = () => {
   const renderProductivityReport = () => (
     <Card
       title={
-        isManagerMode
+        viewMode === 'manager'
           ? 'Kohë reale: Raporti i produktivitetit'
           : 'Kohë reale: Raporti i produktivitetit personal'
       }
     >
       <Typography.Paragraph>
-        {isManagerMode ? (
+        {viewMode === 'manager' ? (
           <>
             Në këtë muaj janë kryer <strong>87%</strong> e orëve të
             planifikuara. Ekipi ka tejkaluar pritshmëritë në projektet kritike.
@@ -245,18 +247,16 @@ export const UserDashboard: React.FC = () => {
                     <strong>
                       {productivityMetrics.mostActiveProject?.name || 'N/A'}
                     </strong>{' '}
-                    ({productivityMetrics.mostActiveProject?.hours || 0}h)
+                    ({productivityMetrics.mostActiveProject?.hours || 0})
                   </li>
                   <li>
-                    Tasks started this week:{' '}
+                    Tasks due this week:{' '}
                     <strong>{productivityMetrics.thisWeekTasks}</strong>
                   </li>
-                  {productivityMetrics.overdueTasks > 0 && (
-                    <li style={{ color: '#ff4d4f' }}>
-                      Overdue tasks:{' '}
-                      <strong>{productivityMetrics.overdueTasks}</strong>
-                    </li>
-                  )}
+                  <li>
+                    Overdue tasks:{' '}
+                    <strong>{productivityMetrics.overdueTasks}</strong>
+                  </li>
                 </ul>
               </>
             ) : (
@@ -283,22 +283,10 @@ export const UserDashboard: React.FC = () => {
               Welcome back, {currentUser?.firstName} {currentUser?.lastName}!
             </Title>
             <Text type="secondary">
-              {isManagerMode
+              {viewMode === 'manager'
                 ? "Here's your team dashboard with all projects and metrics."
                 : "Here's your personal dashboard with your assignments and progress."}
             </Text>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <UserOutlined style={{ color: '#1890ff' }} />
-            <Text strong>User Mode</Text>
-            <Switch
-              checked={isManagerMode}
-              onChange={setIsManagerMode}
-              checkedChildren={<TeamOutlined />}
-              unCheckedChildren={<UserOutlined />}
-            />
-            <TeamOutlined style={{ color: '#faad14' }} />
-            <Text strong>Manager Mode</Text>
           </div>
         </div>
       </Card>
@@ -345,7 +333,7 @@ export const UserDashboard: React.FC = () => {
         </div>
       </Card>
 
-      {isManagerMode ? (
+      {viewMode === 'manager' ? (
         <>
           <ManagerStatsCards
             activePlannings={
@@ -374,7 +362,7 @@ export const UserDashboard: React.FC = () => {
       ) : (
         <>
           <UserStatsCards
-            activeTasks={userTasks.filter((t) => !t.isCompleted).length}
+            activeTasks={userTasks.filter((t: Task) => !t.isCompleted).length}
             projectCount={userProjects.length}
             completionRate={productivityMetrics.taskCompletionRate}
             plannedHours={stats.plannedHours}

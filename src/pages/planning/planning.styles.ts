@@ -161,4 +161,26 @@ export const createStyles = createAntdStyles(({ token }) => ({
     paddingTop: token.paddingMD,
     borderTop: `1px solid ${token.colorBorder}`,
   },
+
+  cardTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  statusTag: {
+    marginRight: 8,
+  },
+
+  userInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 16,
+    gap: 8,
+  },
+
+  userDetails: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 }));
