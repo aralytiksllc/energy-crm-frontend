@@ -70,8 +70,14 @@ export const refineProps: RefineProps = {
       name: 'planning',
       list: '/planning',
       meta: {
-        canDelete: true,
+        label: 'Planning',
         icon: <CalendarOutlined />,
+      },
+    },
+    {
+      name: 'project-members',
+      meta: {
+        hide: true,
       },
     },
   ],

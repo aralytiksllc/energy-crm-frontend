@@ -10,15 +10,21 @@ import {
   DatePicker,
   Space,
   Select,
+  Modal,
+  List,
+  Popconfirm,
+  message,
 } from 'antd';
 import {
   CalendarOutlined,
   PlusOutlined,
+  DeleteOutlined,
   UserOutlined,
   ProjectOutlined,
   ClockCircleOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
-import { useList } from '@refinedev/core';
+import { useList, useDelete } from '@refinedev/core';
 import { EmailField, TextField } from '@refinedev/antd';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -26,28 +32,32 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Calendar, type CalendarAssignment } from '@components/calendar';
 import { type IUser } from '@interfaces/users';
 import { type IProject } from '@interfaces/project';
+import { type IPlanning } from '@interfaces/planning';
 import PlanningForm from './components/planning-form';
 import { createStyles } from './planning.styles';
-import { mockPlanningAssignments } from './mock-data';
 
 const { Title, Text } = Typography;
 
 interface PlanningAssignment extends CalendarAssignment {
   projectId: string | number;
-  allocatedHours: number;
+  title: string;
+  description?: string;
+  isCompleted: boolean;
+  completedDate?: string;
 }
 
 export const Planning: React.FC = () => {
   const { styles } = createStyles();
 
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs('2025-06-01'));
-  const [currentMonth, setCurrentMonth] = useState<Dayjs>(dayjs('2025-06-01'));
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
+  const [currentMonth, setCurrentMonth] = useState<Dayjs>(dayjs());
   const [selectedProject, setSelectedProject] = useState<number | 'all'>('all');
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [formDrawerVisible, setFormDrawerVisible] = useState(false);
   const [selectedDayAssignments, setSelectedDayAssignments] = useState<
     PlanningAssignment[]
   >([]);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const { data: usersData, isLoading: usersLoading } = useList<IUser>({
     resource: 'users',
@@ -59,14 +69,68 @@ export const Planning: React.FC = () => {
     pagination: { mode: 'off' },
   });
 
+  const {
+    data: planningsData,
+    isLoading: planningsLoading,
+    refetch: refetchPlannings,
+  } = useList<IPlanning>({
+    resource: 'plannings',
+    pagination: { mode: 'off' },
+  });
+
+  const { mutate: deletePlanning, isLoading: deleteLoading } = useDelete();
+
   const users = usersData?.data || [];
   const projects = projectsData?.data || [];
+  const plannings = planningsData?.data || [];
 
-  const filteredAssignments = mockPlanningAssignments.filter((assignment) => {
+  const calendarAssignments: PlanningAssignment[] = plannings.map(
+    (planning) => ({
+      id: planning.id.toString(),
+      userId: planning.assignedUserId,
+      projectId: planning.projectId,
+      startDate: planning.startDate,
+      endDate: planning.endDate,
+      title: planning.title,
+      description: planning.description,
+      notes: planning.notes,
+      isCompleted: planning.isCompleted,
+      completedDate: planning.completedDate,
+      status: planning.isCompleted ? 'completed' : 'active',
+      priority: 'medium',
+    }),
+  );
+
+  const filteredAssignments = calendarAssignments.filter((assignment) => {
     const projectMatch =
       selectedProject === 'all' || assignment.projectId === selectedProject;
     return projectMatch;
   });
+
+  const filteredPlanningsForDelete = plannings.filter((planning) => {
+    const projectMatch =
+      selectedProject === 'all' || planning.projectId === selectedProject;
+    return projectMatch;
+  });
+
+  const handleDeletePlanning = (planningId: number) => {
+    deletePlanning(
+      {
+        resource: 'plannings',
+        id: planningId,
+      },
+      {
+        onSuccess: () => {
+          message.success('Planning deleted successfully');
+          refetchPlannings();
+        },
+        onError: (error) => {
+          message.error('Failed to delete planning');
+          console.error('Delete planning error:', error);
+        },
+      },
+    );
+  };
 
   const handleDayClick = (date: Dayjs, assignments: CalendarAssignment[]) => {
     setSelectedDayAssignments(assignments as PlanningAssignment[]);
@@ -90,21 +154,17 @@ export const Planning: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     const colors = {
-      active: 'green',
+      active: 'blue',
       planned: 'blue',
-      completed: 'default',
+      completed: 'green',
       cancelled: 'red',
     };
     return colors[status as keyof typeof colors] || 'default';
   };
 
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      high: 'red',
-      medium: 'orange',
-      low: 'blue',
-    };
-    return colors[priority as keyof typeof colors] || 'default';
+  const handleFormSuccess = () => {
+    setFormDrawerVisible(false);
+    refetchPlannings();
   };
 
   return (
@@ -112,16 +172,27 @@ export const Planning: React.FC = () => {
       <div className={styles.pageHeader}>
         <Title level={2} className={styles.pageTitle}>
           <CalendarOutlined />
-          Calendar
+          Planning Calendar
         </Title>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setFormDrawerVisible(true)}
-          className={styles.createButton}
-        >
-          Create Planning
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setFormDrawerVisible(true)}
+            className={styles.createButton}
+          >
+            Create Planning
+          </Button>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => setDeleteModalVisible(true)}
+            disabled={filteredPlanningsForDelete.length === 0}
+            className={styles.deleteButton}
+          >
+            Delete Planning
+          </Button>
+        </Space>
       </div>
       <div className={styles.filtersContainer}>
         <div className={styles.filterItem}>
@@ -164,12 +235,12 @@ export const Planning: React.FC = () => {
           onDayClick={handleDayClick}
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
-          loading={usersLoading || projectsLoading}
+          loading={usersLoading || projectsLoading || planningsLoading}
           height={800}
         />
       </div>
       <Drawer
-        title={`Assignments for ${selectedDate?.format('MMMM D, YYYY')}`}
+        title={`Planning for ${selectedDate?.format('MMMM D, YYYY')}`}
         placement="right"
         onClose={() => setDrawerVisible(false)}
         open={drawerVisible}
@@ -178,14 +249,14 @@ export const Planning: React.FC = () => {
       >
         <div className={styles.drawerHeader}>
           <Title level={4} className={styles.drawerTitle}>
-            {selectedDayAssignments.length} Assignment
+            {selectedDayAssignments.length} Planning
             {selectedDayAssignments.length !== 1 ? 's' : ''}
           </Title>
         </div>
 
         {selectedDayAssignments.length === 0 ? (
           <div className={styles.emptyState}>
-            <Empty description="No assignments for this day" />
+            <Empty description="No planning for this day" />
           </div>
         ) : (
           selectedDayAssignments.map((assignment) => {
@@ -227,13 +298,22 @@ export const Planning: React.FC = () => {
                       style={{ width: '100%' }}
                     >
                       <div>
-                        <ProjectOutlined style={{ marginRight: 4 }} />
-                        <TextField value={project?.name || 'Unknown Project'} />
+                        <Text strong style={{ fontSize: '14px' }}>
+                          {assignment.title}
+                        </Text>
                       </div>
 
+                      {assignment.description && (
+                        <div>
+                          <Text type="secondary" style={{ fontSize: '12px' }}>
+                            {assignment.description}
+                          </Text>
+                        </div>
+                      )}
+
                       <div>
-                        <ClockCircleOutlined style={{ marginRight: 4 }} />
-                        <Text>{assignment.allocatedHours} hours</Text>
+                        <ProjectOutlined style={{ marginRight: 4 }} />
+                        <TextField value={project?.name || 'Unknown Project'} />
                       </div>
 
                       <div>
@@ -251,18 +331,50 @@ export const Planning: React.FC = () => {
                           </Text>
                         </div>
                       )}
+
+                      {assignment.isCompleted && assignment.completedDate && (
+                        <div>
+                          <CheckCircleOutlined
+                            style={{ marginRight: 4, color: 'green' }}
+                          />
+                          <Text type="secondary" style={{ fontSize: '12px' }}>
+                            Completed:{' '}
+                            {dayjs(assignment.completedDate).format(
+                              'MMM D, YYYY',
+                            )}
+                          </Text>
+                        </div>
+                      )}
                     </Space>
                   </div>
 
                   <div className={styles.assignmentTags}>
-                    <Tag color={getStatusColor(assignment.status || 'planned')}>
-                      {assignment.status?.toUpperCase() || 'PLANNED'}
-                    </Tag>
-                    <Tag
-                      color={getPriorityColor(assignment.priority || 'medium')}
-                    >
-                      {assignment.priority?.toUpperCase() || 'MEDIUM'} PRIORITY
-                    </Tag>
+                    <Space>
+                      <Tag
+                        color={getStatusColor(assignment.status || 'active')}
+                      >
+                        {assignment.isCompleted ? 'COMPLETED' : 'ACTIVE'}
+                      </Tag>
+                      <Popconfirm
+                        title="Delete this planning?"
+                        description="Are you sure you want to delete this planning? This action cannot be undone."
+                        onConfirm={() =>
+                          handleDeletePlanning(Number(assignment.id))
+                        }
+                        okText="Yes"
+                        cancelText="No"
+                        okType="danger"
+                      >
+                        <Button
+                          danger
+                          icon={<DeleteOutlined />}
+                          size="small"
+                          loading={deleteLoading}
+                        >
+                          Delete
+                        </Button>
+                      </Popconfirm>
+                    </Space>
                   </div>
                 </div>
               </Card>
@@ -279,8 +391,111 @@ export const Planning: React.FC = () => {
         destroyOnHidden
         className={styles.formDrawer}
       >
-        <PlanningForm onSuccess={() => setFormDrawerVisible(false)} />
+        <PlanningForm onSuccess={handleFormSuccess} />
       </Drawer>
+
+      <Modal
+        title="Delete Planning"
+        open={deleteModalVisible}
+        onCancel={() => setDeleteModalVisible(false)}
+        footer={null}
+        width={600}
+      >
+        {filteredPlanningsForDelete.length === 0 ? (
+          <Empty
+            description={
+              selectedProject === 'all'
+                ? 'No plannings found'
+                : 'No plannings found for the selected project'
+            }
+          />
+        ) : (
+          <List
+            dataSource={filteredPlanningsForDelete}
+            renderItem={(planning) => {
+              const user = getUserInfo(planning.assignedUserId);
+              const project = getProjectInfo(planning.projectId);
+
+              return (
+                <List.Item
+                  actions={[
+                    <Popconfirm
+                      title="Delete this planning?"
+                      description="Are you sure you want to delete this planning? This action cannot be undone."
+                      onConfirm={() => handleDeletePlanning(planning.id)}
+                      okText="Yes"
+                      cancelText="No"
+                      okType="danger"
+                    >
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        size="small"
+                        loading={deleteLoading}
+                      >
+                        Delete
+                      </Button>
+                    </Popconfirm>,
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar
+                        size="small"
+                        icon={<UserOutlined />}
+                        src={user?.avatar}
+                      />
+                    }
+                    title={
+                      <Space
+                        direction="vertical"
+                        size="small"
+                        style={{ width: '100%' }}
+                      >
+                        <Text strong>{planning.title}</Text>
+                        <Space size="small">
+                          <ProjectOutlined />
+                          <Text type="secondary">
+                            {project?.name || 'Unknown Project'}
+                          </Text>
+                        </Space>
+                        <Space size="small">
+                          <ClockCircleOutlined />
+                          <Text type="secondary">
+                            {planning.startDate === planning.endDate
+                              ? dayjs(planning.startDate).format('MMM D, YYYY')
+                              : `${dayjs(planning.startDate).format('MMM D')} - ${dayjs(planning.endDate).format('MMM D, YYYY')}`}
+                          </Text>
+                        </Space>
+                        {planning.isCompleted && (
+                          <Space size="small">
+                            <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                            <Text type="success">Completed</Text>
+                          </Space>
+                        )}
+                      </Space>
+                    }
+                    description={
+                      <Space
+                        direction="vertical"
+                        size="small"
+                        style={{ width: '100%' }}
+                      >
+                        {planning.description && (
+                          <Text type="secondary">{planning.description}</Text>
+                        )}
+                        <Text type="secondary">
+                          Assigned to: {user?.firstName} {user?.lastName}
+                        </Text>
+                      </Space>
+                    }
+                  />
+                </List.Item>
+              );
+            }}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

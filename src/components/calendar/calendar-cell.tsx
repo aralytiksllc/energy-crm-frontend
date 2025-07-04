@@ -6,6 +6,7 @@ import {
   type CalendarAssignment,
 } from './calendar.types';
 import { createStyles } from './calendar.styles';
+import { getUserColor, getContrastTextColor } from '../color-utils';
 
 const CalendarCell: React.FC<CalendarCellProps> = ({
   date,
@@ -125,15 +126,17 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
         const position = getAssignmentPosition(assignment, date);
         const statusColor = getStatusColor(assignment.status);
         const rowIndex = assignmentRows[assignment.id] ?? 0;
-
+        const userColor = user ? getUserColor(user.id) : statusColor;
+        const textColor = getContrastTextColor(userColor);
         return (
           <div
             key={`spanning-${assignment.id}`}
             className={`${styles.spanningAssignmentItem} assignment-${position}`}
             style={{
               top: `${4 + rowIndex * 24}px`,
-              backgroundColor: `${statusColor}15`,
-              borderColor: statusColor,
+              backgroundColor: userColor,
+              borderColor: userColor,
+              color: textColor,
               opacity: assignment.status === 'cancelled' ? 0.5 : 1,
             }}
             onClick={(e) => {
@@ -142,7 +145,12 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
             }}
           >
             {position === 'start' && user && (
-              <Avatar size={16} src={user.avatar} className={styles.avatar}>
+              <Avatar
+                size={16}
+                src={user.avatar}
+                className={styles.avatar}
+                style={{ backgroundColor: userColor, color: textColor }}
+              >
                 {user.firstName?.[0]}
                 {user.lastName?.[0]}
               </Avatar>
@@ -150,7 +158,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
             <span
               className={styles.spanningAssignmentText}
               style={{
-                color: statusColor,
+                color: textColor,
                 textDecoration:
                   assignment.status === 'cancelled' ? 'line-through' : 'none',
               }}
@@ -187,16 +195,18 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
           const user = getUserInfo(assignment.userId);
           const statusColor = getStatusColor(assignment.status);
           const priorityColor = getPriorityColor(assignment.priority);
-
+          const userColor = user ? getUserColor(user.id) : statusColor;
+          const textColor = getContrastTextColor(userColor);
           return (
             <div
               key={`single-${assignment.id}`}
               className={styles.assignmentItem}
               style={{
-                backgroundColor: `${statusColor}10`,
-                borderColor: statusColor,
+                backgroundColor: userColor,
+                borderColor: userColor,
                 borderLeftWidth: assignment.priority === 'high' ? '3px' : '1px',
                 borderLeftColor: priorityColor,
+                color: textColor,
                 opacity: assignment.status === 'cancelled' ? 0.5 : 1,
               }}
               onClick={(e) => {
@@ -205,7 +215,12 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
               }}
             >
               {user && (
-                <Avatar size={16} src={user.avatar} className={styles.avatar}>
+                <Avatar
+                  size={16}
+                  src={user.avatar}
+                  className={styles.avatar}
+                  style={{ backgroundColor: userColor, color: textColor }}
+                >
                   {user.firstName?.[0]}
                   {user.lastName?.[0]}
                 </Avatar>
@@ -213,7 +228,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
               <span
                 className={styles.assignmentText}
                 style={{
-                  color: statusColor,
+                  color: textColor,
                   textDecoration:
                     assignment.status === 'cancelled' ? 'line-through' : 'none',
                 }}

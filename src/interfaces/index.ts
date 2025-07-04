@@ -10,3 +10,4 @@ export * from './project-status.enum';
 export * from './project-priority.enum';
 export * from './customer';
 export * from './planning';
+export * from './assignee';

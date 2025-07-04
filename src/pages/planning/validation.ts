@@ -1,30 +1,50 @@
 import type { Rule } from 'antd/es/form';
 
 export const planningValidationRules = {
-  user: [
+  title: [
+    {
+      required: true,
+      message: 'Please enter a title for the planning',
+    },
+    {
+      max: 255,
+      message: 'Title cannot exceed 255 characters',
+    },
+  ] as Rule[],
+
+  description: [
+    {
+      required: false,
+      max: 1000,
+      message: 'Description cannot exceed 1000 characters',
+    },
+  ] as Rule[],
+
+  assignedUserId: [
     {
       required: true,
       message: 'Please select a user to assign to this planning',
     },
   ] as Rule[],
 
-  project: [
+  projectId: [
     {
       required: true,
-      message: 'Please select a project for this assignment',
+      message: 'Please select a project for this planning',
     },
   ] as Rule[],
 
   startDate: [
     {
       required: true,
-      message: 'Please select when this assignment should start',
+      message: 'Please select when this planning should start',
     },
   ] as Rule[],
 
   endDate: [
     {
-      required: false,
+      required: true,
+      message: 'Please select when this planning should end',
     },
     ({ getFieldValue }) => ({
       validator: async (_, value) => {
@@ -41,45 +61,45 @@ export const planningValidationRules = {
     }),
   ] as Rule[],
 
-  allocatedHours: [
-    {
-      required: true,
-      message: 'Please enter allocated hours',
-    },
-    {
-      type: 'number',
-      min: 0.5,
-      max: 24,
-      message: 'Hours must be between 0.5 and 24',
-    },
-  ] as Rule[],
-
-  status: [
-    {
-      required: true,
-      message: 'Please select a status',
-    },
-  ] as Rule[],
-
-  priority: [
-    {
-      required: true,
-      message: 'Please select a priority',
-    },
-  ] as Rule[],
-
   notes: [
     {
       required: false,
-      max: 500,
-      message: 'Notes cannot exceed 500 characters',
+      max: 1000,
+      message: 'Notes cannot exceed 1000 characters',
     },
   ] as Rule[],
 
-  dateRange: [
+  isCompleted: [
     {
-      required: true,
-      message: 'Please select a date range',
+      required: false,
     },
+  ] as Rule[],
+
+  completedDate: [
+    {
+      required: false,
+    },
+    ({ getFieldValue }) => ({
+      validator: async (_, value) => {
+        if (!value) return Promise.resolve();
+
+        const isCompleted = getFieldValue('isCompleted');
+        const endDate = getFieldValue('endDate');
+
+        if (isCompleted && !value) {
+          return Promise.reject(
+            new Error('Completed date is required when marking as completed'),
+          );
+        }
+
+        if (value && endDate && value.isBefore(endDate)) {
+          return Promise.reject(
+            new Error('Completed date cannot be before end date'),
+          );
+        }
+
+        return Promise.resolve();
+      },
+    }),
   ] as Rule[],
 };

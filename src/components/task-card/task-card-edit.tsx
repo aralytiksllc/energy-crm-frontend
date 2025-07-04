@@ -303,15 +303,10 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
                   const selectedUsers = users.filter((user: IUser) =>
                     userIds.includes(user.id),
                   );
-                  const assignees: TaskAssignee[] = selectedUsers.map(
-                    (user: IUser) => ({
-                      user,
-                      userId: user.id,
-                      taskId: editedTask.id,
-                      estimatedHours: 0,
-                      actualHours: 0,
-                    }),
-                  );
+                  const assignees = selectedUsers.map((user: IUser) => ({
+                    userId: user.id,
+                    estimatedHours: 0,
+                  }));
                   handleFieldChange('assignees', assignees);
                 }}
                 users={users}

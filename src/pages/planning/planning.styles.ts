@@ -114,6 +114,15 @@ export const createStyles = createAntdStyles(({ token }) => ({
     gap: token.marginXS,
   },
 
+  deleteButton: {
+    borderRadius: token.borderRadius,
+    fontWeight: 500,
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: token.marginXS,
+  },
+
   emptyState: {
     textAlign: 'center',
     padding: `${token.paddingXL}px ${token.paddingLG}px`,

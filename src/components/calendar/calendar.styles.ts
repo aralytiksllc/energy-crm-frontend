@@ -162,13 +162,13 @@ export const createStyles = createAntdStyles(({ token }) => ({
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
-    padding: '2px 4px',
-    borderRadius: '4px',
+    padding: '2px 8px',
+    borderRadius: '6px',
     backgroundColor: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
     marginBottom: '2px',
     fontSize: '11px',
-    minHeight: '20px',
+    minHeight: '22px',
     position: 'relative',
     zIndex: 14,
 
@@ -184,12 +184,12 @@ export const createStyles = createAntdStyles(({ token }) => ({
     top: '4px',
     left: '4px',
     right: '-1px',
-    height: '18px',
+    height: '20px',
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
-    padding: '1px 6px',
-    borderRadius: '9px',
+    padding: '1px 4px',
+    borderRadius: '6px',
     backgroundColor: token.colorPrimaryBg,
     border: `1px solid ${token.colorPrimary}`,
     fontSize: '10px',
@@ -198,8 +198,8 @@ export const createStyles = createAntdStyles(({ token }) => ({
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
 
     '&.assignment-start': {
-      borderTopLeftRadius: '9px',
-      borderBottomLeftRadius: '9px',
+      borderTopLeftRadius: '6px',
+      borderBottomLeftRadius: '6px',
       borderTopRightRadius: '2px',
       borderBottomRightRadius: '2px',
     },
@@ -219,7 +219,7 @@ export const createStyles = createAntdStyles(({ token }) => ({
     },
 
     '&.assignment-single': {
-      borderRadius: '9px',
+      borderRadius: '6px',
       right: '4px',
     },
 

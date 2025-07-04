@@ -45,6 +45,7 @@ export function CrudTable<TData extends { id: number }>(
   const createDrawerForm = useDrawerForm({
     action: 'create',
     resource,
+    syncWithLocation: true,
   });
 
   const augmentedCreateDrawerForm = {

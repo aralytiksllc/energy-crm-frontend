@@ -9,31 +9,41 @@ import { authStorage } from '@helpers/auth-storage';
 
 export const authProvider: AuthProvider = {
   async login(params) {
-    const response = await httpClient.post('login', {
-      json: {
-        email: params.email,
-        password: params.password,
-      },
-    });
+    try {
+      const response = await httpClient.post('login', {
+        json: {
+          email: params.email,
+          password: params.password,
+        },
+      });
 
-    const data = await response.json<IAuthResponse>();
+      const data = await response.json<IAuthResponse>();
 
-    if (!data.accessToken) {
+      if (!data.accessToken) {
+        return {
+          success: false,
+          error: {
+            name: 'LoginError',
+            message: 'Missing access token.',
+          },
+        };
+      }
+
+      authStorage.set(data.accessToken);
+
+      return {
+        success: true,
+        redirectTo: '/',
+      };
+    } catch (error) {
       return {
         success: false,
         error: {
           name: 'LoginError',
-          message: 'Missing access token.',
+          message: 'Login failed. Please check your credentials.',
         },
       };
     }
-
-    authStorage.set(data.accessToken);
-
-    return {
-      success: true,
-      redirectTo: '/',
-    };
   },
 
   async logout() {
@@ -45,15 +55,17 @@ export const authProvider: AuthProvider = {
   },
 
   async check() {
-    return authStorage.get()
-      ? { authenticated: true }
-      : { authenticated: false, logout: true, redirectTo: '/login' };
+    const hasToken = authStorage.get();
+    if (hasToken) {
+      return { authenticated: true };
+    }
+    return { authenticated: false, logout: true, redirectTo: '/login' };
   },
 
   async getIdentity() {
     try {
       return await httpClient.get('me').json<IUser>();
-    } catch {
+    } catch (error) {
       return null;
     }
   },
