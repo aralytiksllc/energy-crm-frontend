@@ -42,6 +42,7 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
     projectsLoading,
     planningsLoading,
     filteredAssignments,
+    viewMode,
     setSelectedDate,
     setDrawerVisible,
     handleDayClick,
@@ -98,18 +99,20 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
                   <List.Item
                     key={item.id}
                     extra={
-                      <Popconfirm
-                        title="Are you sure to delete this planning?"
-                        onConfirm={() =>
-                          handleDeletePlanning(item.id as number)
-                        }
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        <DeleteOutlined
-                          style={{ color: 'red', cursor: 'pointer' }}
-                        />
-                      </Popconfirm>
+                      viewMode === 'manager' && (
+                        <Popconfirm
+                          title="Are you sure to delete this planning?"
+                          onConfirm={() =>
+                            handleDeletePlanning(item.id as number)
+                          }
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <DeleteOutlined
+                            style={{ color: 'red', cursor: 'pointer' }}
+                          />
+                        </Popconfirm>
+                      )
                     }
                   >
                     <Card

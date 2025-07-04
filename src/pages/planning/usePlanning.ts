@@ -85,7 +85,8 @@ export const usePlanning = () => {
   const filteredPlanningsForDelete = plannings.filter((planning) => {
     const projectMatch =
       selectedProject === 'all' || planning.projectId === selectedProject;
-    return projectMatch;
+    const monthMatch = dayjs(planning.startDate).isSame(currentMonth, 'month');
+    return projectMatch && monthMatch;
   });
 
   const handleDeletePlanning = (planningId: number) => {

@@ -7,6 +7,8 @@ import {
   Select,
   Modal,
   Drawer,
+  List,
+  Popconfirm,
 } from 'antd';
 import {
   CalendarOutlined,
@@ -61,15 +63,17 @@ export const Planning: React.FC = () => {
           >
             Create Planning
           </Button>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => setDeleteModalVisible(true)}
-            disabled={filteredPlanningsForDelete.length === 0}
-            className={styles.deleteButton}
-          >
-            Delete Planning
-          </Button>
+          {viewMode === 'manager' && (
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => setDeleteModalVisible(true)}
+              disabled={filteredPlanningsForDelete.length === 0}
+              className={styles.deleteButton}
+            >
+              Delete Planning
+            </Button>
+          )}
         </Space>
       </div>
       <div className={styles.filtersContainer}>
@@ -120,23 +124,40 @@ export const Planning: React.FC = () => {
       </Drawer>
 
       <Modal
-        title="Confirm Deletion"
+        title="Delete Plannings"
         open={deleteModalVisible}
-        onOk={() => {
-          filteredPlanningsForDelete.forEach((planning: IPlanning) => {
-            handleDeletePlanning(planning.id as number);
-          });
-          setDeleteModalVisible(false);
-        }}
         onCancel={() => setDeleteModalVisible(false)}
-        confirmLoading={planningsLoading || deleteLoading}
-        okText="Delete"
-        cancelText="Cancel"
+        footer={null}
+        width={600}
       >
-        <p>
-          Are you sure you want to delete all plannings for the selected
-          project?
-        </p>
+        <List
+          dataSource={filteredPlanningsForDelete}
+          loading={planningsLoading}
+          renderItem={(item: IPlanning) => (
+            <List.Item
+              actions={[
+                <Popconfirm
+                  title="Are you sure you want to delete this planning?"
+                  onConfirm={() => handleDeletePlanning(item.id as number)}
+                  okText="Delete"
+                  cancelText="Cancel"
+                >
+                  <Button danger icon={<DeleteOutlined />}>
+                    Delete
+                  </Button>
+                </Popconfirm>,
+              ]}
+            >
+              <List.Item.Meta
+                title={item.title}
+                description={`Project: ${
+                  filteredProjects.find((p) => p.id === item.projectId)?.name ||
+                  'N/A'
+                }`}
+              />
+            </List.Item>
+          )}
+        />
       </Modal>
     </div>
   );
