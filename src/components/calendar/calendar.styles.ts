@@ -158,6 +158,37 @@ export const createStyles = createAntdStyles(({ token }) => ({
     },
   },
 
+  singleDayAssignmentsContainer: {},
+
+  priorityIndicator: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    marginLeft: 'auto',
+  },
+
+  statusIndicator: {
+    width: '4px',
+    height: '4px',
+    borderRadius: '50%',
+    marginLeft: 'auto',
+    flexShrink: 0,
+  },
+
+  assignmentText: {
+    textDecoration: 'none',
+  },
+
+  cancelledText: {
+    textDecoration: 'line-through',
+  },
+
+  spanningAssignmentText: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+
   assignmentItem: {
     display: 'flex',
     alignItems: 'center',
@@ -230,24 +261,6 @@ export const createStyles = createAntdStyles(({ token }) => ({
       boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
       zIndex: 18,
     },
-  },
-
-  assignmentText: {
-    fontSize: '11px',
-    color: token.colorText,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    maxWidth: '100px',
-  },
-
-  spanningAssignmentText: {
-    fontSize: '10px',
-    color: token.colorText,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    fontWeight: 500,
   },
 
   loadingOverlay: {

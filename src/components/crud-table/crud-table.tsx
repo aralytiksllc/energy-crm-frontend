@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Table, Space } from 'antd';
 import { List, useTable, useDrawerForm } from '@refinedev/antd';
+import { useGetIdentity } from '@refinedev/core';
 import type { FormProps } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 
 import { DrawerForm } from '@components/drawer-form/drawer-form';
-
 import { PopoverSelect } from '@components/dropdown-select';
 import { DrawerFormProvider } from '@components/drawer-form';
 import { ColumnFilter } from '@components/column-filter';
+import { useViewMode } from '@contexts/ViewModeContext';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
@@ -35,11 +36,21 @@ export function CrudTable<TData extends { id: number }>(
     drawerTitles = {},
   } = props;
 
+  const { viewMode } = useViewMode();
+  const { data: identity } = useGetIdentity<{ id: number }>();
+
   const { tableProps, setFilters } = useTable<TData>({
-    filters: { mode: 'server' },
+    filters: {
+      mode: 'server',
+    },
     sorters: { mode: 'server' },
     syncWithLocation: true,
     resource,
+    meta: {
+      // Pass view mode and user info to the backend
+      viewMode,
+      userId: identity?.id,
+    },
   });
 
   const createDrawerForm = useDrawerForm({
@@ -76,36 +87,65 @@ export function CrudTable<TData extends { id: number }>(
     [columns],
   );
 
+  // For user view, hide the actions column entirely
+  const processedColumns = React.useMemo(() => {
+    if (viewMode === 'user') {
+      return columns.filter((column: any) => column.key !== 'actions');
+    }
+    return columns;
+  }, [columns, viewMode]);
+
   const augmentedColumns = React.useMemo(
     () =>
-      columns.map((column: any) => {
-        if (column.key === 'actions') {
-          return {
-            ...column,
-            filterDropdown: undefined,
-          };
+      processedColumns.map((column: any) => {
+        if (column.key === 'actions' || !column.dataIndex) {
+          return column;
         }
 
         return {
           ...column,
           filterIcon: () => <FilterOutlined />,
           filterDropdown: () => (
-            <ColumnFilter
-              columns={filterableColumns}
-              setFilters={setFilters}
-              defaultField={column.dataIndex || column.key}
-            />
+            <ColumnFilter column={column} setFilters={setFilters} />
           ),
         };
       }),
-    [columns, setFilters, filterableColumns],
+    [processedColumns, setFilters],
   );
 
-  const [selectedColumns, setSelectedColumns] =
-    React.useState(augmentedColumns);
+  const [selectedColumns, setSelectedColumns] = React.useState(() => {
+    // Initialize with actions column fixed to the right
+    const actionsColumn = augmentedColumns.find(
+      (col: any) => col.key === 'actions',
+    );
+    const nonActionsColumns = augmentedColumns.filter(
+      (col: any) => col.key !== 'actions',
+    );
+
+    if (actionsColumn) {
+      return [...nonActionsColumns, { ...actionsColumn, fixed: 'right' }];
+    }
+
+    return augmentedColumns;
+  });
 
   React.useEffect(() => {
-    setSelectedColumns(augmentedColumns);
+    // Ensure actions column is always fixed to the right when augmentedColumns change
+    const actionsColumn = augmentedColumns.find(
+      (col: any) => col.key === 'actions',
+    );
+    const nonActionsColumns = augmentedColumns.filter(
+      (col: any) => col.key !== 'actions',
+    );
+
+    if (actionsColumn) {
+      setSelectedColumns([
+        ...nonActionsColumns,
+        { ...actionsColumn, fixed: 'right' },
+      ]);
+    } else {
+      setSelectedColumns(augmentedColumns);
+    }
   }, [augmentedColumns]);
 
   const onSelectColumn = (column: any) => {
@@ -114,20 +154,56 @@ export function CrudTable<TData extends { id: number }>(
       map.has(column.dataIndex)
         ? map.delete(column.dataIndex)
         : map.set(column.dataIndex, column);
-      return Array.from(map.values());
+
+      // Get all columns from map, maintaining original order
+      const orderedColumns = augmentedColumns.filter((col: any) =>
+        map.has(col.dataIndex),
+      );
+
+      // Ensure actions column is always at the end and fixed
+      const actionsColumn = orderedColumns.find(
+        (col: any) => col.key === 'actions',
+      );
+      const nonActionsColumns = orderedColumns.filter(
+        (col: any) => col.key !== 'actions',
+      );
+
+      if (actionsColumn) {
+        return [...nonActionsColumns, { ...actionsColumn, fixed: 'right' }];
+      }
+
+      return orderedColumns;
     });
   };
 
   const onToggleAll = () => {
-    setSelectedColumns((prev: any[]) =>
-      prev.length === columns.length ? [] : [...augmentedColumns],
-    );
+    setSelectedColumns((prev: any[]) => {
+      if (prev.length === columns.length) {
+        return [];
+      } else {
+        // When selecting all, maintain order and ensure actions column is fixed at the end
+        const actionsColumn = augmentedColumns.find(
+          (col: any) => col.key === 'actions',
+        );
+        const nonActionsColumns = augmentedColumns.filter(
+          (col: any) => col.key !== 'actions',
+        );
+
+        if (actionsColumn) {
+          return [...nonActionsColumns, { ...actionsColumn, fixed: 'right' }];
+        }
+
+        return [...augmentedColumns];
+      }
+    });
   };
 
   return (
     <DrawerFormProvider drawerForm={editDrawerForm}>
       <List
-        createButtonProps={createButtonProps}
+        createButtonProps={
+          viewMode === 'manager' ? createButtonProps : undefined
+        }
         headerButtons={({ defaultButtons }) => (
           <Space>
             <PopoverSelect
@@ -139,7 +215,7 @@ export function CrudTable<TData extends { id: number }>(
               optionLabel={(col: any) => col.title}
               buttonLabel="Select Columns"
             />
-            {defaultButtons}
+            {viewMode === 'manager' && defaultButtons}
           </Space>
         )}
       >
@@ -149,16 +225,22 @@ export function CrudTable<TData extends { id: number }>(
           columns={selectedColumns}
           scroll={{ x: true }}
         />
-        <DrawerForm
-          {...augmentedCreateDrawerForm}
-          renderForm={renderForm}
-          title={drawerTitles.create}
-          width={drawerWidth}
-        />
+        {viewMode === 'manager' && (
+          <DrawerForm
+            {...augmentedCreateDrawerForm}
+            renderForm={renderForm}
+            title={drawerTitles.create}
+            width={drawerWidth}
+          />
+        )}
         <DrawerForm
           {...editDrawerForm}
           renderForm={renderForm}
-          title={drawerTitles.edit}
+          title={
+            viewMode === 'user'
+              ? drawerTitles.view || 'View Details'
+              : drawerTitles.edit
+          }
           width={drawerWidth}
         />
       </List>

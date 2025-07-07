@@ -92,7 +92,13 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
   return (
     <Card
       title={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
           <Text strong>{`TASK-${task.id}`}</Text>
           {task.isCompleted && <Tag color="success">Completed</Tag>}
         </div>

@@ -19,7 +19,8 @@ export function KanbanBoard<T>({
   keyExtractor,
   renderItem,
   renderColumnHeader,
-}: KanbanBoardProps<T>) {
+  onDragEnd,
+}: KanbanBoardProps<T> & { onDragEnd?: (event: DragEndEvent) => void }) {
   const { styles } = useStyles();
 
   const mouseSensor = useSensor(MouseSensor, sensorOptions);
@@ -28,10 +29,13 @@ export function KanbanBoard<T>({
 
   const sensors = useSensors(mouseSensor, touchSensor);
 
-  const handleDragEnd = React.useCallback((event: DragEndEvent) => {
-    if (event.over === null) return;
-    // onDragEnd(event);
-  }, []);
+  const handleDragEnd = React.useCallback(
+    (event: DragEndEvent) => {
+      if (event.over === null) return;
+      if (onDragEnd) onDragEnd(event);
+    },
+    [onDragEnd],
+  );
 
   return (
     <div className={styles.container}>

@@ -9,6 +9,7 @@ import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 import { Header } from '@components/header';
 import { ColorModeContextProvider } from '@contexts/color-mode';
 import { ViewModeProvider } from '@contexts/ViewModeContext';
+import { ViewSwitcher } from '@components/view-switcher';
 import {
   Register,
   Login,
@@ -34,7 +35,19 @@ export const Routes: React.FC = () => (
             >
               <ThemedLayoutV2
                 Header={Header}
-                Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+                Sider={(props) => (
+                  <ThemedSiderV2
+                    {...props}
+                    fixed
+                    render={({ items, logout, collapsed }) => (
+                      <>
+                        {items}
+                        {logout}
+                        <ViewSwitcher collapsed={collapsed} />
+                      </>
+                    )}
+                  />
+                )}
               >
                 <Outlet />
               </ThemedLayoutV2>
@@ -44,12 +57,12 @@ export const Routes: React.FC = () => (
       }
     >
       <Route index element={<NavigateToResource resource="users" />} />
-      <Route index path="/dashboard" element={<Dashboard />} />
-      <Route index path="/users" element={<Users />} />
-      <Route index path="/tasks" element={<Tasks />} />
-      <Route index path="/planning" element={<Planning />} />
-      <Route index path="/projects" element={<Projects />} />
-      <Route index path="/customers" element={<Customers />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/users" element={<Users />} />
+      <Route path="/tasks" element={<Tasks />} />
+      <Route path="/planning" element={<Planning />} />
+      <Route path="/projects" element={<Projects />} />
+      <Route path="/customers" element={<Customers />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route

@@ -1,10 +1,9 @@
 // External imports
 import React from 'react';
-import { Layout, Space, Switch, Avatar, Typography, Segmented } from 'antd';
+import { Layout, Space, Switch, Avatar, Typography } from 'antd';
 import { useGetIdentity } from '@refinedev/core';
 import { RefineThemedLayoutV2HeaderProps } from '@refinedev/antd';
 import { useHeaderStyles } from './header.styles';
-import { useViewMode } from '@contexts/ViewModeContext';
 
 const { Text } = Typography;
 
@@ -16,7 +15,6 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
     email: string;
     avatar: string;
   }>();
-  const { viewMode, setViewMode } = useViewMode();
 
   return (
     <Layout.Header className={styles.header}>
@@ -25,13 +23,6 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
       </div>
 
       <Space className={styles.leftSection} size="middle">
-        <Segmented
-          options={['Manager', 'User']}
-          value={viewMode.charAt(0).toUpperCase() + viewMode.slice(1)}
-          onChange={(value) =>
-            setViewMode(value.toString().toLowerCase() as 'manager' | 'user')
-          }
-        />
         <Switch
           checkedChildren="🌛"
           unCheckedChildren="🔆"
