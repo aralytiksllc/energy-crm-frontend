@@ -5,7 +5,6 @@
   "type": "module",
   "dependencies": {
     "@ant-design/charts": "^2.4.0",
-    "@ant-design/colors": "^7.2.1",
     "@ant-design/icons": "^5.5.1",
     "@ant-design/plots": "^2.5.0",
     "@dnd-kit/modifiers": "^9.0.0",

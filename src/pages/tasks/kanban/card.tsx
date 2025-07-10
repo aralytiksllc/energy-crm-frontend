@@ -141,7 +141,7 @@ export const KanbanCard = ({ task, onClick, onDelete }: KanbanCardProps) => {
           {task.project && (
             <Tag color="blue" style={{ fontSize: '11px' }}>
               <Tooltip title={task.project.name}>
-                {truncate(task.project.name, 7)}
+                {truncate(task.project.name, 10)}
               </Tooltip>
             </Tag>
           )}

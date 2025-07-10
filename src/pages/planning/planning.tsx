@@ -15,6 +15,7 @@ import {
   PlusOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
+import { useCan } from '@refinedev/core';
 
 import { IPlanning } from '@interfaces/planning';
 import PlanningForm from './components/planning-form';
@@ -27,16 +28,24 @@ const { Title, Text } = Typography;
 export const Planning: React.FC = () => {
   const { styles } = createStyles();
   const planningHook = usePlanning();
+
+  const { data: canCreate } = useCan({
+    resource: 'plannings',
+    action: 'create',
+  });
+
+  const { data: canDelete } = useCan({
+    resource: 'plannings',
+    action: 'delete',
+  });
+
   const {
-    users,
     formDrawerVisible,
     deleteModalVisible,
     planningsLoading,
-    deleteLoading,
     filteredProjects,
     currentMonth,
     selectedProject,
-    viewMode,
     filteredPlanningsForDelete,
     setFormDrawerVisible,
     setDeleteModalVisible,
@@ -44,7 +53,6 @@ export const Planning: React.FC = () => {
     setSelectedProject,
     handleDeletePlanning,
     handleFormSuccess,
-    refetchPlannings,
   } = planningHook;
 
   return (
@@ -55,15 +63,17 @@ export const Planning: React.FC = () => {
           Planning Calendar
         </Title>
         <Space>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setFormDrawerVisible(true)}
-            className={styles.createButton}
-          >
-            Create Planning
-          </Button>
-          {viewMode === 'manager' && (
+          {canCreate?.can && (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setFormDrawerVisible(true)}
+              className={styles.createButton}
+            >
+              Create Planning
+            </Button>
+          )}
+          {canDelete?.can && (
             <Button
               danger
               icon={<DeleteOutlined />}

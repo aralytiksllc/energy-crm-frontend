@@ -6,10 +6,8 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  DragOverlay,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { KanbanCard } from './card';
 import { useKanbanBoardStyles } from './board.styles';
 
 // Add a max height to the board container for window fit

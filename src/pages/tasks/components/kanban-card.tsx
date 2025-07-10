@@ -54,7 +54,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
   const estimatedTime = 0;
 
   // Format dates
-  const dueDate = dayjs(new Date()).format('MMM DD');
   const createdDate = dayjs(new Date()).format('MMM DD');
 
   // Get task type color

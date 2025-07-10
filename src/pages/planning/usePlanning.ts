@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useList, useDelete, useGetIdentity } from '@refinedev/core';
+import { useList, useDelete } from '@refinedev/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { IUser } from '@interfaces/users';
 import { IProject } from '@interfaces/project';
 import { IPlanning } from '@interfaces/planning';
 import { PlanningAssignment } from './types';
 import { message } from 'antd';
-import { useViewMode } from '@contexts/ViewModeContext';
 
 export const usePlanning = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
@@ -18,9 +17,7 @@ export const usePlanning = () => {
     PlanningAssignment[]
   >([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const { viewMode } = useViewMode();
 
-  const { data: identity } = useGetIdentity<IUser>();
   const { data: usersData, isLoading: usersLoading } = useList<IUser>({
     resource: 'users',
     pagination: { mode: 'off' },
@@ -66,21 +63,10 @@ export const usePlanning = () => {
   const filteredAssignments = calendarAssignments.filter((assignment) => {
     const projectMatch =
       selectedProject === 'all' || assignment.projectId === selectedProject;
-    const userMatch =
-      viewMode === 'user' ? assignment.userId === identity?.id : true;
-    return projectMatch && userMatch;
+    return projectMatch;
   });
 
-  const filteredProjects =
-    viewMode === 'user'
-      ? projects.filter((project) =>
-          calendarAssignments.some(
-            (assignment) =>
-              assignment.projectId === project.id &&
-              assignment.userId === identity?.id,
-          ),
-        )
-      : projects;
+  const filteredProjects = projects;
 
   const filteredPlanningsForDelete = plannings.filter((planning) => {
     const projectMatch =
@@ -144,7 +130,6 @@ export const usePlanning = () => {
     formDrawerVisible,
     selectedDayAssignments,
     deleteModalVisible,
-    viewMode,
     usersLoading,
     projectsLoading,
     planningsLoading,
@@ -152,7 +137,6 @@ export const usePlanning = () => {
     filteredAssignments,
     filteredProjects,
     filteredPlanningsForDelete,
-    identity,
     setSelectedDate,
     setCurrentMonth,
     setSelectedProject,

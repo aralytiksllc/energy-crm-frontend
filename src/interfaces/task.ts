@@ -10,4 +10,5 @@ export interface Task {
   priority: 'Low' | 'Medium' | 'High' | 'Critical';
   type: string;
   assignees?: any[];
+  status?: string;
 }

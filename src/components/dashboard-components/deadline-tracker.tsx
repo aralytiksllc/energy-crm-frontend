@@ -8,6 +8,7 @@ import {
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { DeadlineInfo } from '../../pages/dashboard/utils';
+import { useDeadlineTrackerStyles } from './deadline-tracker.styles';
 
 dayjs.extend(relativeTime);
 
@@ -52,92 +53,99 @@ export const DeadlineTracker: React.FC<DeadlineTrackerProps> = ({
   deadlines,
   title = 'Upcoming Deadlines',
 }) => {
+  const { styles } = useDeadlineTrackerStyles();
+
   if (deadlines.length === 0) {
     return (
-      <Card title={title}>
-        <Empty
-          description="No upcoming deadlines"
-          style={{ padding: '20px 0' }}
-        />
+      <Card title={title} className={styles.card}>
+        <div className={styles.cardBody}>
+          <div className={styles.emptyContainer}>
+            <Empty
+              description="No upcoming deadlines"
+              style={{ padding: '20px 0' }}
+            />
+          </div>
+        </div>
       </Card>
     );
   }
 
   return (
-    <Card title={title}>
-      <List
-        size="small"
-        dataSource={deadlines}
-        renderItem={(deadline) => {
-          const overdue = isOverdue(deadline.dueDate);
-          const dueDate = dayjs(deadline.dueDate);
-          const relativeTimeStr = dueDate.fromNow();
+    <Card title={title} className={styles.card}>
+      <div className={styles.cardBody}>
+        <div className={styles.listContainer}>
+          <List
+            size="small"
+            dataSource={deadlines}
+            renderItem={(deadline) => {
+              const overdue = isOverdue(deadline.dueDate);
+              const dueDate = dayjs(deadline.dueDate);
+              const relativeTimeStr = dueDate.fromNow();
 
-          return (
-            <List.Item
-              style={{
-                padding: '8px 0',
-                borderBottom: '1px solid #f0f0f0',
-              }}
-            >
-              <div style={{ width: '100%' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                  }}
-                >
-                  <div style={{ flex: 1, marginRight: '8px' }}>
+              return (
+                <List.Item className={styles.listItem}>
+                  <div style={{ width: '100%' }}>
                     <div
                       style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        marginBottom: '4px',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
                       }}
                     >
-                      {getPriorityIcon(deadline.priority)}
-                      <Text strong style={{ fontSize: '13px' }}>
-                        {deadline.title}
-                      </Text>
-                      <Tag color={deadline.type === 'task' ? 'blue' : 'green'}>
-                        {deadline.type}
-                      </Tag>
+                      <div style={{ flex: 1, marginRight: '8px' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            marginBottom: '4px',
+                          }}
+                        >
+                          {getPriorityIcon(deadline.priority)}
+                          <Text strong style={{ fontSize: '13px' }}>
+                            {deadline.title}
+                          </Text>
+                          <Tag
+                            color={deadline.type === 'task' ? 'blue' : 'green'}
+                          >
+                            {deadline.type}
+                          </Tag>
+                        </div>
+                        {deadline.projectName && (
+                          <Text type="secondary" style={{ fontSize: '11px' }}>
+                            {deadline.projectName}
+                          </Text>
+                        )}
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <Tooltip title={dueDate.format('MMM DD, YYYY')}>
+                          <Text
+                            style={{
+                              fontSize: '11px',
+                              color: overdue ? '#ff4d4f' : '#666',
+                              fontWeight: overdue ? 'bold' : 'normal',
+                            }}
+                          >
+                            {overdue ? 'Overdue' : relativeTimeStr}
+                          </Text>
+                        </Tooltip>
+                        <div>
+                          <Tag
+                            color={getPriorityColor(deadline.priority)}
+                            style={{ fontSize: '10px', marginTop: '2px' }}
+                          >
+                            {deadline.priority.toUpperCase()}
+                          </Tag>
+                        </div>
+                      </div>
                     </div>
-                    {deadline.projectName && (
-                      <Text type="secondary" style={{ fontSize: '11px' }}>
-                        {deadline.projectName}
-                      </Text>
-                    )}
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <Tooltip title={dueDate.format('MMM DD, YYYY')}>
-                      <Text
-                        style={{
-                          fontSize: '11px',
-                          color: overdue ? '#ff4d4f' : '#666',
-                          fontWeight: overdue ? 'bold' : 'normal',
-                        }}
-                      >
-                        {overdue ? 'Overdue' : relativeTimeStr}
-                      </Text>
-                    </Tooltip>
-                    <div>
-                      <Tag
-                        color={getPriorityColor(deadline.priority)}
-                        style={{ fontSize: '10px', marginTop: '2px' }}
-                      >
-                        {deadline.priority.toUpperCase()}
-                      </Tag>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </List.Item>
-          );
-        }}
-      />
+                </List.Item>
+              );
+            }}
+          />
+        </div>
+      </div>
     </Card>
   );
 };

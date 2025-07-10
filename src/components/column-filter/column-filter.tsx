@@ -29,7 +29,9 @@ export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
         const filter: LogicalFilter = {
           field: dataIndex.toString(),
           operator: filterValues.operator as any,
-          value: filterValues.value,
+          value: ['ilike', 'like'].includes(filterValues.operator)
+            ? `%${filterValues.value}%`
+            : filterValues.value,
         };
         setFilters([filter], 'replace');
       }

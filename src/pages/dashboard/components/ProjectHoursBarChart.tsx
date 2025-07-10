@@ -73,7 +73,7 @@ export const ProjectHoursBarChart: React.FC<ProjectHoursBarChartProps> = ({
             dataKey="actualHours"
             stackId="a"
             fill={BAR_CHART_COLORS.actual}
-            name="Orët aktuale"
+            name="Orët reale"
             barSize={20}
           >
             <LabelList dataKey="actualHours" position="inside" fill="white" />

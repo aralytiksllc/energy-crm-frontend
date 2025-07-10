@@ -1,4 +1,3 @@
-// External imports
 import type {
   DataProvider,
   BaseRecord,
@@ -16,10 +15,10 @@ import type {
   CustomResponse,
 } from '@refinedev/core';
 
-// Internal imports
 import { API_URL } from '@helpers/http-client/http-constants';
 import { httpClient } from '@helpers/http-client/http-client';
 import { dataHelper } from './data-helper';
+import ky from 'ky';
 
 export const dataProvider: DataProvider = {
   getApiUrl() {
@@ -44,27 +43,22 @@ export const dataProvider: DataProvider = {
         };
       }
 
-      // Handle different response formats
       if (response.items && typeof response.total === 'number') {
-        // Format: { items: TData[], total: number }
         return {
           data: Array.isArray(response.items) ? response.items : [],
           total: response.total,
         };
       } else if (response.data && typeof response.total === 'number') {
-        // Format: { data: TData[], total: number }
         return {
           data: Array.isArray(response.data) ? response.data : [],
           total: response.total,
         };
       } else if (Array.isArray(response)) {
-        // Format: TData[] (simple array)
         return {
           data: response,
           total: response.length,
         };
       } else if (response.results && typeof response.count === 'number') {
-        // Format: { results: TData[], count: number }
         return {
           data: Array.isArray(response.results) ? response.results : [],
           total: response.count,
@@ -98,9 +92,24 @@ export const dataProvider: DataProvider = {
   async create<TData extends BaseRecord, TVariables>(
     params: CreateParams<TVariables>,
   ): Promise<CreateResponse<TData>> {
-    const url = `${params.resource}`;
+    const { resource, variables } = params;
+    const url = `${API_URL}/${resource}`;
+
+    if (resource === 'users') {
+      const response = await ky
+        .post(url, {
+          json: variables,
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .json<TData>();
+
+      return {
+        data: response,
+      };
+    }
+
     const response = await httpClient
-      .post(url, { json: params.variables })
+      .post(resource, { json: variables })
       .json<TData>();
 
     return {

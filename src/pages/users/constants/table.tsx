@@ -38,6 +38,13 @@ export const columns: FilterColumn<IUser>[] = [
     filterType: 'text',
   },
   {
+    title: 'Team',
+    dataIndex: 'team',
+    key: 'team',
+    sorter: true,
+    filterType: 'text',
+  },
+  {
     title: 'Date of Birth',
     dataIndex: 'dateOfBirth',
     key: 'dateOfBirth',

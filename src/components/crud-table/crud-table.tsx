@@ -9,12 +9,14 @@ import { DrawerForm } from '@components/drawer-form/drawer-form';
 import { PopoverSelect } from '@components/dropdown-select';
 import { DrawerFormProvider } from '@components/drawer-form';
 import { ColumnFilter } from '@components/column-filter';
-import { useViewMode } from '@contexts/ViewModeContext';
+import { IUser } from '@interfaces/users';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
   columns: any;
   renderForm: (formProps: FormProps) => React.ReactNode;
+  headerActions?: React.ReactNode;
+  permanentFilters?: any[];
   drawerWidth?: number;
   createInitialValues?: Partial<TData>;
   drawerTitles?: {
@@ -31,26 +33,23 @@ export function CrudTable<TData extends { id: number }>(
     resource,
     columns,
     renderForm,
+    headerActions,
+    permanentFilters,
     drawerWidth = 720,
     createInitialValues,
     drawerTitles = {},
   } = props;
 
-  const { viewMode } = useViewMode();
-  const { data: identity } = useGetIdentity<{ id: number }>();
+  const { data: identity } = useGetIdentity<IUser>();
 
   const { tableProps, setFilters } = useTable<TData>({
     filters: {
       mode: 'server',
+      permanent: permanentFilters,
     },
     sorters: { mode: 'server' },
     syncWithLocation: true,
     resource,
-    meta: {
-      // Pass view mode and user info to the backend
-      viewMode,
-      userId: identity?.id,
-    },
   });
 
   const createDrawerForm = useDrawerForm({
@@ -87,30 +86,25 @@ export function CrudTable<TData extends { id: number }>(
     [columns],
   );
 
-  // For user view, hide the actions column entirely
-  const processedColumns = React.useMemo(() => {
-    if (viewMode === 'user') {
-      return columns.filter((column: any) => column.key !== 'actions');
-    }
-    return columns;
-  }, [columns, viewMode]);
-
   const augmentedColumns = React.useMemo(
     () =>
-      processedColumns.map((column: any) => {
+      columns.map((column: any) => {
         if (column.key === 'actions' || !column.dataIndex) {
           return column;
         }
 
-        return {
-          ...column,
-          filterIcon: () => <FilterOutlined />,
-          filterDropdown: () => (
-            <ColumnFilter column={column} setFilters={setFilters} />
-          ),
-        };
+        if (identity?.role === 'manager') {
+          return {
+            ...column,
+            filterIcon: () => <FilterOutlined />,
+            filterDropdown: () => (
+              <ColumnFilter column={column} setFilters={setFilters} />
+            ),
+          };
+        }
+        return column;
       }),
-    [processedColumns, setFilters],
+    [columns, setFilters, identity?.role],
   );
 
   const [selectedColumns, setSelectedColumns] = React.useState(() => {
@@ -201,11 +195,10 @@ export function CrudTable<TData extends { id: number }>(
   return (
     <DrawerFormProvider drawerForm={editDrawerForm}>
       <List
-        createButtonProps={
-          viewMode === 'manager' ? createButtonProps : undefined
-        }
+        createButtonProps={createButtonProps}
         headerButtons={({ defaultButtons }) => (
           <Space>
+            {headerActions}
             <PopoverSelect
               options={augmentedColumns}
               selected={selectedColumns}
@@ -215,7 +208,7 @@ export function CrudTable<TData extends { id: number }>(
               optionLabel={(col: any) => col.title}
               buttonLabel="Select Columns"
             />
-            {viewMode === 'manager' && defaultButtons}
+            {defaultButtons}
           </Space>
         )}
       >
@@ -225,19 +218,17 @@ export function CrudTable<TData extends { id: number }>(
           columns={selectedColumns}
           scroll={{ x: true }}
         />
-        {viewMode === 'manager' && (
-          <DrawerForm
-            {...augmentedCreateDrawerForm}
-            renderForm={renderForm}
-            title={drawerTitles.create}
-            width={drawerWidth}
-          />
-        )}
+        <DrawerForm
+          {...augmentedCreateDrawerForm}
+          renderForm={renderForm}
+          title={drawerTitles.create}
+          width={drawerWidth}
+        />
         <DrawerForm
           {...editDrawerForm}
           renderForm={renderForm}
           title={
-            viewMode === 'user'
+            identity?.role === 'user'
               ? drawerTitles.view || 'View Details'
               : drawerTitles.edit
           }

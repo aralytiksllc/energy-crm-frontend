@@ -47,42 +47,36 @@ export const filterDataByDateRange = <T extends { createdAt: string }>(
   });
 };
 
-const calculateTaskHours = (
+const calculateHours = (
   tasks: Task[],
-  isManagerMode: boolean,
-  userId?: number,
+  hourType: 'estimatedHours' | 'actualHours',
 ): number => {
-  return tasks.reduce((sum, task) => {
-    if (isManagerMode) {
-      return (
-        sum +
-        (task.assignees?.reduce(
-          (taskSum: number, assignee: Assignee) =>
-            taskSum + (assignee.estimatedHours || 0),
-          0,
-        ) || 0)
-      );
+  let totalHours = 0;
+
+  for (const task of tasks) {
+    if (!task.assignees) continue;
+
+    for (const assignee of task.assignees) {
+      totalHours += assignee[hourType] || 0;
     }
-    const userAssignment = task.assignees?.find(
-      (assignee) => assignee.userId === userId,
-    );
-    return sum + (userAssignment?.estimatedHours || 0);
-  }, 0);
+  }
+
+  return totalHours;
 };
 
 export const calculateDashboardStats = (
   userCustomers: ICustomer[],
   userProjects: IProject[],
   userTasks: Task[],
-  isManagerMode: boolean,
-  userId?: number,
 ) => {
-  const plannedHours = calculateTaskHours(userTasks, isManagerMode, userId);
+  const plannedHours = calculateHours(userTasks, 'estimatedHours');
+  const workedHours = calculateHours(userTasks, 'actualHours');
+
   return {
     totalClients: userCustomers.length,
     totalProjects: userProjects.length,
     plannedHours,
-    workedHours: Math.round(plannedHours * 0.85),
+    workedHours,
   };
 };
 
@@ -90,8 +84,6 @@ export const processClientHours = (
   userProjects: IProject[],
   userCustomers: ICustomer[],
   userTasks: Task[],
-  isManagerMode: boolean,
-  userId?: number,
 ) => {
   const customerHours = new Map<string, number>();
 
@@ -102,7 +94,7 @@ export const processClientHours = (
     const projectTasks = userTasks.filter(
       (task) => task.projectId === project.id,
     );
-    const hours = calculateTaskHours(projectTasks, isManagerMode, userId);
+    const hours = calculateHours(projectTasks, 'estimatedHours');
 
     customerHours.set(
       customerName,
@@ -120,20 +112,14 @@ export const processClientHours = (
 export const processProjectHours = (
   userProjects: IProject[],
   userTasks: Task[],
-  isManagerMode: boolean,
-  userId?: number,
 ) => {
   return userProjects
     .map((project) => {
       const projectTasks = userTasks.filter(
         (task) => task.projectId === project.id,
       );
-      const plannedHours = calculateTaskHours(
-        projectTasks,
-        isManagerMode,
-        userId,
-      );
-      const actualHours = Math.round(plannedHours * 0.85);
+      const plannedHours = calculateHours(projectTasks, 'estimatedHours');
+      const actualHours = calculateHours(projectTasks, 'actualHours');
 
       return {
         name: project.name,
@@ -151,7 +137,9 @@ export const calculateLegacyTicketStats = (userTasks: Task[]) => {
   const ticketStatsMap = new Map<string, number>();
 
   userTasks.forEach((task) => {
-    const key = `${task.type} - ${task.isCompleted ? 'Completed' : 'Open'}`;
+    const isCompleted =
+      task.isCompleted || task.status?.toLowerCase() === 'done';
+    const key = `${task.type} - ${isCompleted ? 'Completed' : 'Open'}`;
     ticketStatsMap.set(key, (ticketStatsMap.get(key) || 0) + 1);
   });
 
@@ -162,22 +150,30 @@ export const calculateLegacyTicketStats = (userTasks: Task[]) => {
 
   if (result.length === 0) {
     return [
-      { type: 'Bug - Open', count: 0 },
-      { type: 'Feature - Completed', count: 0 },
-      { type: 'Task - Open', count: 0 },
-      { type: 'Enhancement - Completed', count: 0 },
+      { type: 'FEATURE - Open', count: 0 },
+      { type: 'BUG - Open', count: 0 },
+      { type: 'CODE_REVIEW - Open', count: 0 },
+      { type: 'TESTING - Open', count: 0 },
     ];
   }
+
   return result;
 };
 
 export interface TicketStats {
   total: number;
-  bugs: number;
-  features: number;
-  tasks: number;
   completed: number;
   overdue: number;
+  FEATURE: number;
+  BUG: number;
+  CODE_REVIEW: number;
+  TESTING: number;
+  DOCUMENTATION: number;
+  REFACTOR: number;
+  MEETING: number;
+  DEPLOYMENT: number;
+  RESEARCH: number;
+  OTHER: number;
 }
 
 export interface DeadlineInfo {
@@ -201,22 +197,46 @@ export interface ProductivityMetrics {
   };
 }
 
-export const calculateTicketStats = (tasks: Task[]): TicketStats => {
+export const calculateTicketStats = (
+  tasks: Task[],
+  userId?: number,
+  isManager?: boolean,
+): TicketStats => {
   const stats = {
     total: tasks.length,
-    bugs: tasks.filter((task) => task.type?.toLowerCase().includes('bug'))
-      .length,
-    features: tasks.filter((task) =>
-      task.type?.toLowerCase().includes('feature'),
-    ).length,
-    tasks: tasks.filter((task) => task.type?.toLowerCase().includes('task'))
-      .length,
-    completed: tasks.filter((item) => item.isCompleted).length,
+    completed: isManager
+      ? tasks.filter(
+          (item) => item.status?.toLowerCase() === 'done' || item.isCompleted,
+        ).length
+      : tasks.filter(
+          (item) =>
+            (item.status?.toLowerCase() === 'done' || item.isCompleted) &&
+            item.assignees?.some((assignee: any) => assignee.userId === userId),
+        ).length,
     overdue: tasks.filter((item) => {
-      if (item.isCompleted) return false;
+      if (isManager) {
+        if (item.status?.toLowerCase() === 'done' || item.isCompleted)
+          return false;
+      } else {
+        if (
+          (item.status?.toLowerCase() === 'done' || item.isCompleted) &&
+          item.assignees?.some((assignee: any) => assignee.userId === userId)
+        )
+          return false;
+      }
       const dueDate = item.dueDate;
       return dueDate && dayjs(dueDate).isBefore(dayjs(), 'day');
     }).length,
+    FEATURE: tasks.filter((task) => task.type === 'FEATURE').length,
+    BUG: tasks.filter((task) => task.type === 'BUG').length,
+    CODE_REVIEW: tasks.filter((task) => task.type === 'CODE_REVIEW').length,
+    TESTING: tasks.filter((task) => task.type === 'TESTING').length,
+    DOCUMENTATION: tasks.filter((task) => task.type === 'DOCUMENTATION').length,
+    REFACTOR: tasks.filter((task) => task.type === 'REFACTOR').length,
+    MEETING: tasks.filter((task) => task.type === 'MEETING').length,
+    DEPLOYMENT: tasks.filter((task) => task.type === 'DEPLOYMENT').length,
+    RESEARCH: tasks.filter((task) => task.type === 'RESEARCH').length,
+    OTHER: tasks.filter((task) => task.type === 'OTHER').length,
   };
 
   return stats;
@@ -231,7 +251,11 @@ export const getUpcomingDeadlines = (
   const cutoffDate = dayjs().add(daysAhead, 'day');
 
   tasks
-    .filter((task) => !task.isCompleted && task.dueDate)
+    .filter((task) => {
+      const isTaskCompleted =
+        task.isCompleted || task.status?.toLowerCase() === 'done';
+      return !isTaskCompleted && task.dueDate;
+    })
     .forEach((task) => {
       const dueDate = dayjs(task.dueDate);
       if (dueDate.isBefore(cutoffDate)) {
@@ -258,7 +282,9 @@ export const calculateProductivityMetrics = (
   projects: IProject[],
   userId: number,
 ): ProductivityMetrics => {
-  const completedTasks = tasks.filter((task) => task.isCompleted).length;
+  const completedTasks = tasks.filter(
+    (task) => task.status?.toLowerCase() === 'done',
+  ).length;
   const totalUserTasks = tasks.length;
   const taskCompletionRate =
     totalUserTasks > 0
@@ -266,7 +292,7 @@ export const calculateProductivityMetrics = (
       : 0;
 
   const overdueTasks = tasks.filter((task) => {
-    if (task.isCompleted) return false;
+    if (task.status?.toLowerCase() === 'done') return false;
     return task.dueDate && dayjs(task.dueDate).isBefore(dayjs(), 'day');
   }).length;
 
@@ -299,10 +325,16 @@ export const calculateProductivityMetrics = (
     return sum + (userAssignment?.estimatedHours || 0);
   }, 0);
 
-  const estimatedWorkedHours = Math.round(totalPlannedHours * 0.85);
+  const totalActualHours = tasks.reduce((sum, task) => {
+    const userAssignment = task.assignees?.find(
+      (assignee: Assignee) => assignee.userId === userId,
+    );
+    return sum + (userAssignment?.actualHours || 0);
+  }, 0);
+
   const completionRate =
     totalPlannedHours > 0
-      ? Math.round((estimatedWorkedHours / totalPlannedHours) * 100)
+      ? Math.round((totalActualHours / totalPlannedHours) * 100)
       : 0;
 
   return {

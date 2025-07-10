@@ -32,6 +32,7 @@ export const useKanbanColumnStyles = createStyles(
       display: flex;
       flex-direction: column;
       gap: 8px;
+      width: 360px;
     `,
   }),
 );

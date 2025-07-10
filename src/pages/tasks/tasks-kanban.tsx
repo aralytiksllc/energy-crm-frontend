@@ -2,9 +2,10 @@ import React, { useMemo, useCallback, useState } from 'react';
 import {
   useList,
   useUpdate,
-  useNavigation,
   useDelete,
   useCreate,
+  useCan,
+  useGetIdentity,
 } from '@refinedev/core';
 import { useModalForm } from '@refinedev/antd';
 import { KanbanBoard, KanbanBoardContainer } from './kanban/board';
@@ -13,20 +14,23 @@ import { KanbanColumn } from './kanban/column';
 import { KanbanItem } from './kanban/item';
 import { KanbanAddCardButton } from './components/kanban-add-card-button';
 import { TaskForm } from './components/task-form';
-import { useViewMode } from '@contexts/ViewModeContext';
 import {
   Modal,
   message,
   Form,
-  Descriptions,
   Tag,
   Space,
   Typography,
   Divider,
   Popconfirm,
+  InputNumber,
+  Button,
+  Row,
+  Col,
 } from 'antd';
 import dayjs from 'dayjs';
 import { useTasksKanbanStyles } from './tasks-kanban.styles';
+import { IUser } from '../../interfaces';
 
 const { Text, Title } = Typography;
 
@@ -40,32 +44,37 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export const Tasks: React.FC = () => {
-  const { viewMode } = useViewMode();
-  const { replace } = useNavigation();
   const { mutate: updateTask } = useUpdate();
   const { mutate: deleteTask } = useDelete();
   const { mutate: createTask } = useCreate();
   const { styles } = useTasksKanbanStyles();
+  const { data: identity } = useGetIdentity<IUser>();
+  const { mutate: updateAssignee } = useUpdate();
 
   const [form] = Form.useForm();
 
   // View card modal state
   const [isViewModalVisible, setIsViewModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [actualHours, setActualHours] = useState<Record<string, number | null>>(
+    {},
+  );
+
+  const { data: canEdit } = useCan({
+    resource: 'tasks',
+    action: 'edit',
+    params: { id: selectedTask?.id },
+  });
+
+  const { data: canDelete } = useCan({
+    resource: 'tasks',
+    action: 'delete',
+    params: { id: selectedTask?.id },
+  });
 
   const { data, isLoading, refetch } = useList({
     resource: 'tasks',
-    pagination: { mode: 'off' },
-    filters:
-      viewMode === 'user'
-        ? [
-            {
-              field: 'assignees.userId',
-              operator: 'eq',
-              value: 'current',
-            },
-          ]
-        : [],
+    pagination: { mode: 'off', pageSize: 1000 },
   });
 
   const tasks = data?.data || [];
@@ -83,8 +92,6 @@ export const Tasks: React.FC = () => {
 
   const handleDragEnd = useCallback(
     (event: any) => {
-      if (viewMode !== 'manager') return;
-
       const { active, over } = event;
       if (!active || !over || active.data.current?.status === over.id) return;
 
@@ -108,7 +115,7 @@ export const Tasks: React.FC = () => {
         },
       });
     },
-    [viewMode, updateTask],
+    [updateTask],
   );
 
   const createModalFormProps = useModalForm({
@@ -122,6 +129,47 @@ export const Tasks: React.FC = () => {
     action: 'edit',
     syncWithLocation: true,
   });
+  const transformTaskValues = (values: any) => {
+    const transformedValues = { ...values };
+    if (Array.isArray(transformedValues.assignees)) {
+      transformedValues.assignees = transformedValues.assignees
+        .filter((a: any) => a && a.userId)
+        .map((a: any) => ({
+          userId: a.userId,
+          estimatedHours: a.estimatedHours || 0,
+        }));
+    } else {
+      transformedValues.assignees = [];
+    }
+    return transformedValues;
+  };
+  const createModalFormPropsFixed = {
+    ...createModalFormProps,
+    formProps: {
+      ...createModalFormProps.formProps,
+      onFinish: async (values: any) => {
+        const transformed = transformTaskValues(values);
+        if (createModalFormProps.formProps.onFinish) {
+          const result =
+            await createModalFormProps.formProps.onFinish(transformed);
+          refetch();
+          return result;
+        }
+      },
+    },
+  };
+  const editModalFormPropsFixed = {
+    ...editModalFormProps,
+    formProps: {
+      ...editModalFormProps.formProps,
+      onFinish: async (values: any) => {
+        const transformed = transformTaskValues(values);
+        if (editModalFormProps.formProps.onFinish) {
+          return editModalFormProps.formProps.onFinish(transformed);
+        }
+      },
+    },
+  };
 
   const handleAddCard = useCallback(
     (args: { id: string }) => {
@@ -133,6 +181,13 @@ export const Tasks: React.FC = () => {
 
   const handleCardClick = useCallback((task: any) => {
     setSelectedTask(task);
+    if (task && Array.isArray(task.assignees)) {
+      const initialActualHours: Record<string, number | null> = {};
+      task.assignees.forEach((assignee: any) => {
+        initialActualHours[assignee.id] = assignee.actualHours ?? null;
+      });
+      setActualHours(initialActualHours);
+    }
     setIsViewModalVisible(true);
   }, []);
 
@@ -166,6 +221,42 @@ export const Tasks: React.FC = () => {
     },
     [deleteTask, selectedTask],
   );
+
+  const handleActualHoursChange = (
+    assigneeId: string,
+    value: number | null,
+  ) => {
+    setActualHours((prev) => ({ ...prev, [assigneeId]: value }));
+  };
+
+  const handleSaveActualHours = (assigneeId: string) => {
+    const hours = actualHours[assigneeId];
+    if (hours === null || hours === undefined) {
+      message.error('Please enter a valid number for actual hours.');
+      return;
+    }
+
+    updateAssignee(
+      {
+        resource: 'tasks/assignees',
+        id: assigneeId,
+        values: { actualHours: hours },
+        successNotification: {
+          message: 'Actual hours updated successfully!',
+          type: 'success',
+        },
+        errorNotification: {
+          message: 'Failed to update actual hours.',
+          type: 'error',
+        },
+      },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      },
+    );
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -211,7 +302,7 @@ export const Tasks: React.FC = () => {
               id={section.id}
               title={section.title}
               count={section.count}
-              onAddClick={viewMode === 'manager' ? handleAddCard : undefined}
+              onAddClick={() => handleAddCard({ id: section.id })}
             >
               {section.tasks.map((task: any) => (
                 <KanbanItem
@@ -223,14 +314,14 @@ export const Tasks: React.FC = () => {
                     task={task}
                     onClick={() => handleCardClick(task)}
                     onDelete={
-                      viewMode === 'manager'
+                      identity?.role === 'manager'
                         ? () => handleDeleteCard(task.id)
                         : undefined
                     }
                   />
                 </KanbanItem>
               ))}
-              {section.tasks.length === 0 && viewMode === 'manager' && (
+              {section.tasks.length === 0 && (
                 <KanbanAddCardButton
                   onClick={() => handleAddCard({ id: section.id })}
                 />
@@ -240,135 +331,202 @@ export const Tasks: React.FC = () => {
         </KanbanBoard>
       </KanbanBoardContainer>
 
-      <Modal {...createModalFormProps.modalProps}>
-        <TaskForm formProps={createModalFormProps.formProps} />
+      <Modal {...createModalFormPropsFixed.modalProps}>
+        <TaskForm formProps={createModalFormPropsFixed.formProps} />
       </Modal>
 
-      <Modal {...editModalFormProps.modalProps}>
-        <TaskForm formProps={editModalFormProps.formProps} />
+      <Modal {...editModalFormPropsFixed.modalProps}>
+        <TaskForm formProps={editModalFormPropsFixed.formProps} />
       </Modal>
 
       {/* View Task Modal */}
       <Modal
         title={
-          <Space>
-            <Title level={4} style={{ margin: 0 }}>
-              {selectedTask?.title}
-            </Title>
-            <Tag color={getPriorityColor(selectedTask?.priority)}>
-              {selectedTask?.priority || 'No Priority'}
-            </Tag>
-          </Space>
+          <div className={styles.viewModalHeader}>
+            <Space>
+              <Title level={4} style={{ margin: 0 }}>
+                {selectedTask?.title}
+              </Title>
+              <Tag color={getPriorityColor(selectedTask?.priority)}>
+                {selectedTask?.priority || 'No Priority'}
+              </Tag>
+              <Tag color="default">
+                {STATUS_LABELS[selectedTask?.status || 'todo']}
+              </Tag>
+            </Space>
+            {/* Removed viewMode === 'manager' check as per edit hint */}
+            <Space>
+              {canEdit?.can && (
+                <Button
+                  onClick={() => handleEditCard(selectedTask?.id)}
+                  type="default"
+                >
+                  Edit
+                </Button>
+              )}
+              {canDelete?.can && (
+                <Popconfirm
+                  title="Are you sure you want to delete this task?"
+                  onConfirm={() => handleDeleteCard(selectedTask?.id)}
+                  okText="Yes"
+                  cancelText="No"
+                  placement="leftTop"
+                >
+                  <Button danger>Delete</Button>
+                </Popconfirm>
+              )}
+            </Space>
+          </div>
         }
         open={isViewModalVisible}
         onCancel={() => {
           setIsViewModalVisible(false);
           setSelectedTask(null);
         }}
-        width={800}
+        width={700}
         destroyOnClose
-        footer={[
-          <Space key="footer" className={styles.viewModalFooter}>
-            <div>
-              {viewMode === 'manager' && (
-                <>
-                  <Tag
-                    color="blue"
-                    className={styles.editTag}
-                    onClick={() => handleEditCard(selectedTask?.id)}
-                  >
-                    Edit Task
-                  </Tag>
-                  <Popconfirm
-                    title="Are you sure you want to delete this task?"
-                    onConfirm={() => handleDeleteCard(selectedTask?.id)}
-                    okText="Yes"
-                    cancelText="No"
-                  >
-                    <Tag color="red" className={styles.deleteTag}>
-                      Delete Task
-                    </Tag>
-                  </Popconfirm>
-                </>
-              )}
-            </div>
-            <div>
-              <Tag color="default">
-                Status: {STATUS_LABELS[selectedTask?.status || 'todo']}
-              </Tag>
-            </div>
-          </Space>,
-        ]}
+        footer={null}
+        bodyStyle={{ padding: 0 }}
       >
         {selectedTask && (
-          <div>
-            <Descriptions column={1} bordered>
-              <Descriptions.Item label="Project">
-                <Tag color="blue">{selectedTask.project?.name}</Tag>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="Type">
-                <Tag color={getTypeColor(selectedTask.type)}>
-                  {selectedTask.type}
-                </Tag>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="Priority">
-                <Tag color={getPriorityColor(selectedTask.priority)}>
-                  {selectedTask.priority || 'No Priority'}
-                </Tag>
-              </Descriptions.Item>
-
-              {selectedTask.dueDate && (
-                <Descriptions.Item label="Due Date">
-                  <Text>
-                    {dayjs(selectedTask.dueDate).format('DD/MM/YYYY')}
+          <div className={styles.viewModalBody}>
+            <Row gutter={24} style={{ marginBottom: 16 }}>
+              <Col span={12}>
+                <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
+                    Project
                   </Text>
-                </Descriptions.Item>
-              )}
-
-              {selectedTask.description && (
-                <Descriptions.Item label="Description">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: selectedTask.description,
-                    }}
-                  />
-                </Descriptions.Item>
-              )}
-            </Descriptions>
-
-            <Divider />
-
-            <Title level={5}>Assignees</Title>
-            {selectedTask.assignees?.length > 0 ? (
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {selectedTask.assignees.map((assignee: any) => (
-                  <div
-                    key={assignee.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text>
-                      {assignee.user.firstName} {assignee.user.lastName}
-                    </Text>
-                    <Space>
-                      <Tag color="green">
-                        {assignee.estimatedHours}h estimated
-                      </Tag>
-                      {assignee.actualHours && (
-                        <Tag color="blue">{assignee.actualHours}h actual</Tag>
-                      )}
-                    </Space>
-                  </div>
-                ))}
-              </Space>
-            ) : (
-              <Text type="secondary">No assignees</Text>
+                  <Space>
+                    <Tag color="blue">{selectedTask.project?.name}</Tag>
+                  </Space>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
+                    Type
+                  </Text>
+                  <Space>
+                    <Tag color={getTypeColor(selectedTask.type)}>
+                      {selectedTask.type}
+                    </Tag>
+                  </Space>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
+                    Due Date
+                  </Text>
+                  <Space>
+                    <Tag color="default">
+                      {dayjs(selectedTask.dueDate).format('DD/MM/YYYY')}
+                    </Tag>
+                  </Space>
+                </Space>
+              </Col>
+              <Col span={12}>
+                <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
+                    Status
+                  </Text>
+                  <Space>
+                    <Tag color={getPriorityColor(selectedTask?.priority)}>
+                      {STATUS_LABELS[selectedTask?.status || 'todo']}
+                    </Tag>
+                  </Space>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
+                    Priority
+                  </Text>
+                  <Space>
+                    <Tag color={getPriorityColor(selectedTask.priority)}>
+                      {selectedTask.priority || 'No Priority'}
+                    </Tag>
+                  </Space>
+                </Space>
+              </Col>
+            </Row>
+            <Divider style={{ margin: '16px 0' }} />
+            {selectedTask.description && (
+              <div style={{ marginBottom: 24 }}>
+                <Text strong>Description</Text>
+                <div
+                  style={{
+                    background: '#fff',
+                    borderRadius: 8,
+                    padding: 16,
+                    marginTop: 8,
+                    fontSize: 15,
+                  }}
+                  dangerouslySetInnerHTML={{ __html: selectedTask.description }}
+                />
+              </div>
             )}
+            <Divider style={{ margin: '16px 0' }} />
+            <div
+              style={{
+                marginBottom: 8,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Title level={5} style={{ margin: 0 }}>
+                Assignees
+              </Title>
+              {selectedTask?.assignees && (
+                <Text strong style={{ fontSize: 13 }}>
+                  Total Estimated Hours:{' '}
+                  {selectedTask.assignees.reduce(
+                    (acc: number, assignee: any) =>
+                      acc + (assignee.estimatedHours || 0),
+                    0,
+                  )}
+                </Text>
+              )}
+            </div>
+            <Row gutter={[0, 12]}>
+              {selectedTask?.assignees?.map((assignee: any) => {
+                // Removed isCurrentUser and canEditHours as per edit hint
+                return (
+                  <Col span={24} key={assignee.id}>
+                    <div className={styles.assigneeCard}>
+                      <Space size={16} align="center">
+                        <span className={styles.assigneeAvatar}>
+                          {assignee.user.firstName?.[0]}
+                          {assignee.user.lastName?.[0]}
+                        </span>
+                        <div className={styles.assigneeInfo}>
+                          <Text>
+                            {assignee.user.firstName} {assignee.user.lastName}
+                          </Text>
+                          <div style={{ fontSize: 12, color: '#888' }}>
+                            {assignee.user.email}
+                          </div>
+                        </div>
+                      </Space>
+                      <div className={styles.assigneeHours}>
+                        <Tag
+                          color="green"
+                          style={{
+                            fontSize: 12,
+                            padding: '3px 10px',
+                            fontWeight: 500,
+                          }}
+                        >
+                          {assignee.estimatedHours}h est.
+                        </Tag>
+                        {/* Removed canEditHours check as per edit hint */}
+                        {assignee.actualHours && (
+                          <Tag
+                            color="blue"
+                            style={{
+                              fontSize: 12,
+                              padding: '3px 10px',
+                              fontWeight: 500,
+                            }}
+                          >
+                            {assignee.actualHours}h actual
+                          </Tag>
+                        )}
+                      </div>
+                    </div>
+                  </Col>
+                );
+              })}
+            </Row>
           </div>
         )}
       </Modal>
@@ -385,12 +543,7 @@ const PageSkeleton = () => {
     <div className={styles.skeletonContainer}>
       <KanbanBoardContainer>
         {Array.from({ length: columnCount }).map((_, index) => (
-          <KanbanColumn
-            key={index}
-            id={`skeleton-${index}`}
-            title="Loading..."
-            count={0}
-          >
+          <KanbanColumn key={index} id={`skeleton-${index}`} title="" count={0}>
             {Array.from({ length: itemCount }).map((_, itemIndex) => (
               <div key={itemIndex} className={styles.skeletonCard} />
             ))}

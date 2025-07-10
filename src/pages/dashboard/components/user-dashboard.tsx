@@ -14,7 +14,6 @@ import { IUser, IPlanning, IProject, ICustomer, Task } from '@interfaces/index';
 import dayjs, { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 
-import { useViewMode } from '@contexts/ViewModeContext';
 import {
   getDateRangeFromFilter,
   filterDataByDateRange,
@@ -29,15 +28,12 @@ import {
   type DeadlineInfo,
   type ProductivityMetrics,
 } from '../utils';
-import {
-  DeadlineTracker,
-  TicketStatsCard,
-} from '../../../components/dashboard-components';
 import { ManagerStatsCards } from './ManagerStatsCards';
 import { UserStatsCards } from './UserStatsCards';
 import { ClientHoursPieChart } from './ClientHoursPieChart';
 import { ProjectHoursBarChart } from './ProjectHoursBarChart';
 import { LegacyTicketStats } from './LegacyTicketStats';
+import { useUserDashboardStyles } from './user-dashboard.styles';
 
 dayjs.extend(isBetween);
 
@@ -45,7 +41,6 @@ const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export const UserDashboard: React.FC = () => {
-  const { viewMode } = useViewMode();
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [quickFilter, setQuickFilter] = useState<string>('month');
 
@@ -82,78 +77,39 @@ export const UserDashboard: React.FC = () => {
     [allTasks, currentDateRange],
   );
 
-  const userTasks = useMemo(() => {
-    if (viewMode === 'manager' || !currentUser?.id) {
-      return filteredTasks;
-    }
-    return filteredTasks.filter((task: Task) =>
-      task.assignees?.some(
-        (assignee: any) => assignee.userId === currentUser.id,
-      ),
-    );
-  }, [filteredTasks, currentUser?.id, viewMode]);
-
-  const userProjects = useMemo(() => {
-    if (viewMode === 'manager') return allProjects;
-    if (!currentUser?.id) return [];
-    const userProjectIds = new Set(userTasks.map((t: Task) => t.projectId));
-    return allProjects.filter((project) => userProjectIds.has(project.id));
-  }, [allProjects, userTasks, currentUser?.id, viewMode]);
-
-  const userCustomers = useMemo(() => {
-    if (viewMode === 'manager') return allCustomers;
-    const userCustomerIds = new Set(userProjects.map((p) => p.customerId));
-    return allCustomers.filter((customer) => userCustomerIds.has(customer.id));
-  }, [userProjects, allCustomers, viewMode]);
-
   const stats = useMemo(
-    () =>
-      calculateDashboardStats(
-        userCustomers,
-        userProjects,
-        userTasks,
-        viewMode === 'manager',
-        currentUser?.id,
-      ),
-    [userCustomers, userProjects, userTasks, viewMode, currentUser?.id],
+    () => calculateDashboardStats(allCustomers, allProjects, filteredTasks),
+    [allCustomers, allProjects, filteredTasks],
   );
 
   const hoursByClient = useMemo(
-    () =>
-      processClientHours(
-        userProjects,
-        userCustomers,
-        userTasks,
-        viewMode === 'manager',
-        currentUser?.id,
-      ),
-    [userProjects, userCustomers, userTasks, viewMode, currentUser?.id],
+    () => processClientHours(allProjects, allCustomers, filteredTasks),
+    [allProjects, allCustomers, filteredTasks],
   );
 
   const hoursByProject = useMemo(
-    () =>
-      processProjectHours(
-        userProjects,
-        userTasks,
-        viewMode === 'manager',
-        currentUser?.id,
-      ),
-    [userProjects, userTasks, viewMode, currentUser?.id],
+    () => processProjectHours(allProjects, filteredTasks),
+    [allProjects, filteredTasks],
   );
 
   const ticketStats: TicketStats = useMemo(
-    () => calculateTicketStats(userTasks),
-    [userTasks],
+    () =>
+      calculateTicketStats(
+        filteredTasks,
+        Number(currentUser?.id),
+        currentUser?.role?.name === 'manager',
+      ),
+    [filteredTasks, currentUser],
   );
 
   const legacyStats = useMemo(
-    () => calculateLegacyTicketStats(userTasks),
-    [userTasks],
+    () => calculateLegacyTicketStats(filteredTasks),
+    [filteredTasks],
   );
 
   const upcomingDeadlines: DeadlineInfo[] = useMemo(
-    () => getUpcomingDeadlines(userTasks, userProjects),
-    [userTasks, userProjects],
+    () => getUpcomingDeadlines(filteredTasks, allProjects),
+    [filteredTasks, allProjects],
   );
 
   const productivityMetrics: ProductivityMetrics = useMemo(() => {
@@ -168,11 +124,11 @@ export const UserDashboard: React.FC = () => {
         mostActiveProject: { name: 'N/A', hours: 0 },
       };
     return calculateProductivityMetrics(
-      userTasks,
-      userProjects,
-      currentUser.id,
+      filteredTasks,
+      allProjects,
+      Number(currentUser.id),
     );
-  }, [userTasks, userProjects, currentUser?.id]);
+  }, [filteredTasks, allProjects, currentUser?.id]);
 
   const handleQuickFilterChange = (value: string) => {
     setQuickFilter(value);
@@ -193,114 +149,104 @@ export const UserDashboard: React.FC = () => {
     projectsLoading ||
     customersLoading;
 
+  const { styles } = useUserDashboardStyles();
+
   if (isLoading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '400px',
-        }}
-      >
+      <div className={styles.loadingContainer}>
         <Spin size="large" />
       </div>
     );
   }
 
-  const renderProductivityReport = () => (
-    <Card
-      title={
-        viewMode === 'manager'
-          ? 'Kohë reale: Raporti i produktivitetit'
-          : 'Kohë reale: Raporti i produktivitetit personal'
-      }
-    >
-      <Typography.Paragraph>
-        {viewMode === 'manager' ? (
-          <>
-            Në këtë muaj janë kryer <strong>87%</strong> e orëve të
-            planifikuara. Ekipi ka tejkaluar pritshmëritë në projektet kritike.
+  const renderProductivityReport = () => {
+    if (currentUser?.role?.name === 'manager') {
+      const { plannedHours, workedHours } = stats;
+      const percent =
+        plannedHours > 0 ? Math.round((workedHours / plannedHours) * 100) : 0;
+      const overworkedProject = hoursByProject.find(
+        (p) => p.actualHours > p.plannedHours,
+      );
+      return (
+        <Card title="Kohë reale: Raporti i produktivitetit">
+          <Typography.Paragraph>
+            Në këtë periudhë janë kryer <strong>{percent}%</strong> e orëve të
+            planifikuara.
+            {percent >= 100 ? ' Ekipi ka tejkaluar pritshmëritë!' : null}
             <br />
             <br />
-            <strong>Rekomandim:</strong> Rishiko prioritetet për klientin B, ku
-            janë alokuar më shumë orë se sa është buxhetuar.
-          </>
-        ) : (
-          <>
-            {productivityMetrics.totalUserTasks > 0 ? (
+            {overworkedProject ? (
               <>
-                You have completed{' '}
-                <strong>{productivityMetrics.completedTasks}</strong> out of{' '}
-                <strong>{productivityMetrics.totalUserTasks}</strong> tasks.
-                {productivityMetrics.taskCompletionRate > 80
-                  ? " Excellent work! You're exceeding expectations."
-                  : productivityMetrics.taskCompletionRate > 60
-                    ? ' Good progress! Keep up the momentum.'
-                    : ' Consider prioritizing task completion to improve your efficiency.'}
-                <br />
-                <br />
-                <strong>Your Performance:</strong>
-                <ul>
-                  <li>
-                    Most active project:{' '}
-                    <strong>
-                      {productivityMetrics.mostActiveProject?.name || 'N/A'}
-                    </strong>{' '}
-                    ({productivityMetrics.mostActiveProject?.hours || 0})
-                  </li>
-                  <li>
-                    Tasks due this week:{' '}
-                    <strong>{productivityMetrics.thisWeekTasks}</strong>
-                  </li>
-                  <li>
-                    Overdue tasks:{' '}
-                    <strong>{productivityMetrics.overdueTasks}</strong>
-                  </li>
-                </ul>
+                <strong>Rekomandim:</strong> Rishiko prioritetet për projektin{' '}
+                <strong>{overworkedProject.name}</strong>, ku janë alokuar më
+                shumë orë ({overworkedProject.actualHours}) se sa është
+                planifikuar ({overworkedProject.plannedHours}).
               </>
             ) : (
-              'Welcome! Once you are assigned tasks, this dashboard will show your personal metrics.'
+              <>
+                <strong>Rekomandim:</strong> Ekipi po performon mirë në të
+                gjitha projektet.
+              </>
             )}
-          </>
-        )}
-      </Typography.Paragraph>
-    </Card>
-  );
+          </Typography.Paragraph>
+        </Card>
+      );
+    }
+    return (
+      <Card title="Kohë reale: Raporti i produktivitetit personal">
+        <Typography.Paragraph>
+          {productivityMetrics.totalUserTasks > 0 ? (
+            <>
+              You have completed{' '}
+              <strong>{productivityMetrics.completedTasks}</strong> out of{' '}
+              <strong>{productivityMetrics.totalUserTasks}</strong> tasks.
+              {productivityMetrics.taskCompletionRate > 80
+                ? " Excellent work! You're exceeding expectations."
+                : productivityMetrics.taskCompletionRate > 60
+                  ? ' Good progress! Keep up the momentum.'
+                  : ' Consider prioritizing task completion to improve your efficiency.'}
+              <br />
+              <br />
+              <strong>Your Performance:</strong>
+              <ul>
+                <li>
+                  Most active project:{' '}
+                  <strong>
+                    {productivityMetrics.mostActiveProject?.name || 'N/A'}
+                  </strong>{' '}
+                  ({productivityMetrics.mostActiveProject?.hours || 0})
+                </li>
+                <li>
+                  Tasks due this week:{' '}
+                  <strong>{productivityMetrics.thisWeekTasks}</strong>
+                </li>
+                <li>
+                  Overdue tasks:{' '}
+                  <strong>{productivityMetrics.overdueTasks}</strong>
+                </li>
+              </ul>
+            </>
+          ) : (
+            <Text>No tasks assigned in the selected period.</Text>
+          )}
+        </Typography.Paragraph>
+      </Card>
+    );
+  };
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+    <Space direction="vertical" size="large" className={styles.verticalSpace}>
       <Card>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
+        <div className={styles.headerRow}>
           <div>
             <Title level={3}>
               Welcome back, {currentUser?.firstName} {currentUser?.lastName}!
             </Title>
             <Text type="secondary">
-              {viewMode === 'manager'
-                ? "Here's your team dashboard with all projects and metrics."
-                : "Here's your personal dashboard with your assignments and progress."}
+              {currentUser?.role?.name === 'manager' ? 'Manager' : 'User'}{' '}
+              Account
             </Text>
           </div>
-        </div>
-      </Card>
-
-      <Card>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '16px',
-          }}
-        >
           <Space>
             <Text strong>Time Period:</Text>
             <Select
@@ -308,11 +254,8 @@ export const UserDashboard: React.FC = () => {
               onChange={handleQuickFilterChange}
               style={{ width: 120 }}
             >
-              <Select.Option value="today">Today</Select.Option>
               <Select.Option value="week">This Week</Select.Option>
               <Select.Option value="month">This Month</Select.Option>
-              <Select.Option value="lastMonth">Last Month</Select.Option>
-              <Select.Option value="quarter">Last 3 Months</Select.Option>
               <Select.Option value="year">This Year</Select.Option>
               <Select.Option value="custom">Custom Range</Select.Option>
             </Select>
@@ -324,25 +267,56 @@ export const UserDashboard: React.FC = () => {
               />
             )}
           </Space>
-          {currentDateRange && (
-            <Text type="secondary">
-              Showing data from {currentDateRange[0].format('MMM DD, YYYY')} to{' '}
-              {currentDateRange[1].format('MMM DD, YYYY')}
-            </Text>
-          )}
         </div>
       </Card>
 
-      {viewMode === 'manager' ? (
-        <>
-          <ManagerStatsCards
-            activePlannings={
-              allPlannings.filter((p: IPlanning) => !p.isCompleted).length
-            }
-            totalProjects={stats.totalProjects}
-            plannedHours={stats.plannedHours}
-            workedHours={stats.workedHours}
-          />
+      {currentUser?.role?.name === 'manager' ? (
+        <ManagerStatsCards
+          activePlannings={allPlannings.filter((p) => !p.isCompleted).length}
+          totalProjects={stats.totalProjects}
+          plannedHours={stats.plannedHours}
+          workedHours={stats.workedHours}
+        />
+      ) : (
+        <UserStatsCards
+          activeTasks={
+            allTasks.filter(
+              (t) =>
+                !t.isCompleted &&
+                t.assignees?.some((a) => a.userId === Number(currentUser?.id)),
+            ).length
+          }
+          projectCount={
+            [
+              ...new Set(
+                allTasks
+                  .filter((t) =>
+                    t.assignees?.some(
+                      (a) => a.userId === Number(currentUser?.id),
+                    ),
+                  )
+                  .map((t) => t.projectId),
+              ),
+            ].length
+          }
+          completionRate={productivityMetrics.taskCompletionRate}
+          plannedHours={allTasks
+            .filter((task) =>
+              task.assignees?.some(
+                (assignee) => assignee.userId === Number(currentUser?.id),
+              ),
+            )
+            .reduce((total, task) => {
+              const userAssignee = task.assignees?.find(
+                (assignee) => assignee.userId === Number(currentUser?.id),
+              );
+              return total + (userAssignee?.estimatedHours || 0);
+            }, 0)}
+        />
+      )}
+
+      <Row gutter={24}>
+        <Col span={24}>
           <Row gutter={16}>
             <Col span={10}>
               <ClientHoursPieChart
@@ -358,36 +332,8 @@ export const UserDashboard: React.FC = () => {
             </Col>
           </Row>
           <LegacyTicketStats stats={legacyStats} />
-        </>
-      ) : (
-        <>
-          <UserStatsCards
-            activeTasks={userTasks.filter((t: Task) => !t.isCompleted).length}
-            projectCount={userProjects.length}
-            completionRate={productivityMetrics.taskCompletionRate}
-            plannedHours={stats.plannedHours}
-          />
-          <Row gutter={16}>
-            <Col span={14}>
-              <TicketStatsCard
-                stats={ticketStats}
-                title="Statistikat e Tiketave"
-              />
-            </Col>
-            <Col span={10}>
-              <DeadlineTracker
-                deadlines={upcomingDeadlines}
-                title="Upcoming Deadlines"
-              />
-            </Col>
-          </Row>
-          <ProjectHoursBarChart
-            data={hoursByProject}
-            title="Orët e shpenzuara sipas projektit"
-          />
-        </>
-      )}
-
+        </Col>
+      </Row>
       {renderProductivityReport()}
     </Space>
   );

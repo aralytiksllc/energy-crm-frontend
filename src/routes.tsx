@@ -8,8 +8,6 @@ import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 // Internal imports
 import { Header } from '@components/header';
 import { ColorModeContextProvider } from '@contexts/color-mode';
-import { ViewModeProvider } from '@contexts/ViewModeContext';
-import { ViewSwitcher } from '@components/view-switcher';
 import {
   Register,
   Login,
@@ -22,47 +20,46 @@ import { Dashboard } from '@modules/dashboard';
 import { Planning } from '@modules/planning';
 import { Projects } from '@modules/projects';
 import { Customers } from '@modules/customers';
+import { PermissionsMatrix } from '@modules/permissions';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
     <Route
       element={
         <ColorModeContextProvider>
-          <ViewModeProvider>
-            <Authenticated
-              key="authenticated-inner"
-              fallback={<CatchAllNavigate to="/login" />}
+          <Authenticated
+            key="authenticated-inner"
+            fallback={<CatchAllNavigate to="/login" />}
+          >
+            <ThemedLayoutV2
+              Header={Header}
+              Sider={(props) => (
+                <ThemedSiderV2
+                  {...props}
+                  fixed
+                  render={({ items, logout }) => (
+                    <>
+                      {items}
+                      {logout}
+                    </>
+                  )}
+                />
+              )}
             >
-              <ThemedLayoutV2
-                Header={Header}
-                Sider={(props) => (
-                  <ThemedSiderV2
-                    {...props}
-                    fixed
-                    render={({ items, logout, collapsed }) => (
-                      <>
-                        {items}
-                        {logout}
-                        <ViewSwitcher collapsed={collapsed} />
-                      </>
-                    )}
-                  />
-                )}
-              >
-                <Outlet />
-              </ThemedLayoutV2>
-            </Authenticated>
-          </ViewModeProvider>
+              <Outlet />
+            </ThemedLayoutV2>
+          </Authenticated>
         </ColorModeContextProvider>
       }
     >
-      <Route index element={<NavigateToResource resource="users" />} />
+      <Route index element={<NavigateToResource resource="dashboard" />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/users" element={<Users />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/planning" element={<Planning />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/customers" element={<Customers />} />
+      <Route path="/permissions" element={<PermissionsMatrix />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route
