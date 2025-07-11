@@ -1,7 +1,9 @@
-import { Rule } from 'antd/lib/form';
-import { IUser } from '@interfaces/users';
+import type { Rule } from 'antd/lib/form';
+import type { IUser } from '@interfaces/users';
 
-export const rules: Partial<Record<keyof IUser, Rule[]>> = {
+type UserFormRules = Partial<Record<keyof IUser, Rule[]>>;
+
+export const rules: UserFormRules = {
   firstName: [
     {
       required: true,
@@ -24,53 +26,20 @@ export const rules: Partial<Record<keyof IUser, Rule[]>> = {
       message: 'Please enter a valid email',
     },
   ],
+  role: [
+    {
+      required: true,
+      message: 'Role is required',
+    },
+  ],
   password: [
     {
       required: true,
       message: 'Password is required',
     },
     {
-      min: 6,
-      message: 'Password must be at least 6 characters',
+      min: 8,
+      message: 'Password must be at least 8 characters',
     },
   ],
-  dateOfBirth: [
-    {
-      required: true,
-      message: 'Date of birth is required',
-    },
-  ],
-  dateOfJoining: [
-    {
-      required: true,
-      message: 'Date of joining is required',
-    },
-  ],
-  isActive: [
-    {
-      required: true,
-      message: 'Active status is required',
-    },
-  ],
-  notes: [
-    {
-      max: 500,
-      message: 'Notes cannot exceed 500 characters',
-    },
-  ],
-  settings: [
-    {
-      validator: (_, value) => {
-        if (!value) {
-          return Promise.resolve();
-        }
-        try {
-          JSON.parse(value);
-          return Promise.resolve();
-        } catch {
-          return Promise.reject(new Error('Settings must be a valid JSON'));
-        }
-      },
-    },
-  ],
-} as const;
+};

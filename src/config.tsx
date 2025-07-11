@@ -1,4 +1,3 @@
-// External imports
 import { RefineProps } from '@refinedev/core';
 import { useNotificationProvider } from '@refinedev/antd';
 import routerBindings from '@refinedev/react-router';
@@ -9,15 +8,16 @@ import {
   ProfileOutlined,
   CalendarOutlined,
   CheckSquareOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 
-// Internal imports
-import { authProvider, dataProvider } from '@providers';
+import { authProvider, dataProvider, accessControlProvider } from '@providers';
 import { LogoSvg } from '@components/logo-svg';
 
 export const refineProps: RefineProps = {
   authProvider: authProvider,
   dataProvider: dataProvider,
+  accessControlProvider: accessControlProvider,
   routerProvider: routerBindings,
   notificationProvider: useNotificationProvider,
   resources: [
@@ -67,16 +67,42 @@ export const refineProps: RefineProps = {
       },
     },
     {
-      name: 'planning',
+      name: 'plannings',
       list: '/planning',
       meta: {
-        canDelete: true,
+        label: 'Planning',
         icon: <CalendarOutlined />,
+      },
+    },
+    {
+      name: 'permissions',
+      list: '/permissions',
+      meta: {
+        label: 'Permissions',
+        icon: <SettingOutlined />,
+      },
+    },
+    {
+      name: 'roles',
+      meta: {
+        hide: true,
+      },
+    },
+    {
+      name: 'role-permissions',
+      meta: {
+        hide: true,
+      },
+    },
+    {
+      name: 'project-members',
+      meta: {
+        hide: true,
       },
     },
   ],
   options: {
-    syncWithLocation: true,
+    syncWithLocation: false,
     warnWhenUnsavedChanges: true,
     useNewQueryKeys: true,
     projectId: 'DLUNzF-hNHv7s-rovOa5',

@@ -1,20 +1,19 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Input, Select, Space } from 'antd';
+import { Input, Select, Space, DatePicker, InputNumber } from 'antd';
 import { LogicalFilter } from '@refinedev/core';
-import { filterOperators } from './constants';
+import { dateOperators, numberOperators, textOperators } from './constants';
 import { ColumnFilterProps } from './column-filter.types';
-import { ColumnType } from 'antd/es/table';
 import { useColumnFilterStyles } from './column-filter.styles';
 
-export const ColumnFilter: FC<ColumnFilterProps> = ({
+export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
+  column,
   setFilters,
-  columns = [],
 }) => {
   const { styles } = useColumnFilterStyles();
+  const { dataIndex, filterType = 'text' } = column;
 
   const [filterValues, setFilterValues] = useState({
-    field: '',
-    operator: 'contains' as const,
+    operator: filterType === 'text' ? 'ilike' : 'eq',
     value: '',
   });
 
@@ -26,34 +25,20 @@ export const ColumnFilter: FC<ColumnFilterProps> = ({
         filterValues.value === undefined
       ) {
         setFilters([], 'replace');
-      } else if (filterValues.field && filterValues.operator) {
+      } else if (dataIndex && filterValues.operator) {
         const filter: LogicalFilter = {
-          field: filterValues.field,
-          operator: filterValues.operator,
-          value: filterValues.value,
+          field: dataIndex.toString(),
+          operator: filterValues.operator as any,
+          value: ['ilike', 'like'].includes(filterValues.operator)
+            ? `%${filterValues.value}%`
+            : filterValues.value,
         };
         setFilters([filter], 'replace');
       }
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [
-    filterValues.value,
-    filterValues.field,
-    filterValues.operator,
-    setFilters,
-  ]);
-
-  const handleFieldChange = useCallback(
-    (field: string) => {
-      setFilterValues({
-        ...filterValues,
-        field,
-        value: '',
-      });
-    },
-    [filterValues],
-  );
+  }, [filterValues.value, filterValues.operator, dataIndex, setFilters]);
 
   const handleOperatorChange = useCallback(
     (operator: any) => {
@@ -67,43 +52,67 @@ export const ColumnFilter: FC<ColumnFilterProps> = ({
   );
 
   const handleValueChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (value: any) => {
       setFilterValues({
         ...filterValues,
-        value: e.target.value,
+        value,
       });
     },
     [filterValues],
   );
 
-  const fieldOptions = useMemo(() => {
-    return columns
-      .filter((column): column is ColumnType<any> & { dataIndex: string } =>
-        Boolean(column.dataIndex),
-      )
-      .map((column) => ({
-        label: (column.title as string) || column.dataIndex,
-        value: column.dataIndex,
-      }));
-  }, [columns]);
+  const operatorOptions = useMemo(() => {
+    switch (filterType) {
+      case 'number':
+        return numberOperators;
+      case 'date':
+        return dateOperators;
+      case 'text':
+      default:
+        return textOperators;
+    }
+  }, [filterType]);
+
+  const renderInput = () => {
+    switch (filterType) {
+      case 'number':
+        return (
+          <InputNumber
+            className={styles.input}
+            placeholder="Enter value"
+            value={filterValues.value as any}
+            onChange={handleValueChange}
+            style={{ width: '100%' }}
+          />
+        );
+      case 'date':
+        return (
+          <DatePicker
+            className={styles.input}
+            placeholder="Select date"
+            value={filterValues.value as any}
+            onChange={handleValueChange}
+            style={{ width: '100%' }}
+          />
+        );
+      case 'text':
+      default:
+        return (
+          <Input
+            className={styles.input}
+            placeholder="Type to filter..."
+            value={filterValues.value}
+            onChange={(e) => handleValueChange(e.target.value)}
+            allowClear
+            style={{ width: '100%' }}
+          />
+        );
+    }
+  };
 
   return (
     <div className={styles.container}>
       <Space direction="horizontal" size="small">
-        <Select
-          className={styles.input}
-          placeholder="Select field"
-          value={filterValues.field || undefined}
-          onChange={handleFieldChange}
-          style={{ width: 150 }}
-        >
-          {fieldOptions.map((option) => (
-            <Select.Option key={option.value} value={option.value}>
-              {option.label}
-            </Select.Option>
-          ))}
-        </Select>
-
         <Select
           className={styles.input}
           placeholder="Select operator"
@@ -111,21 +120,14 @@ export const ColumnFilter: FC<ColumnFilterProps> = ({
           onChange={handleOperatorChange}
           style={{ width: 120 }}
         >
-          {filterOperators.map((operator) => (
+          {operatorOptions.map((operator: { value: string; label: string }) => (
             <Select.Option key={operator.value} value={operator.value}>
               {operator.label}
             </Select.Option>
           ))}
         </Select>
 
-        <Input
-          className={styles.input}
-          placeholder="Type to filter..."
-          value={filterValues.value}
-          onChange={handleValueChange}
-          allowClear
-          style={{ width: '100%' }}
-        />
+        {renderInput()}
       </Space>
     </div>
   );

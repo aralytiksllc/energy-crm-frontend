@@ -1,20 +1,21 @@
-import type { ColumnsType } from 'antd/es/table';
 import { Space, Tag, Typography } from 'antd';
-import dayjs from 'dayjs';
 
 import type { Task } from '@interfaces/task';
 import { EditButton } from '@components/edit-button';
 import { DeleteButton } from '@components/delete-button';
+import { FilterColumn } from '@components/column-filter/column-filter.types';
+import { formatTableDate } from '@helpers/date-utils';
 
 const { Text } = Typography;
 
-export const columns: ColumnsType<Task> = [
+export const columns: FilterColumn<Task>[] = [
   {
     title: 'ID',
     dataIndex: 'id',
     key: 'id',
     width: 80,
     sorter: true,
+    filterType: 'number',
   },
   {
     title: 'Title',
@@ -22,6 +23,7 @@ export const columns: ColumnsType<Task> = [
     key: 'title',
     sorter: true,
     render: (title: string) => <Text strong>{title}</Text>,
+    filterType: 'text',
   },
   {
     title: 'Priority',
@@ -29,6 +31,7 @@ export const columns: ColumnsType<Task> = [
     key: 'priority',
     sorter: true,
     render: (priority: string) => <Tag>{priority}</Tag>,
+    filterType: 'text',
   },
   {
     title: 'Status',
@@ -46,8 +49,8 @@ export const columns: ColumnsType<Task> = [
     dataIndex: 'dueDate',
     key: 'dueDate',
     sorter: true,
-    render: (date?: string) =>
-      date ? dayjs(date).format('MMM DD, YYYY') : '-',
+    render: (date?: string) => formatTableDate(date),
+    filterType: 'date',
   },
   {
     title: 'Actions',

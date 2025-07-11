@@ -1,26 +1,38 @@
 import type { BaseRecord } from '@refinedev/core';
 
-export interface IPlanningAssignment extends BaseRecord {
+export interface IPlanning extends BaseRecord {
   id: number;
-  userId: number;
-  projectId: number;
+  title: string;
+  description?: string;
   startDate: string;
-  endDate?: string;
-  allocatedHours: number;
-  status: 'planned' | 'active' | 'completed' | 'cancelled';
-  priority: 'low' | 'medium' | 'high';
+  endDate: string;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: {
+  assignedUserId: number;
+  assignedUser: {
     id: number;
     firstName: string;
     lastName: string;
     email: string;
   };
-  project?: {
+  projectId: number;
+  project: {
     id: number;
     name: string;
-    description?: string;
   };
+  isCompleted: boolean;
+  completedDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IPlanningFormValues {
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  notes?: string;
+  assignedUserId: number;
+  projectId: number;
+  isCompleted?: boolean;
+  completedDate?: string;
 }

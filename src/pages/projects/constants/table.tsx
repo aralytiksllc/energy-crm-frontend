@@ -1,112 +1,12 @@
-import { ColumnsType } from 'antd/es/table';
-import { Progress, Space, Input, Button, Select, Form } from 'antd';
-import { FilterOutlined } from '@ant-design/icons';
+import { Progress, Space } from 'antd';
 import { DateField, NumberField, TagField, TextField } from '@refinedev/antd';
+
 import type { IProject } from '@interfaces/project';
 import { EditButton } from '@components/edit-button';
 import { DeleteButton } from '@components/delete-button';
-import { ColumnType as AntColumnType } from 'antd/es/table';
+import { FilterColumn } from '@components/column-filter/column-filter.types';
 
-function isDataColumn<T>(
-  col: AntColumnType<T>,
-): col is AntColumnType<T> & { dataIndex: string | string[] } {
-  return 'dataIndex' in col;
-}
-
-const filterOperators = [
-  { label: 'Equals', value: 'eq' },
-  { label: 'Not Equals', value: 'ne' },
-  { label: 'Like (case-sensitive)', value: 'like' },
-  { label: 'Ilike (case-insensitive)', value: 'ilike' },
-  { label: 'Greater Than', value: 'gt' },
-  { label: 'Less Than', value: 'lt' },
-  { label: 'Greater Than or Equal', value: 'gte' },
-  { label: 'Less Than or Equal', value: 'lte' },
-  { label: 'In', value: 'in' },
-  { label: 'Range', value: 'range' },
-];
-
-const getAdvancedFilterProps = (
-  defaultField: string | string[],
-  allColumns: ColumnsType<IProject>,
-) => ({
-  filterDropdown: ({
-    setSelectedKeys,
-    selectedKeys,
-    confirm,
-    clearFilters,
-  }: any) => {
-    const filterableColumns = allColumns
-      .filter(isDataColumn)
-      .filter((c) => c.key !== 'actions');
-
-    const initialValues = selectedKeys[0] || { field: defaultField };
-
-    return (
-      <div style={{ padding: 8, width: 480 }}>
-        <Form
-          onFinish={(values) => {
-            setSelectedKeys(values.field ? [values] : []);
-            confirm();
-          }}
-          initialValues={initialValues}
-          layout="inline"
-        >
-          <Form.Item name="field" style={{ flex: 1 }}>
-            <Select placeholder="Column">
-              {filterableColumns.map((col: any) => (
-                <Select.Option
-                  key={col.key}
-                  value={
-                    Array.isArray(col.dataIndex)
-                      ? col.dataIndex.join('.')
-                      : col.dataIndex
-                  }
-                >
-                  {col.title}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item name="operator" style={{ flex: 1 }}>
-            <Select placeholder="Operator">
-              {filterOperators.map((op) => (
-                <Select.Option key={op.value} value={op.value}>
-                  {op.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item name="value" style={{ flex: 1 }}>
-            <Input placeholder="Value" />
-          </Form.Item>
-          <div style={{ marginTop: 8, textAlign: 'right', width: '100%' }}>
-            <Space>
-              <Button
-                onClick={() => {
-                  clearFilters();
-                  confirm();
-                }}
-                size="small"
-              >
-                Reset
-              </Button>
-              <Button type="primary" htmlType="submit" size="small">
-                Filter
-              </Button>
-            </Space>
-          </div>
-        </Form>
-      </div>
-    );
-  },
-  filterIcon: (filtered: boolean) => (
-    <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-  ),
-  onFilter: (value: any, record: IProject) => true,
-});
-
-const projectColumns: ColumnsType<IProject> = [
+export const columns: FilterColumn<IProject>[] = [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -114,6 +14,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 80,
     sorter: true,
     render: (value) => <NumberField value={value} />,
+    filterType: 'number',
   },
   {
     title: 'Project Name',
@@ -123,6 +24,7 @@ const projectColumns: ColumnsType<IProject> = [
     sorter: true,
     ellipsis: true,
     render: (value) => <TextField value={value} strong />,
+    filterType: 'text',
   },
   {
     title: 'Client',
@@ -132,6 +34,7 @@ const projectColumns: ColumnsType<IProject> = [
     sorter: true,
     ellipsis: true,
     render: (value) => <TextField value={value || '-'} />,
+    filterType: 'text',
   },
   {
     title: 'Status',
@@ -140,6 +43,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (value) => <TagField value={value || 'Unknown'} />,
+    filterType: 'text',
   },
   {
     title: 'Priority',
@@ -148,6 +52,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 100,
     sorter: true,
     render: (value) => <TagField value={value || 'Medium'} />,
+    filterType: 'text',
   },
   {
     title: 'Progress',
@@ -156,6 +61,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (value: number) => <Progress percent={value || 0} size="small" />,
+    filterType: 'number',
   },
   {
     title: 'Budget',
@@ -169,6 +75,7 @@ const projectColumns: ColumnsType<IProject> = [
         options={{ style: 'currency', currency: 'EUR' }}
       />
     ),
+    filterType: 'number',
   },
   {
     title: 'Start Date',
@@ -177,6 +84,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (value) => <DateField value={value} format="MMM DD, YYYY" />,
+    filterType: 'date',
   },
   {
     title: 'Deadline',
@@ -185,6 +93,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (value) => <DateField value={value} format="MMM DD, YYYY" />,
+    filterType: 'date',
   },
   {
     title: 'Created',
@@ -193,6 +102,7 @@ const projectColumns: ColumnsType<IProject> = [
     width: 120,
     sorter: true,
     render: (value) => <DateField value={value} format="MMM DD, YYYY" />,
+    filterType: 'date',
   },
   {
     title: 'Actions',
@@ -219,16 +129,3 @@ const projectColumns: ColumnsType<IProject> = [
     ),
   },
 ];
-
-export const columns: ColumnsType<IProject> = projectColumns.map((col) => {
-  if (!isDataColumn(col)) {
-    return col;
-  }
-
-  const field = col.dataIndex || String(col.key);
-
-  return {
-    ...col,
-    ...getAdvancedFilterProps(field, projectColumns),
-  };
-});

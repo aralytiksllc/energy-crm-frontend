@@ -4,36 +4,35 @@ import type { AuthProvider } from '@refinedev/core';
 // Internal imports
 import type { IAuthResponse } from '@interfaces/authentication';
 import type { IUser } from '@interfaces/users';
+import type { IRolePermission } from '@interfaces/role';
 import { httpClient } from '@helpers/http-client';
 import { authStorage } from '@helpers/auth-storage';
 
 export const authProvider: AuthProvider = {
   async login(params) {
-    const response = await httpClient.post('login', {
-      json: {
-        email: params.email,
-        password: params.password,
-      },
-    });
+    try {
+      const { email, password } = params;
+      const response = await httpClient.post('login', {
+        json: { email, password },
+      });
+      const data = await response.json<IAuthResponse>();
 
-    const data = await response.json<IAuthResponse>();
+      authStorage.set(data.accessToken);
 
-    if (!data.accessToken) {
+      return {
+        success: true,
+        redirectTo: '/',
+      };
+    } catch (error) {
+      console.error('Login failed:', error);
       return {
         success: false,
         error: {
           name: 'LoginError',
-          message: 'Missing access token.',
+          message: 'Invalid credentials',
         },
       };
     }
-
-    authStorage.set(data.accessToken);
-
-    return {
-      success: true,
-      redirectTo: '/',
-    };
   },
 
   async logout() {
@@ -45,67 +44,61 @@ export const authProvider: AuthProvider = {
   },
 
   async check() {
-    return authStorage.get()
-      ? { authenticated: true }
-      : { authenticated: false, logout: true, redirectTo: '/login' };
+    const token = authStorage.get();
+    if (token) {
+      try {
+        await httpClient.get('me');
+        return {
+          authenticated: true,
+        };
+      } catch (error) {
+        return {
+          authenticated: false,
+          redirectTo: '/login',
+        };
+      }
+    }
+
+    return {
+      authenticated: false,
+      redirectTo: '/login',
+    };
+  },
+
+  async getPermissions() {
+    const identity = (await this.getIdentity?.()) as IUser | null;
+    if (identity?.role?.rolePermissions) {
+      return identity.role.rolePermissions.map(
+        (rp: IRolePermission) => rp.permission.name,
+      );
+    }
+    return [];
   },
 
   async getIdentity() {
+    const token = authStorage.get();
+    if (!token) {
+      return null;
+    }
+
     try {
-      return await httpClient.get('me').json<IUser>();
-    } catch {
+      const response = await httpClient.get('me');
+      const data = await response.json<IUser>();
+      return data;
+    } catch (error) {
       return null;
     }
   },
 
-  async forgotPassword(params) {
-    await httpClient
-      .post('forgot-password', {
-        json: {
-          email: params.email,
-        },
-      })
-      .json();
-
-    return {
-      success: true,
-      redirectTo: 'login',
-      successNotification: {
-        message: 'Forgot Password',
-        description:
-          "We've sent you an email with instructions to reset your password.",
-      },
-    };
-  },
-
-  async updatePassword(params) {
-    await httpClient
-      .post('update-password', {
-        json: {
-          password: params.password,
-          token: params.token,
-        },
-      })
-      .json();
-
-    return {
-      success: true,
-      redirectTo: '/login',
-      successNotification: {
-        message: 'Password Updated',
-        description:
-          'Your password has been successfully updated. You can now log in with your new credentials.',
-      },
-    };
-  },
-
   async onError(error) {
-    return {
-      success: false,
-      error: {
-        name: 'Error',
-        message: error.message,
-      },
-    };
+    if (error.statusCode === 401 || error.statusCode === 403) {
+      return {
+        logout: true,
+        redirectTo: '/login',
+        error,
+      };
+    }
+
+    return {};
   },
 };

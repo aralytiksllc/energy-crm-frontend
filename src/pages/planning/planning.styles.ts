@@ -114,6 +114,15 @@ export const createStyles = createAntdStyles(({ token }) => ({
     gap: token.marginXS,
   },
 
+  deleteButton: {
+    borderRadius: token.borderRadius,
+    fontWeight: 500,
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: token.marginXS,
+  },
+
   emptyState: {
     textAlign: 'center',
     padding: `${token.paddingXL}px ${token.paddingLG}px`,
@@ -151,5 +160,27 @@ export const createStyles = createAntdStyles(({ token }) => ({
     marginTop: token.marginLG,
     paddingTop: token.paddingMD,
     borderTop: `1px solid ${token.colorBorder}`,
+  },
+
+  cardTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  statusTag: {
+    marginRight: 8,
+  },
+
+  userInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 16,
+    gap: 8,
+  },
+
+  userDetails: {
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));

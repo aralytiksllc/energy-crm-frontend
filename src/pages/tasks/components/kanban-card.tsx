@@ -54,7 +54,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
   const estimatedTime = 0;
 
   // Format dates
-  const dueDate = dayjs(new Date()).format('MMM DD');
   const createdDate = dayjs(new Date()).format('MMM DD');
 
   // Get task type color
@@ -92,7 +91,13 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task }) => {
   return (
     <Card
       title={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
           <Text strong>{`TASK-${task.id}`}</Text>
           {task.isCompleted && <Tag color="success">Completed</Tag>}
         </div>

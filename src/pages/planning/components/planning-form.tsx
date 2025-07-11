@@ -1,27 +1,63 @@
 import React from 'react';
-import { Form, Input, DatePicker, Row, Col, Button, Space } from 'antd';
+import { Form, Input, DatePicker, Row, Col, Button, Space, Switch } from 'antd';
+import { useCreate } from '@refinedev/core';
 import { UserSelect } from '@components/user-select/user-select';
 import { RemoteSelect } from '@components/remote-select';
 import { planningValidationRules } from '@modules/planning/validation';
+import type { IPlanningFormValues } from '@interfaces/planning';
+import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
 interface PlanningFormProps {
   onSuccess: () => void;
+  onCancel: () => void;
 }
 
-const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
+const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
   const [form] = Form.useForm();
+  const { mutate: createPlanning, isLoading } = useCreate();
 
-  const handleSubmit = (values: any) => {
-    console.log('Planning form values:', values);
-    onSuccess();
+  const handleSubmit = (values: IPlanningFormValues) => {
+    const transformedValues = {
+      ...values,
+      startDate: values.startDate
+        ? dayjs(values.startDate).format('YYYY-MM-DD')
+        : undefined,
+      endDate: values.endDate
+        ? dayjs(values.endDate).format('YYYY-MM-DD')
+        : undefined,
+      completedDate: values.completedDate
+        ? dayjs(values.completedDate).format('YYYY-MM-DD')
+        : undefined,
+      isCompleted: values.isCompleted || false,
+    };
+
+    createPlanning(
+      {
+        resource: 'plannings',
+        values: transformedValues,
+      },
+      {
+        onSuccess: () => {
+          form.resetFields();
+          onSuccess();
+        },
+      },
+    );
   };
 
   const handleCancel = () => {
     form.resetFields();
-    onSuccess();
+    onCancel();
   };
+
+  const handleCompletedChange = (checked: boolean) => {
+    if (!checked) {
+      form.setFieldValue('completedDate', undefined);
+    }
+  };
+
   return (
     <div style={{ padding: '24px' }}>
       <Form
@@ -39,11 +75,41 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
         }}
       >
         <Row gutter={[16, 16]}>
+          <Col xs={24}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={planningValidationRules.title}
+              required
+            >
+              <Input placeholder="Enter planning title" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24}>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={planningValidationRules.description}
+            >
+              <TextArea
+                rows={3}
+                placeholder="Enter planning description (optional)..."
+                maxLength={1000}
+                showCount
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               label="Assigned User"
-              name="userId"
-              rules={planningValidationRules.user}
+              name="assignedUserId"
+              rules={planningValidationRules.assignedUserId}
               required
             >
               <UserSelect placeholder="Select a user to assign" showSearch />
@@ -53,7 +119,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
             <Form.Item
               label="Project"
               name="projectId"
-              rules={planningValidationRules.project}
+              rules={planningValidationRules.projectId}
               required
             >
               <RemoteSelect
@@ -87,17 +153,18 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
               label="End Date"
               name="endDate"
               rules={planningValidationRules.endDate}
+              required
             >
               <DatePicker
                 style={{ width: '100%' }}
-                placeholder="Select end date (optional)"
+                placeholder="Select end date"
                 showTime={false}
               />
             </Form.Item>
           </Col>
         </Row>
 
-        <Row>
+        <Row gutter={[16, 16]}>
           <Col xs={24}>
             <Form.Item
               label="Notes"
@@ -106,9 +173,37 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
             >
               <TextArea
                 rows={3}
-                placeholder="Any additional notes about this planning assignment (optional)..."
-                maxLength={500}
+                placeholder="Any additional notes about this planning (optional)..."
+                maxLength={1000}
                 showCount
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Mark as Completed"
+              name="isCompleted"
+              valuePropName="checked"
+              rules={planningValidationRules.isCompleted}
+            >
+              <Switch onChange={handleCompletedChange} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Completed Date"
+              name="completedDate"
+              rules={planningValidationRules.completedDate}
+              dependencies={['isCompleted']}
+            >
+              <DatePicker
+                style={{ width: '100%' }}
+                placeholder="Select completion date"
+                showTime={false}
+                disabled={!Form.useWatch('isCompleted', form)}
               />
             </Form.Item>
           </Col>
@@ -130,8 +225,10 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess }) => {
             }}
           >
             <Space>
-              <Button onClick={handleCancel}>Cancel</Button>
-              <Button type="primary" htmlType="submit">
+              <Button onClick={handleCancel} disabled={isLoading}>
+                Cancel
+              </Button>
+              <Button type="primary" htmlType="submit" loading={isLoading}>
                 Create Planning
               </Button>
             </Space>

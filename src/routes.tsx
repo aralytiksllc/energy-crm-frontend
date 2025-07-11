@@ -7,6 +7,7 @@ import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
 
 // Internal imports
 import { Header } from '@components/header';
+import { ColorModeContextProvider } from '@contexts/color-mode';
 import {
   Register,
   Login,
@@ -19,31 +20,46 @@ import { Dashboard } from '@modules/dashboard';
 import { Planning } from '@modules/planning';
 import { Projects } from '@modules/projects';
 import { Customers } from '@modules/customers';
+import { PermissionsMatrix } from '@modules/permissions';
 
 export const Routes: React.FC = () => (
   <ReactRoutes>
     <Route
       element={
-        <Authenticated
-          key="authenticated-inner"
-          fallback={<CatchAllNavigate to="/login" />}
-        >
-          <ThemedLayoutV2
-            Header={Header}
-            Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+        <ColorModeContextProvider>
+          <Authenticated
+            key="authenticated-inner"
+            fallback={<CatchAllNavigate to="/login" />}
           >
-            <Outlet />
-          </ThemedLayoutV2>
-        </Authenticated>
+            <ThemedLayoutV2
+              Header={Header}
+              Sider={(props) => (
+                <ThemedSiderV2
+                  {...props}
+                  fixed
+                  render={({ items, logout }) => (
+                    <>
+                      {items}
+                      {logout}
+                    </>
+                  )}
+                />
+              )}
+            >
+              <Outlet />
+            </ThemedLayoutV2>
+          </Authenticated>
+        </ColorModeContextProvider>
       }
     >
-      <Route index element={<NavigateToResource resource="users" />} />
-      <Route index path="/dashboard" element={<Dashboard />} />
-      <Route index path="/users" element={<Users />} />
-      <Route index path="/tasks" element={<Tasks />} />
-      <Route index path="/planning" element={<Planning />} />
-      <Route index path="/projects" element={<Projects />} />
-      <Route index path="/customers" element={<Customers />} />
+      <Route index element={<NavigateToResource resource="dashboard" />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/users" element={<Users />} />
+      <Route path="/tasks" element={<Tasks />} />
+      <Route path="/planning" element={<Planning />} />
+      <Route path="/projects" element={<Projects />} />
+      <Route path="/customers" element={<Customers />} />
+      <Route path="/permissions" element={<PermissionsMatrix />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route

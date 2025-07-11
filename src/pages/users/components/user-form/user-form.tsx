@@ -1,20 +1,47 @@
 // External imports
 import * as React from 'react';
-import { Form, Input, DatePicker, Switch } from 'antd';
+import { Form, Input, DatePicker, Switch, Select } from 'antd';
 import type { FormProps } from 'antd/lib/form';
+import { useSelect } from '@refinedev/antd';
 
 // Internal imports
 import type { IUser } from '@interfaces/users';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
 import { rules } from './user-form.rules';
+import { Team } from '@interfaces/team.enum';
+import { UserRole } from '@interfaces/user-role.enum';
+import { useMemo } from 'react';
 
-export interface UsersFormProps {
+const teamOptions = Object.values(Team).map((team) => ({
+  label: team,
+  value: team,
+}));
+
+const roleOptions = Object.values(UserRole).map((role) => ({
+  label: role.charAt(0).toUpperCase() + role.slice(1),
+  value: role,
+}));
+
+interface UserFormProps {
   formProps: FormProps<IUser>;
+  mode: 'create' | 'edit';
 }
 
-export const UsersForm: React.FC<UsersFormProps> = (props) => {
-  const { formProps } = props;
+export const UsersForm: React.FC<UserFormProps> = ({
+  formProps,
+  mode,
+}: UserFormProps) => {
+  const { selectProps } = useSelect({
+    resource: 'roles',
+    optionLabel: 'name',
+    optionValue: 'id',
+  });
+
+  const title = useMemo(() => {
+    if (mode === 'create') return 'Create User';
+    return 'Edit User';
+  }, [mode]);
 
   const { styles } = useStyles();
 
@@ -48,13 +75,36 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
       </Form.Item>
 
       <Form.Item
-        label="Password"
-        name="password"
-        rules={rules.password}
-        className={styles.formItem}
+        label="Role"
+        name="roleId"
+        rules={[{ required: true, message: 'Please select a role' }]}
       >
-        <Input.Password autoComplete="new-password" />
+        <Select {...selectProps} placeholder="Select a role" />
       </Form.Item>
+
+      <Form.Item label="Team" name="team" className={styles.formItem}>
+        <Select placeholder="Select a team" options={teamOptions} allowClear />
+      </Form.Item>
+
+      {mode === 'create' ? (
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={rules.password}
+          className={styles.formItem}
+        >
+          <Input.Password autoComplete="new-password" />
+        </Form.Item>
+      ) : (
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={rules.passwordOptional}
+          className={styles.formItem}
+        >
+          <Input.Password placeholder="Enter new password (optional)" />
+        </Form.Item>
+      )}
 
       <Form.Item
         label="Date of Birth"
@@ -62,7 +112,6 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
         className={styles.formItem}
         getValueProps={DayjsTransformer.toValueProps}
         normalize={DayjsTransformer.toNormalizedDate}
-        rules={rules.dateOfBirth}
       >
         <DatePicker className={styles.datePicker} />
       </Form.Item>
@@ -73,18 +122,11 @@ export const UsersForm: React.FC<UsersFormProps> = (props) => {
         className={styles.formItem}
         getValueProps={DayjsTransformer.toValueProps}
         normalize={DayjsTransformer.toNormalizedDate}
-        rules={rules.dateOfJoining}
       >
         <DatePicker className={styles.datePicker} />
       </Form.Item>
 
-      <Form.Item
-        label="Active"
-        name="isActive"
-        valuePropName="checked"
-        rules={rules.isActive}
-        className={styles.formItem}
-      >
+      <Form.Item name="status" valuePropName="checked">
         <Switch />
       </Form.Item>
     </Form>

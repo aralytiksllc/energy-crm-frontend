@@ -15,7 +15,9 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   onAssignmentClick,
   assignmentRows = {},
 }) => {
-  const { styles } = createStyles();
+  const { styles, cx } = createStyles();
+  const defaultUserColor = '#1677ff';
+  const defaultTextColor = '#fff';
 
   const handleDayClick = () => {
     if (onDayClick) {
@@ -125,15 +127,20 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
         const position = getAssignmentPosition(assignment, date);
         const statusColor = getStatusColor(assignment.status);
         const rowIndex = assignmentRows[assignment.id] ?? 0;
-
+        const userColor = user ? defaultUserColor : statusColor;
+        const textColor = defaultTextColor;
         return (
           <div
             key={`spanning-${assignment.id}`}
-            className={`${styles.spanningAssignmentItem} assignment-${position}`}
+            className={cx(
+              styles.spanningAssignmentItem,
+              `assignment-${position}`,
+            )}
             style={{
               top: `${4 + rowIndex * 24}px`,
-              backgroundColor: `${statusColor}15`,
-              borderColor: statusColor,
+              backgroundColor: userColor,
+              borderColor: userColor,
+              color: textColor,
               opacity: assignment.status === 'cancelled' ? 0.5 : 1,
             }}
             onClick={(e) => {
@@ -142,18 +149,24 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
             }}
           >
             {position === 'start' && user && (
-              <Avatar size={16} src={user.avatar} className={styles.avatar}>
+              <Avatar
+                size={16}
+                src={user.avatar}
+                className={styles.avatar}
+                style={{ backgroundColor: userColor, color: textColor }}
+              >
                 {user.firstName?.[0]}
                 {user.lastName?.[0]}
               </Avatar>
             )}
             <span
-              className={styles.spanningAssignmentText}
-              style={{
-                color: statusColor,
-                textDecoration:
-                  assignment.status === 'cancelled' ? 'line-through' : 'none',
-              }}
+              className={cx(
+                styles.spanningAssignmentText,
+                assignment.status === 'cancelled'
+                  ? styles.cancelledText
+                  : styles.assignmentText,
+              )}
+              style={{ color: textColor }}
             >
               {position === 'start' && user
                 ? `${user.firstName} ${user.lastName}`
@@ -165,12 +178,9 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
             </span>
             {position === 'start' && assignment.priority === 'high' && (
               <div
+                className={styles.priorityIndicator}
                 style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
                   backgroundColor: getPriorityColor(assignment.priority),
-                  marginLeft: 'auto',
                 }}
               />
             )}
@@ -179,6 +189,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
       })}
 
       <div
+        className={styles.singleDayAssignmentsContainer}
         style={{
           marginTop: `${spanningAssignments.length > 0 ? (Math.max(...spanningAssignments.map((a) => assignmentRows[a.id] ?? 0)) + 1) * 24 + 8 : 8}px`,
         }}
@@ -187,16 +198,18 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
           const user = getUserInfo(assignment.userId);
           const statusColor = getStatusColor(assignment.status);
           const priorityColor = getPriorityColor(assignment.priority);
-
+          const userColor = user ? defaultUserColor : statusColor;
+          const textColor = defaultTextColor;
           return (
             <div
               key={`single-${assignment.id}`}
               className={styles.assignmentItem}
               style={{
-                backgroundColor: `${statusColor}10`,
-                borderColor: statusColor,
+                backgroundColor: userColor,
+                borderColor: userColor,
                 borderLeftWidth: assignment.priority === 'high' ? '3px' : '1px',
                 borderLeftColor: priorityColor,
+                color: textColor,
                 opacity: assignment.status === 'cancelled' ? 0.5 : 1,
               }}
               onClick={(e) => {
@@ -205,31 +218,33 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
               }}
             >
               {user && (
-                <Avatar size={16} src={user.avatar} className={styles.avatar}>
+                <Avatar
+                  size={16}
+                  src={user.avatar}
+                  className={styles.avatar}
+                  style={{ backgroundColor: userColor, color: textColor }}
+                >
                   {user.firstName?.[0]}
                   {user.lastName?.[0]}
                 </Avatar>
               )}
               <span
-                className={styles.assignmentText}
-                style={{
-                  color: statusColor,
-                  textDecoration:
-                    assignment.status === 'cancelled' ? 'line-through' : 'none',
-                }}
+                className={cx(
+                  styles.assignmentText,
+                  assignment.status === 'cancelled'
+                    ? styles.cancelledText
+                    : styles.assignmentText,
+                )}
+                style={{ color: textColor }}
               >
                 {user
                   ? `${user.firstName} ${user.lastName}`
                   : assignment.title || 'Assignment'}
               </span>
               <div
+                className={styles.statusIndicator}
                 style={{
-                  width: '4px',
-                  height: '4px',
-                  borderRadius: '50%',
                   backgroundColor: statusColor,
-                  marginLeft: 'auto',
-                  flexShrink: 0,
                 }}
               />
             </div>

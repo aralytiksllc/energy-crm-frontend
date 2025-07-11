@@ -1,48 +1,62 @@
 // External dependencies
-import type { ColumnsType } from 'antd/es/table';
 import { Space } from 'antd';
 
 // Internal dependencies
 import { IUser } from '@interfaces/users';
 import { EditButton } from '@components/edit-button';
 import { DeleteButton } from '@components/delete-button';
+import { FilterColumn } from '@components/column-filter/column-filter.types';
+import { formatTableDate } from '@helpers/date-utils';
 
-export const columns: ColumnsType<IUser> = [
+export const columns: FilterColumn<IUser>[] = [
   {
     title: 'ID',
     dataIndex: 'id',
     key: 'id',
     sorter: true,
+    filterType: 'number',
   },
   {
     title: 'First Name',
     dataIndex: 'firstName',
     key: 'firstName',
     sorter: true,
+    filterType: 'text',
   },
   {
     title: 'Last Name',
     dataIndex: 'lastName',
     key: 'lastName',
     sorter: true,
+    filterType: 'text',
   },
   {
     title: 'Email',
     dataIndex: 'email',
     key: 'email',
     sorter: true,
+    filterType: 'text',
+  },
+  {
+    title: 'Team',
+    dataIndex: 'team',
+    key: 'team',
+    sorter: true,
+    filterType: 'text',
   },
   {
     title: 'Date of Birth',
     dataIndex: 'dateOfBirth',
     key: 'dateOfBirth',
     sorter: true,
+    filterType: 'date',
   },
   {
     title: 'Date of Joining',
     dataIndex: 'dateOfJoining',
     key: 'dateOfJoining',
     sorter: true,
+    filterType: 'date',
   },
   {
     title: 'Active',
@@ -56,6 +70,8 @@ export const columns: ColumnsType<IUser> = [
     dataIndex: 'createdAt',
     key: 'createdAt',
     sorter: true,
+    filterType: 'date',
+    render: (date: Date | string) => formatTableDate(date),
   },
   {
     title: 'Actions',

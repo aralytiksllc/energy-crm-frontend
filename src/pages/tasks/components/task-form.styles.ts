@@ -1,6 +1,6 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ token }) => ({
+export const useStyles = createStyles(() => ({
   form: {
     maxWidth: 1000,
   },
@@ -12,4 +12,13 @@ export const useStyles = createStyles(({ token }) => ({
   datePicker: {
     width: '100%',
   },
+}));
+
+export const useTaskFormStyles = createStyles(({ css }) => ({
+  hiddenField: css`
+    display: none;
+  `,
+  fullWidthDatePicker: css`
+    width: 100%;
+  `,
 }));

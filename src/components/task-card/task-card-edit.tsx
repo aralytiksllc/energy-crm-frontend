@@ -15,6 +15,7 @@ import { TaskType } from '@interfaces/task-type.enum';
 import { IUser } from '@interfaces/users';
 import { UserSelector } from './user-selector';
 import dayjs from 'dayjs';
+import { useTaskCardEditStyles } from './task-card-edit.styles';
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -50,6 +51,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
 }) => {
   const [editedTask, setEditedTask] = useState<Task>(task);
   const [isEditing, setIsEditing] = useState<keyof Task | null>(editingField);
+  const { styles } = useTaskCardEditStyles();
 
   useEffect(() => {
     setIsEditing(editingField);
@@ -91,7 +93,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
         <div>
           {component}
           {actions && (
-            <Space style={{ marginTop: 8 }}>
+            <Space className={styles.actionButtons}>
               <Button
                 type="primary"
                 size="small"
@@ -117,14 +119,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
 
   return (
     <Card className={className} style={style} bodyStyle={{ padding: 16 }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: 12,
-        }}
-      >
+      <div className={styles.header}>
         {isEditing === 'type' ? (
           renderEditableField(
             'type',
@@ -139,7 +134,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
         ) : (
           <Tag
             color={typeColors[editedTask.type]}
-            style={{ margin: 0, cursor: 'pointer' }}
+            className={styles.tag}
             onClick={() => handleFieldEdit('type')}
           >
             {editedTask.type}
@@ -161,11 +156,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
       ) : (
         <Title
           level={5}
-          style={{
-            margin: '0 0 8px 0',
-            cursor: 'pointer',
-            padding: '4px 0',
-          }}
+          className={styles.title}
           onClick={() => handleFieldEdit('title')}
         >
           {editedTask.title}
@@ -176,24 +167,8 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
         renderEditableField(
           'description',
           <div>
-            <div
-              style={{
-                border: '1px solid #d9d9d9',
-                borderRadius: 6,
-                padding: 12,
-                minHeight: 100,
-                backgroundColor: '#fff',
-              }}
-            >
-              <div
-                style={{
-                  borderBottom: '1px solid #f0f0f0',
-                  paddingBottom: 8,
-                  marginBottom: 8,
-                  display: 'flex',
-                  gap: 8,
-                }}
-              >
+            <div className={styles.descriptionEditor}>
+              <div className={styles.editorToolbar}>
                 <Button size="small" type="text" disabled={disabled}>
                   <strong>B</strong>
                 </Button>
@@ -203,13 +178,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
                 <Button size="small" type="text" disabled={disabled}>
                   <u>U</u>
                 </Button>
-                <div
-                  style={{
-                    borderLeft: '1px solid #d9d9d9',
-                    height: 20,
-                    margin: '0 4px',
-                  }}
-                />
+                <div className={styles.toolbarDivider} />
                 <Button size="small" type="text" disabled={disabled}>
                   •
                 </Button>
@@ -226,19 +195,14 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
                 bordered={false}
                 rows={4}
                 disabled={disabled}
-                style={{ resize: 'none' }}
+                className={styles.textArea}
               />
             </div>
           </div>,
         )
       ) : (
         <Paragraph
-          style={{
-            margin: '0 0 16px 0',
-            cursor: 'pointer',
-            padding: '4px 0',
-            minHeight: '20px',
-          }}
+          className={styles.description}
           onClick={() => handleFieldEdit('description')}
         >
           {editedTask.description || 'Click to add description'}
@@ -246,13 +210,11 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
       )}
 
       <Space
-        split={
-          <div style={{ width: 1, height: 16, backgroundColor: '#f0f0f0' }} />
-        }
-        style={{ width: '100%', justifyContent: 'space-between' }}
+        split={<div className={styles.footerDivider} />}
+        className={styles.footer}
       >
         {isEditing === 'dueDate' ? (
-          <div style={{ minWidth: 150 }}>
+          <div className={styles.dateContainer}>
             {renderEditableField(
               'dueDate',
               <DatePicker
@@ -261,22 +223,18 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
                   handleFieldChange('dueDate', date?.toDate())
                 }
                 disabled={disabled}
-                style={{ width: '100%' }}
+                className={styles.datePicker}
               />,
               false,
             )}
           </div>
         ) : (
           <Space
-            style={{
-              cursor: 'pointer',
-              padding: '4px',
-              borderRadius: 4,
-            }}
+            className={styles.dateDisplay}
             onClick={() => handleFieldEdit('dueDate')}
           >
-            <span style={{ color: '#8c8c8c' }}>📅</span>
-            <span style={{ color: '#8c8c8c' }}>
+            <span className={styles.dateIcon}>📅</span>
+            <span className={styles.dateText}>
               {editedTask.dueDate
                 ? new Intl.DateTimeFormat('en-US', {
                     month: 'short',
@@ -289,7 +247,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
         )}
 
         {isEditing === 'assignees' ? (
-          <div style={{ minWidth: 200 }}>
+          <div className={styles.assigneeContainer}>
             {renderEditableField(
               'assignees',
               <UserSelector
@@ -303,15 +261,10 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
                   const selectedUsers = users.filter((user: IUser) =>
                     userIds.includes(user.id),
                   );
-                  const assignees: TaskAssignee[] = selectedUsers.map(
-                    (user: IUser) => ({
-                      user,
-                      userId: user.id,
-                      taskId: editedTask.id,
-                      estimatedHours: 0,
-                      actualHours: 0,
-                    }),
-                  );
+                  const assignees = selectedUsers.map((user: IUser) => ({
+                    userId: user.id,
+                    estimatedHours: 0,
+                  }));
                   handleFieldChange('assignees', assignees);
                 }}
                 users={users}
@@ -324,15 +277,11 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
         ) : (
           <Space
             size={4}
-            style={{
-              cursor: 'pointer',
-              padding: '4px',
-              borderRadius: 4,
-            }}
+            className={styles.assigneeDisplay}
             onClick={() => handleFieldEdit('assignees')}
           >
-            <span style={{ color: '#8c8c8c' }}>👥</span>
-            <span style={{ color: '#8c8c8c', fontSize: 12 }}>
+            <span className={styles.assigneeIcon}>👥</span>
+            <span className={styles.assigneeText}>
               {editedTask.assignees && editedTask.assignees.length > 0
                 ? `${editedTask.assignees.length} assigned`
                 : 'Unassigned'}
@@ -342,13 +291,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
       </Space>
 
       {isEditing && (
-        <div
-          style={{
-            marginTop: 16,
-            borderTop: '1px solid #f0f0f0',
-            paddingTop: 12,
-          }}
-        >
+        <div className={styles.actionsContainer}>
           <Space>
             <Button
               type="primary"
