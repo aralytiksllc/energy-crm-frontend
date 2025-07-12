@@ -19,6 +19,7 @@ export interface CrudTableProps<TData extends { id: number }> {
   permanentFilters?: any[];
   drawerWidth?: number;
   createInitialValues?: Partial<TData>;
+  showCreateButton?: boolean;
   drawerTitles?: {
     create?: string;
     edit?: string;
@@ -37,6 +38,7 @@ export function CrudTable<TData extends { id: number }>(
     permanentFilters,
     drawerWidth = 720,
     createInitialValues,
+    showCreateButton = true,
     drawerTitles = {},
   } = props;
 
@@ -93,7 +95,7 @@ export function CrudTable<TData extends { id: number }>(
           return column;
         }
 
-        if (identity?.role === 'manager') {
+        if (identity?.role?.name === 'manager') {
           return {
             ...column,
             filterIcon: () => <FilterOutlined />,
@@ -195,7 +197,7 @@ export function CrudTable<TData extends { id: number }>(
   return (
     <DrawerFormProvider drawerForm={editDrawerForm}>
       <List
-        createButtonProps={createButtonProps}
+        createButtonProps={showCreateButton ? createButtonProps : undefined}
         headerButtons={({ defaultButtons }) => (
           <Space>
             {headerActions}
@@ -208,7 +210,7 @@ export function CrudTable<TData extends { id: number }>(
               optionLabel={(col: any) => col.title}
               buttonLabel="Select Columns"
             />
-            {defaultButtons}
+            {showCreateButton && defaultButtons}
           </Space>
         )}
       >
@@ -228,7 +230,7 @@ export function CrudTable<TData extends { id: number }>(
           {...editDrawerForm}
           renderForm={renderForm}
           title={
-            identity?.role === 'user'
+            identity?.role?.name === 'user'
               ? drawerTitles.view || 'View Details'
               : drawerTitles.edit
           }

@@ -1,67 +1,113 @@
 import { createStyles } from 'antd-style';
 
-export const useTasksKanbanStyles = createStyles(({ css }) => ({
-  pageContainer: css`
-    height: 85vh;
-  `,
-  viewModalFooter: css`
-    justify-content: space-between;
-    width: 100%;
-  `,
-  editTag: css`
-    cursor: pointer;
-  `,
-  deleteTag: css`
-    cursor: pointer;
-  `,
-  skeletonContainer: css`
-    height: 85vh;
-  `,
-  skeletonCard: css`
-    height: 80px;
-    background: #f0f0f0;
-    border-radius: 8px;
-    margin-bottom: 8px;
-  `,
-  viewModalHeader: css`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 95%;
-  `,
-  viewModalBody: css`
-    background: #fafbfc;
-    border-radius: 12px;
-    padding: 24px;
-  `,
-  assigneeCard: css`
-    background: #fff;
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    margin-bottom: 4px;
-  `,
-  assigneeAvatar: css`
-    background: #e6f4ff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 18px;
-  `,
-  assigneeInfo: css`
-    font-weight: 600;
-    font-size: 15px;
-  `,
-  assigneeHours: css`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  `,
+export const useTasksKanbanStyles = createStyles(() => ({
+  pageContainer: {
+    height: '85vh',
+  },
+  viewModalFooter: {
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  editTag: {
+    cursor: 'pointer',
+  },
+  deleteTag: {
+    cursor: 'pointer',
+  },
+  skeletonContainer: {
+    height: '85vh',
+  },
+  skeletonCard: {
+    height: '80px',
+    background: '#f0f0f0',
+    borderRadius: '8px',
+    marginBottom: '8px',
+  },
+  viewModalHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  viewModalBody: {
+    padding: 16,
+  },
+  modalRow: {
+    marginBottom: 16,
+  },
+  modalColumn: {
+    width: '100%',
+  },
+  modalSectionText: {
+    color: '#8c8c8c',
+    fontSize: 13,
+  },
+  modalDivider: {
+    margin: '16px 0',
+  },
+  descriptionContainer: {
+    marginBottom: 24,
+  },
+  descriptionContent: {
+    background: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginTop: 8,
+    fontSize: 15,
+  },
+  assigneeHeader: {
+    marginBottom: 8,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  assigneeTitle: {
+    margin: 0,
+  },
+  assigneeHours: {
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  assigneeCard: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px 16px',
+    border: '1px solid #f0f0f0',
+    borderRadius: 8,
+    backgroundColor: '#fafafa',
+  },
+  assigneeAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    backgroundColor: '#1890ff',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  assigneeInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  assigneeEmail: {
+    fontSize: 12,
+    color: '#888',
+  },
+  assigneeHoursContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  tagSmall: {
+    fontSize: 12,
+    padding: '3px 10px',
+    fontWeight: 500,
+  },
+  actualHoursInput: {
+    width: 100,
+  },
 }));

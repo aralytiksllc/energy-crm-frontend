@@ -15,4 +15,8 @@ export const useUserDashboardStyles = createStyles(({ css }) => ({
     justify-content: space-between;
     align-items: center;
   `,
+  controlsSection: css`
+    display: flex;
+    align-items: center;
+  `,
 }));

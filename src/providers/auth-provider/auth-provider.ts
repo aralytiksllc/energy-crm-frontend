@@ -19,9 +19,18 @@ export const authProvider: AuthProvider = {
 
       authStorage.set(data.accessToken);
 
+      // Determine redirect based on user role
+      let redirectTo = '/dashboard'; // Default fallback
+
+      if (data.user?.role?.name === 'manager') {
+        redirectTo = '/dashboard'; // Managers go to dashboard
+      } else if (data.user?.role?.name === 'user') {
+        redirectTo = '/tasks'; // Regular users go to tasks (filtered to their assignments)
+      }
+
       return {
         success: true,
-        redirectTo: '/',
+        redirectTo,
       };
     } catch (error) {
       console.error('Login failed:', error);
@@ -37,6 +46,8 @@ export const authProvider: AuthProvider = {
 
   async logout() {
     authStorage.clear();
+    // Clear any URL state by redirecting to login explicitly
+    window.history.replaceState(null, '', '/login');
     return {
       success: true,
       redirectTo: '/login',
@@ -66,13 +77,22 @@ export const authProvider: AuthProvider = {
   },
 
   async getPermissions() {
-    const identity = (await this.getIdentity?.()) as IUser | null;
-    if (identity?.role?.rolePermissions) {
-      return identity.role.rolePermissions.map(
-        (rp: IRolePermission) => rp.permission.name,
-      );
+    const token = authStorage.get();
+    if (!token) {
+      return null;
     }
-    return [];
+
+    try {
+      const response = await httpClient.get('me');
+      const data = await response.json<IUser>();
+      return (
+        data.role?.rolePermissions?.map(
+          (rp: IRolePermission) => rp.permission.name,
+        ) || []
+      );
+    } catch (error) {
+      return null;
+    }
   },
 
   async getIdentity() {

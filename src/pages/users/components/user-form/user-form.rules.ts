@@ -26,7 +26,7 @@ export const rules: UserFormRules = {
       message: 'Please enter a valid email',
     },
   ],
-  role: [
+  roleId: [
     {
       required: true,
       message: 'Role is required',
@@ -37,6 +37,12 @@ export const rules: UserFormRules = {
       required: true,
       message: 'Password is required',
     },
+    {
+      min: 8,
+      message: 'Password must be at least 8 characters',
+    },
+  ],
+  passwordOptional: [
     {
       min: 8,
       message: 'Password must be at least 8 characters',

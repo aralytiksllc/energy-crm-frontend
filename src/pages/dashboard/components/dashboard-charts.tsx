@@ -19,10 +19,11 @@ import {
   CheckCircleOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
+  MinusOutlined,
 } from '@ant-design/icons';
-import type { Task } from '@modules/tasks/types';
-import type { ProjectSummary } from '@modules/projects/api/projects';
-import type { Customer } from '@modules/customers/types/customer.types';
+import type { Task } from '@interfaces/task';
+import type { IProject } from '@interfaces/project';
+import type { ICustomer } from '@interfaces/customer';
 import { type Dayjs } from 'dayjs';
 import { useDashboardStyles } from '@modules/dashboard/dashboard.styles';
 import WordWrapLabel from '@components/charts/WordWrapLabel';
@@ -34,8 +35,8 @@ interface DateRange {
 
 interface DashboardChartsProps {
   tasks: Task[];
-  projects: ProjectSummary[];
-  customers: Customer[];
+  projects: IProject[];
+  customers: ICustomer[];
   dateRange?: DateRange;
   onDateRangeChange?: (dates: DateRange) => void;
 }

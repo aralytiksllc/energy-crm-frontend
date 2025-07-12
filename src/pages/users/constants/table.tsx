@@ -1,14 +1,12 @@
-// External dependencies
 import { Space } from 'antd';
-
-// Internal dependencies
+import { useCan } from '@refinedev/core';
 import { IUser } from '@interfaces/users';
 import { EditButton } from '@components/edit-button';
 import { DeleteButton } from '@components/delete-button';
 import { FilterColumn } from '@components/column-filter/column-filter.types';
 import { formatTableDate } from '@helpers/date-utils';
 
-export const columns: FilterColumn<IUser>[] = [
+export const createColumns = (): FilterColumn<IUser>[] => [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -79,25 +77,49 @@ export const columns: FilterColumn<IUser>[] = [
     key: 'actions',
     fixed: 'right',
     width: 100,
-    render: (_, record) => (
-      <Space size={8}>
-        <EditButton
-          resourceId={record.id}
-          resource="users"
-          type="default"
-          size="small"
-          danger={false}
-        />
-        <DeleteButton
-          confirmTitle={`Are you sure you want to delete "${record.firstName} ${record.lastName}"?`}
-          confirmMessage={`This action cannot be undone.`}
-          resourceId={record.id}
-          resource="users"
-          type="primary"
-          size="small"
-          danger={true}
-        />
-      </Space>
-    ),
+    render: (_, record) => {
+      const ActionButtons = () => {
+        const { data: canEdit } = useCan({
+          resource: 'users',
+          action: 'edit',
+          params: { id: record.id },
+        });
+
+        const { data: canDelete } = useCan({
+          resource: 'users',
+          action: 'delete',
+          params: { id: record.id },
+        });
+
+        return (
+          <Space size={8}>
+            {canEdit?.can && (
+              <EditButton
+                resourceId={record.id as number}
+                resource="users"
+                type="default"
+                size="small"
+                danger={false}
+              />
+            )}
+            {canDelete?.can && (
+              <DeleteButton
+                confirmTitle={`Are you sure you want to delete "${record.firstName} ${record.lastName}"?`}
+                confirmMessage="This action cannot be undone."
+                resourceId={record.id as number}
+                resource="users"
+                type="primary"
+                size="small"
+                danger={true}
+              />
+            )}
+          </Space>
+        );
+      };
+
+      return <ActionButtons />;
+    },
   },
 ];
+
+export const columns = createColumns();

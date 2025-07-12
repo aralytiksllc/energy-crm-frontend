@@ -1,10 +1,10 @@
-import { useList, useCreate, useDelete } from '@refinedev/core';
-import { Table, Checkbox, Spin, Typography } from 'antd';
+import { useList, useCreate, useDelete, CanAccess } from '@refinedev/core';
+import { Table, Checkbox, Spin, Typography, Result } from 'antd';
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { IRole, IPermission, IRolePermission } from '../../interfaces';
 
-export const PermissionsMatrix = () => {
+const PermissionsMatrixContent = () => {
   const { data: roles, isLoading: isLoadingRoles } = useList<IRole>({
     resource: 'roles',
     pagination: { pageSize: 100 },
@@ -127,5 +127,23 @@ export const PermissionsMatrix = () => {
         expandIcon: () => null,
       }}
     />
+  );
+};
+
+export const PermissionsMatrix = () => {
+  return (
+    <CanAccess
+      resource="permissions"
+      action="list"
+      fallback={
+        <Result
+          status="403"
+          title="Access Denied"
+          subTitle="You don't have permission to access this page."
+        />
+      }
+    >
+      <PermissionsMatrixContent />
+    </CanAccess>
   );
 };

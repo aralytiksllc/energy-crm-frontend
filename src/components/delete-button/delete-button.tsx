@@ -53,8 +53,57 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
     },
   });
 
+  const { data: userTasksData } = useList({
+    resource: 'tasks',
+    pagination: { mode: 'off' },
+    queryOptions: {
+      enabled: resource === 'users',
+      select: (data) => ({
+        ...data,
+        data: data.data.filter((task: any) =>
+          task.assignees?.some(
+            (assignee: any) => assignee.userId === Number(resourceId),
+          ),
+        ),
+      }),
+    },
+  });
+
+  const { data: userPlanningData } = useList({
+    resource: 'planning',
+    filters: [
+      {
+        field: 'assignedUserId',
+        operator: 'eq',
+        value: resourceId,
+      },
+    ],
+    pagination: { mode: 'off' },
+    queryOptions: {
+      enabled: resource === 'users',
+    },
+  });
+
+  const { data: userProjectMembersData } = useList({
+    resource: 'project-members',
+    filters: [
+      {
+        field: 'userId',
+        operator: 'eq',
+        value: resourceId,
+      },
+    ],
+    pagination: { mode: 'off' },
+    queryOptions: {
+      enabled: resource === 'users',
+    },
+  });
+
   const relatedProjects = projectsData?.data || [];
   const relatedTasks = tasksData?.data || [];
+  const userRelatedTasks = userTasksData?.data || [];
+  const userRelatedPlanning = userPlanningData?.data || [];
+  const userRelatedProjectMembers = userProjectMembersData?.data || [];
 
   const handleClick = React.useCallback(
     (event: React.MouseEvent) => {
@@ -112,6 +161,69 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
         return;
       }
 
+      if (resource === 'users') {
+        const hasRelatedData =
+          userRelatedTasks.length > 0 ||
+          userRelatedPlanning.length > 0 ||
+          userRelatedProjectMembers.length > 0;
+
+        if (hasRelatedData) {
+          const relationships = [];
+
+          if (userRelatedTasks.length > 0) {
+            const taskTitles = userRelatedTasks
+              .map((task: any) => task.title)
+              .slice(0, 5)
+              .join(', ');
+            relationships.push(
+              `Tasks: ${taskTitles}${userRelatedTasks.length > 5 ? ` and ${userRelatedTasks.length - 5} more` : ''}`,
+            );
+          }
+
+          if (userRelatedPlanning.length > 0) {
+            const planningTitles = userRelatedPlanning
+              .map((planning: any) => planning.title)
+              .slice(0, 3)
+              .join(', ');
+            relationships.push(
+              `Planning: ${planningTitles}${userRelatedPlanning.length > 3 ? ` and ${userRelatedPlanning.length - 3} more` : ''}`,
+            );
+          }
+
+          if (userRelatedProjectMembers.length > 0) {
+            relationships.push(
+              `Project memberships: ${userRelatedProjectMembers.length} project(s)`,
+            );
+          }
+
+          Modal.warning({
+            title: 'Cannot Delete User',
+            content: (
+              <div>
+                <p>
+                  This user cannot be deleted because they have active
+                  relationships:
+                </p>
+                <ul>
+                  {relationships.map((relationship, index) => (
+                    <li key={index}>
+                      <strong>{relationship}</strong>
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  Please remove or reassign these relationships first before
+                  deleting the user.
+                </p>
+              </div>
+            ),
+            okText: 'Understood',
+            centered: true,
+          });
+          return;
+        }
+      }
+
       Modal.confirm({
         title: confirmTitle,
         content: confirmMessage,
@@ -139,6 +251,10 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
                 message.error(
                   'Cannot delete project: This project has active tasks. Please delete or reassign the tasks first.',
                 );
+              } else if (resource === 'users') {
+                message.error(
+                  'Cannot delete user: This user has active relationships (tasks, planning, or project memberships). Please remove or reassign these relationships first.',
+                );
               } else {
                 message.error(
                   'Cannot delete: This item is being used by other records. Please remove dependencies first.',
@@ -160,6 +276,9 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
       resource,
       relatedProjects,
       relatedTasks,
+      userRelatedTasks,
+      userRelatedPlanning,
+      userRelatedProjectMembers,
     ],
   );
 

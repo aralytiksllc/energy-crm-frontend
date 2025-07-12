@@ -5,15 +5,24 @@ import {
   ProjectOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
 } from '@ant-design/icons';
+import {
+  getTrendIcon,
+  getTrendColor,
+  type TrendData,
+} from '../../../utils/trend-utils';
 
 interface ManagerStatsCardsProps {
   activePlannings: number;
   totalProjects: number;
   plannedHours: number;
   workedHours: number;
+  trends?: {
+    plannings: TrendData;
+    projects: TrendData;
+    plannedHours: TrendData;
+    workedHours: TrendData;
+  };
 }
 
 export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
@@ -21,7 +30,18 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
   totalProjects,
   plannedHours,
   workedHours,
+  trends,
 }) => {
+  const getStatTrendIcon = (trendData?: TrendData) => {
+    if (!trendData) return null;
+    const IconComponent = getTrendIcon(trendData.trend);
+    return React.createElement(IconComponent);
+  };
+
+  const getStatTrendColor = (trendData?: TrendData, isPositiveGood = true) => {
+    if (!trendData) return '#3f8600';
+    return getTrendColor(trendData.trend, { isPositiveGood });
+  };
   return (
     <Row gutter={16}>
       <Col span={6}>
@@ -31,8 +51,8 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
             <Statistic
               title="Active Plannings"
               value={activePlannings}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<ArrowUpOutlined />}
+              valueStyle={{ color: getStatTrendColor(trends?.plannings) }}
+              prefix={getStatTrendIcon(trends?.plannings)}
             />
           </Space>
         </Card>
@@ -45,8 +65,8 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
             <Statistic
               title="Active Projects"
               value={totalProjects}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<ArrowUpOutlined />}
+              valueStyle={{ color: getStatTrendColor(trends?.projects) }}
+              prefix={getStatTrendIcon(trends?.projects)}
             />
           </Space>
         </Card>
@@ -62,8 +82,8 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
               title="Planned Hours"
               value={plannedHours}
               suffix="h"
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<ArrowUpOutlined />}
+              valueStyle={{ color: getStatTrendColor(trends?.plannedHours) }}
+              prefix={getStatTrendIcon(trends?.plannedHours)}
             />
           </Space>
         </Card>
@@ -79,8 +99,8 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
               title="Hours Worked"
               value={workedHours}
               suffix="h"
-              valueStyle={{ color: '#cf1322' }}
-              prefix={<ArrowDownOutlined />}
+              valueStyle={{ color: getStatTrendColor(trends?.workedHours) }}
+              prefix={getStatTrendIcon(trends?.workedHours)}
             />
           </Space>
         </Card>

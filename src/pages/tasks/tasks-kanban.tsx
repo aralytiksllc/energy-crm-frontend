@@ -79,16 +79,37 @@ export const Tasks: React.FC = () => {
 
   const tasks = data?.data || [];
 
+  // Filter tasks based on user role
+  const filteredTasks = useMemo(() => {
+    if (identity?.role?.name === 'manager') {
+      return tasks; // Managers see all tasks
+    }
+
+    if (!identity?.id) {
+      return []; // No user logged in
+    }
+
+    // Regular users only see tasks they are assigned to
+    return tasks.filter((task: any) =>
+      task.assignees?.some(
+        (assignee: any) => assignee.userId === Number(identity.id),
+      ),
+    );
+  }, [tasks, identity?.id, identity?.role?.name]);
+
   // Group tasks by status - handle tasks without status field
   const sections = useMemo(() => {
     return STATUS_ORDER.map((status) => ({
       id: status,
       title: STATUS_LABELS[status],
-      count: tasks.filter((task: any) => (task.status || 'todo') === status)
-        .length,
-      tasks: tasks.filter((task: any) => (task.status || 'todo') === status),
+      count: filteredTasks.filter(
+        (task: any) => (task.status || 'todo') === status,
+      ).length,
+      tasks: filteredTasks.filter(
+        (task: any) => (task.status || 'todo') === status,
+      ),
     }));
-  }, [tasks]);
+  }, [filteredTasks]);
 
   const handleDragEnd = useCallback(
     (event: any) => {
@@ -238,7 +259,7 @@ export const Tasks: React.FC = () => {
 
     updateAssignee(
       {
-        resource: 'tasks/assignees',
+        resource: `tasks/${selectedTask.id}/assignee`,
         id: assigneeId,
         values: { actualHours: hours },
         successNotification: {
@@ -314,7 +335,7 @@ export const Tasks: React.FC = () => {
                     task={task}
                     onClick={() => handleCardClick(task)}
                     onDelete={
-                      identity?.role === 'manager'
+                      identity?.role?.name === 'manager'
                         ? () => handleDeleteCard(task.id)
                         : undefined
                     }
@@ -390,26 +411,24 @@ export const Tasks: React.FC = () => {
       >
         {selectedTask && (
           <div className={styles.viewModalBody}>
-            <Row gutter={24} style={{ marginBottom: 16 }}>
+            <Row gutter={24} className={styles.modalRow}>
               <Col span={12}>
-                <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                  <Text type="secondary" style={{ fontSize: 13 }}>
-                    Project
-                  </Text>
+                <Space
+                  direction="vertical"
+                  size={8}
+                  className={styles.modalColumn}
+                >
+                  <Text className={styles.modalSectionText}>Project</Text>
                   <Space>
                     <Tag color="blue">{selectedTask.project?.name}</Tag>
                   </Space>
-                  <Text type="secondary" style={{ fontSize: 13 }}>
-                    Type
-                  </Text>
+                  <Text className={styles.modalSectionText}>Type</Text>
                   <Space>
                     <Tag color={getTypeColor(selectedTask.type)}>
                       {selectedTask.type}
                     </Tag>
                   </Space>
-                  <Text type="secondary" style={{ fontSize: 13 }}>
-                    Due Date
-                  </Text>
+                  <Text className={styles.modalSectionText}>Due Date</Text>
                   <Space>
                     <Tag color="default">
                       {dayjs(selectedTask.dueDate).format('DD/MM/YYYY')}
@@ -418,18 +437,18 @@ export const Tasks: React.FC = () => {
                 </Space>
               </Col>
               <Col span={12}>
-                <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                  <Text type="secondary" style={{ fontSize: 13 }}>
-                    Status
-                  </Text>
+                <Space
+                  direction="vertical"
+                  size={8}
+                  className={styles.modalColumn}
+                >
+                  <Text className={styles.modalSectionText}>Status</Text>
                   <Space>
                     <Tag color={getPriorityColor(selectedTask?.priority)}>
                       {STATUS_LABELS[selectedTask?.status || 'todo']}
                     </Tag>
                   </Space>
-                  <Text type="secondary" style={{ fontSize: 13 }}>
-                    Priority
-                  </Text>
+                  <Text className={styles.modalSectionText}>Priority</Text>
                   <Space>
                     <Tag color={getPriorityColor(selectedTask.priority)}>
                       {selectedTask.priority || 'No Priority'}
@@ -438,95 +457,108 @@ export const Tasks: React.FC = () => {
                 </Space>
               </Col>
             </Row>
-            <Divider style={{ margin: '16px 0' }} />
+            <Divider className={styles.modalDivider} />
             {selectedTask.description && (
-              <div style={{ marginBottom: 24 }}>
+              <div className={styles.descriptionContainer}>
                 <Text strong>Description</Text>
                 <div
-                  style={{
-                    background: '#fff',
-                    borderRadius: 8,
-                    padding: 16,
-                    marginTop: 8,
-                    fontSize: 15,
-                  }}
+                  className={styles.descriptionContent}
                   dangerouslySetInnerHTML={{ __html: selectedTask.description }}
                 />
               </div>
             )}
-            <Divider style={{ margin: '16px 0' }} />
-            <div
-              style={{
-                marginBottom: 8,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Title level={5} style={{ margin: 0 }}>
-                Assignees
-              </Title>
-              {selectedTask?.assignees && (
-                <Text strong style={{ fontSize: 13 }}>
-                  Total Estimated Hours:{' '}
-                  {selectedTask.assignees.reduce(
-                    (acc: number, assignee: any) =>
-                      acc + (assignee.estimatedHours || 0),
-                    0,
+            <Divider className={styles.modalDivider} />
+            {(identity?.role?.name === 'manager' ||
+              selectedTask?.assignees?.some(
+                (assignee: any) => assignee.userId === Number(identity?.id),
+              )) && (
+              <>
+                <div className={styles.assigneeHeader}>
+                  <Title level={5} className={styles.assigneeTitle}>
+                    Assignees
+                  </Title>
+                  {selectedTask?.assignees && (
+                    <Text strong className={styles.assigneeHours}>
+                      Total Estimated Hours:{' '}
+                      {selectedTask.assignees.reduce(
+                        (acc: number, assignee: any) =>
+                          acc + (assignee.estimatedHours || 0),
+                        0,
+                      )}
+                    </Text>
                   )}
-                </Text>
-              )}
-            </div>
-            <Row gutter={[0, 12]}>
-              {selectedTask?.assignees?.map((assignee: any) => {
-                // Removed isCurrentUser and canEditHours as per edit hint
-                return (
-                  <Col span={24} key={assignee.id}>
-                    <div className={styles.assigneeCard}>
-                      <Space size={16} align="center">
-                        <span className={styles.assigneeAvatar}>
-                          {assignee.user.firstName?.[0]}
-                          {assignee.user.lastName?.[0]}
-                        </span>
-                        <div className={styles.assigneeInfo}>
-                          <Text>
-                            {assignee.user.firstName} {assignee.user.lastName}
-                          </Text>
-                          <div style={{ fontSize: 12, color: '#888' }}>
-                            {assignee.user.email}
+                </div>
+                <Row gutter={[0, 12]}>
+                  {selectedTask?.assignees?.map((assignee: any) => {
+                    const currentUserId = identity?.id;
+                    const assigneeUserId = assignee.userId;
+                    const isCurrentUser = currentUserId === assigneeUserId;
+                    const canEditHours =
+                      isCurrentUser &&
+                      (selectedTask.status === 'done' ||
+                        selectedTask.status === 'in-progress');
+
+                    return (
+                      <Col span={24} key={assignee.id}>
+                        <div className={styles.assigneeCard}>
+                          <Space size={16} align="center">
+                            <span className={styles.assigneeAvatar}>
+                              {assignee.user.firstName?.[0]}
+                              {assignee.user.lastName?.[0]}
+                            </span>
+                            <div className={styles.assigneeInfo}>
+                              <Text>
+                                {assignee.user.firstName}{' '}
+                                {assignee.user.lastName}
+                              </Text>
+                              <div className={styles.assigneeEmail}>
+                                {assignee.user.email}
+                              </div>
+                            </div>
+                          </Space>
+                          <div className={styles.assigneeHoursContainer}>
+                            <Tag color="green" className={styles.tagSmall}>
+                              {assignee.estimatedHours}h est.
+                            </Tag>
+
+                            {assignee.actualHours && (
+                              <Tag color="blue" className={styles.tagSmall}>
+                                {assignee.actualHours}h actual
+                              </Tag>
+                            )}
+
+                            {canEditHours && (
+                              <Space>
+                                <InputNumber
+                                  size="small"
+                                  value={actualHours[assignee.id]}
+                                  onChange={(value) =>
+                                    handleActualHoursChange(assignee.id, value)
+                                  }
+                                  placeholder="Actual hours"
+                                  min={0}
+                                  step={0.5}
+                                  className={styles.actualHoursInput}
+                                />
+                                <Button
+                                  size="small"
+                                  type="primary"
+                                  onClick={() =>
+                                    handleSaveActualHours(assignee.id)
+                                  }
+                                >
+                                  Save
+                                </Button>
+                              </Space>
+                            )}
                           </div>
                         </div>
-                      </Space>
-                      <div className={styles.assigneeHours}>
-                        <Tag
-                          color="green"
-                          style={{
-                            fontSize: 12,
-                            padding: '3px 10px',
-                            fontWeight: 500,
-                          }}
-                        >
-                          {assignee.estimatedHours}h est.
-                        </Tag>
-                        {/* Removed canEditHours check as per edit hint */}
-                        {assignee.actualHours && (
-                          <Tag
-                            color="blue"
-                            style={{
-                              fontSize: 12,
-                              padding: '3px 10px',
-                              fontWeight: 500,
-                            }}
-                          >
-                            {assignee.actualHours}h actual
-                          </Tag>
-                        )}
-                      </div>
-                    </div>
-                  </Col>
-                );
-              })}
-            </Row>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              </>
+            )}
           </div>
         )}
       </Modal>

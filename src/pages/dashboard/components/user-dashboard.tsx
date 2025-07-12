@@ -28,6 +28,11 @@ import {
   type DeadlineInfo,
   type ProductivityMetrics,
 } from '../utils';
+import { useMockDashboardTrends } from '../hooks/useDashboardTrends';
+import {
+  DeadlineTracker,
+  TicketStatsCard,
+} from '../../../components/dashboard-components';
 import { ManagerStatsCards } from './ManagerStatsCards';
 import { UserStatsCards } from './UserStatsCards';
 import { ClientHoursPieChart } from './ClientHoursPieChart';
@@ -77,39 +82,105 @@ export const UserDashboard: React.FC = () => {
     [allTasks, currentDateRange],
   );
 
+  // For regular users, filter tasks to only show their assigned tasks
+  // For managers, show all tasks
+  const userFilteredTasks = useMemo(() => {
+    if (currentUser?.role?.name === 'manager') {
+      return filteredTasks; // Managers see all tasks
+    }
+
+    if (!currentUser?.id) {
+      return []; // No user logged in
+    }
+
+    // Regular users only see their assigned tasks
+    return filteredTasks.filter((task) =>
+      task.assignees?.some(
+        (assignee) => assignee.userId === Number(currentUser.id),
+      ),
+    );
+  }, [filteredTasks, currentUser?.id, currentUser?.role?.name]);
+
   const stats = useMemo(
-    () => calculateDashboardStats(allCustomers, allProjects, filteredTasks),
-    [allCustomers, allProjects, filteredTasks],
+    () => calculateDashboardStats(allCustomers, allProjects, userFilteredTasks),
+    [allCustomers, allProjects, userFilteredTasks],
   );
 
   const hoursByClient = useMemo(
-    () => processClientHours(allProjects, allCustomers, filteredTasks),
-    [allProjects, allCustomers, filteredTasks],
+    () => processClientHours(allProjects, allCustomers, userFilteredTasks),
+    [allProjects, allCustomers, userFilteredTasks],
   );
 
   const hoursByProject = useMemo(
-    () => processProjectHours(allProjects, filteredTasks),
-    [allProjects, filteredTasks],
+    () => processProjectHours(allProjects, userFilteredTasks),
+    [allProjects, userFilteredTasks],
   );
+
+  const userHoursByProject = useMemo(() => {
+    if (!currentUser?.id) return [];
+
+    // Use userFilteredTasks which already filters by user assignment and date range
+    const userTasks = userFilteredTasks;
+
+    const userProjects = allProjects.filter((project) =>
+      userTasks.some((task) => task.projectId === project.id),
+    );
+
+    return userProjects
+      .map((project) => {
+        const projectTasks = userTasks.filter(
+          (task) => task.projectId === project.id,
+        );
+
+        const plannedHours = projectTasks.reduce((total, task) => {
+          const userAssignee = task.assignees?.find(
+            (assignee) => assignee.userId === Number(currentUser.id),
+          );
+          return total + (userAssignee?.estimatedHours || 0);
+        }, 0);
+
+        const actualHours = projectTasks.reduce((total, task) => {
+          const userAssignee = task.assignees?.find(
+            (assignee) => assignee.userId === Number(currentUser.id),
+          );
+          return total + (userAssignee?.actualHours || 0);
+        }, 0);
+
+        return {
+          name: project.name,
+          plannedHours,
+          actualHours,
+          totalHours: plannedHours + actualHours,
+        };
+      })
+      .filter((item) => item.totalHours > 0)
+      .sort((a, b) => b.totalHours - a.totalHours)
+      .slice(0, 5);
+  }, [allProjects, userFilteredTasks, currentUser?.id]);
 
   const ticketStats: TicketStats = useMemo(
     () =>
       calculateTicketStats(
-        filteredTasks,
+        userFilteredTasks,
         Number(currentUser?.id),
         currentUser?.role?.name === 'manager',
       ),
-    [filteredTasks, currentUser],
+    [userFilteredTasks, currentUser],
   );
 
   const legacyStats = useMemo(
-    () => calculateLegacyTicketStats(filteredTasks),
-    [filteredTasks],
+    () => calculateLegacyTicketStats(userFilteredTasks),
+    [userFilteredTasks],
   );
 
   const upcomingDeadlines: DeadlineInfo[] = useMemo(
-    () => getUpcomingDeadlines(filteredTasks, allProjects),
-    [filteredTasks, allProjects],
+    () =>
+      getUpcomingDeadlines(
+        userFilteredTasks,
+        allProjects,
+        Number(currentUser?.id),
+      ),
+    [userFilteredTasks, allProjects, currentUser?.id],
   );
 
   const productivityMetrics: ProductivityMetrics = useMemo(() => {
@@ -124,11 +195,13 @@ export const UserDashboard: React.FC = () => {
         mostActiveProject: { name: 'N/A', hours: 0 },
       };
     return calculateProductivityMetrics(
-      filteredTasks,
+      userFilteredTasks,
       allProjects,
       Number(currentUser.id),
     );
-  }, [filteredTasks, allProjects, currentUser?.id]);
+  }, [userFilteredTasks, allProjects, currentUser?.id]);
+
+  const managerTrends = useMockDashboardTrends();
 
   const handleQuickFilterChange = (value: string) => {
     setQuickFilter(value);
@@ -247,26 +320,31 @@ export const UserDashboard: React.FC = () => {
               Account
             </Text>
           </div>
-          <Space>
-            <Text strong>Time Period:</Text>
-            <Select
-              value={quickFilter}
-              onChange={handleQuickFilterChange}
-              style={{ width: 120 }}
-            >
-              <Select.Option value="week">This Week</Select.Option>
-              <Select.Option value="month">This Month</Select.Option>
-              <Select.Option value="year">This Year</Select.Option>
-              <Select.Option value="custom">Custom Range</Select.Option>
-            </Select>
-            {quickFilter === 'custom' && (
-              <RangePicker
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                format="MMM DD, YYYY"
-              />
-            )}
-          </Space>
+          <div className={styles.controlsSection}>
+            <Space size="large">
+              <Space align="center">
+                <Text strong>Time Period:</Text>
+                <Select
+                  value={quickFilter}
+                  onChange={handleQuickFilterChange}
+                  style={{ width: 120 }}
+                >
+                  <Select.Option value="week">This Week</Select.Option>
+                  <Select.Option value="month">This Month</Select.Option>
+                  <Select.Option value="quarter">This Quarter</Select.Option>
+                  <Select.Option value="year">This Year</Select.Option>
+                  <Select.Option value="custom">Custom</Select.Option>
+                </Select>
+              </Space>
+              {quickFilter === 'custom' && (
+                <RangePicker
+                  value={dateRange}
+                  onChange={handleDateRangeChange}
+                  format="MMM DD, YYYY"
+                />
+              )}
+            </Space>
+          </div>
         </div>
       </Card>
 
@@ -276,62 +354,73 @@ export const UserDashboard: React.FC = () => {
           totalProjects={stats.totalProjects}
           plannedHours={stats.plannedHours}
           workedHours={stats.workedHours}
+          trends={managerTrends}
         />
       ) : (
         <UserStatsCards
-          activeTasks={
-            allTasks.filter(
-              (t) =>
-                !t.isCompleted &&
-                t.assignees?.some((a) => a.userId === Number(currentUser?.id)),
-            ).length
-          }
+          activeTasks={userFilteredTasks.filter((t) => !t.isCompleted).length}
           projectCount={
-            [
-              ...new Set(
-                allTasks
-                  .filter((t) =>
-                    t.assignees?.some(
-                      (a) => a.userId === Number(currentUser?.id),
-                    ),
-                  )
-                  .map((t) => t.projectId),
-              ),
-            ].length
+            [...new Set(userFilteredTasks.map((t) => t.projectId))].length
           }
           completionRate={productivityMetrics.taskCompletionRate}
-          plannedHours={allTasks
-            .filter((task) =>
-              task.assignees?.some(
-                (assignee) => assignee.userId === Number(currentUser?.id),
-              ),
-            )
-            .reduce((total, task) => {
-              const userAssignee = task.assignees?.find(
-                (assignee) => assignee.userId === Number(currentUser?.id),
-              );
-              return total + (userAssignee?.estimatedHours || 0);
-            }, 0)}
+          plannedHours={userFilteredTasks.reduce((total, task) => {
+            const userAssignee = task.assignees?.find(
+              (assignee) => assignee.userId === Number(currentUser?.id),
+            );
+            return total + (userAssignee?.estimatedHours || 0);
+          }, 0)}
         />
       )}
 
       <Row gutter={24}>
         <Col span={24}>
-          <Row gutter={16}>
-            <Col span={10}>
-              <ClientHoursPieChart
-                data={hoursByClient}
-                title="Shpërndarja e orëve për klient"
-              />
-            </Col>
-            <Col span={14}>
-              <ProjectHoursBarChart
-                data={hoursByProject}
-                title="Top 5 projektet sipas orëve të shpenzuara"
-              />
-            </Col>
-          </Row>
-          <LegacyTicketStats stats={legacyStats} />
+          {currentUser?.role?.name === 'manager' ? (
+            <>
+              <Row gutter={16}>
+                <Col span={10}>
+                  <ClientHoursPieChart
+                    data={hoursByClient}
+                    title="Shpërndarja e orëve për klient"
+                  />
+                </Col>
+                <Col span={14}>
+                  <ProjectHoursBarChart
+                    data={hoursByProject}
+                    title="Top 5 projektet sipas orëve të shpenzuara"
+                  />
+                </Col>
+              </Row>
+              <LegacyTicketStats stats={legacyStats} />
+            </>
+          ) : (
+            <>
+              <Row gutter={16} style={{ alignItems: 'stretch' }}>
+                <Col span={14} style={{ display: 'flex' }}>
+                  <TicketStatsCard
+                    stats={ticketStats}
+                    title="My Task Statistics"
+                  />
+                </Col>
+                <Col span={10} style={{ display: 'flex' }}>
+                  <DeadlineTracker
+                    deadlines={upcomingDeadlines}
+                    title="My Upcoming Deadlines"
+                  />
+                </Col>
+              </Row>
+
+              {userHoursByProject.length > 0 && (
+                <Row style={{ marginTop: 16 }}>
+                  <Col span={24}>
+                    <ProjectHoursBarChart
+                      data={userHoursByProject}
+                      title="My Project Hours"
+                    />
+                  </Col>
+                </Row>
+              )}
+            </>
+          )}
         </Col>
       </Row>
       {renderProductivityReport()}

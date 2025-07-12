@@ -1,4 +1,5 @@
 import { Space, Tag, Typography } from 'antd';
+import { useCan } from '@refinedev/core';
 
 import type { Customer } from '@modules/customers/types/customer.types';
 import { EditButton } from '@components/edit-button';
@@ -8,7 +9,8 @@ import { formatTableDate } from '@helpers/date-utils';
 
 const { Text } = Typography;
 
-export const columns: FilterColumn<Customer>[] = [
+// Create a function to generate columns with permission checks
+export const createColumns = (): FilterColumn<Customer>[] => [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -60,23 +62,48 @@ export const columns: FilterColumn<Customer>[] = [
     dataIndex: 'actions',
     key: 'actions',
     width: 100,
-    render: (_, record) => (
-      <Space size="middle">
-        <EditButton
-          resource="customers"
-          resourceId={record.id}
-          type="default"
-          size="small"
-        />
-        <DeleteButton
-          resource="customers"
-          resourceId={record.id}
-          confirmTitle={`Delete customer "${record.name}"?`}
-          type="primary"
-          size="small"
-        />
-      </Space>
-    ),
+    render: (_, record) => {
+      const ActionButtons = () => {
+        const { data: canEdit } = useCan({
+          resource: 'customers',
+          action: 'edit',
+          params: { id: record.id },
+        });
+
+        const { data: canDelete } = useCan({
+          resource: 'customers',
+          action: 'delete',
+          params: { id: record.id },
+        });
+
+        return (
+          <Space size="middle">
+            {canEdit?.can && (
+              <EditButton
+                resource="customers"
+                resourceId={record.id}
+                type="default"
+                size="small"
+              />
+            )}
+            {canDelete?.can && (
+              <DeleteButton
+                resource="customers"
+                resourceId={record.id}
+                confirmTitle={`Delete customer "${record.name}"?`}
+                type="primary"
+                size="small"
+              />
+            )}
+          </Space>
+        );
+      };
+
+      return <ActionButtons />;
+    },
     fixed: 'right',
   },
 ];
+
+// Export the columns for backward compatibility
+export const columns = createColumns();

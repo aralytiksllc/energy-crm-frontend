@@ -93,20 +93,6 @@ export const dataProvider: DataProvider = {
     params: CreateParams<TVariables>,
   ): Promise<CreateResponse<TData>> {
     const { resource, variables } = params;
-    const url = `${API_URL}/${resource}`;
-
-    if (resource === 'users') {
-      const response = await ky
-        .post(url, {
-          json: variables,
-          headers: { 'Content-Type': 'application/json' },
-        })
-        .json<TData>();
-
-      return {
-        data: response,
-      };
-    }
 
     const response = await httpClient
       .post(resource, { json: variables })

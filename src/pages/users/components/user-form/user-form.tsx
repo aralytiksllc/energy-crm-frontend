@@ -126,8 +126,13 @@ export const UsersForm: React.FC<UserFormProps> = ({
         <DatePicker className={styles.datePicker} />
       </Form.Item>
 
-      <Form.Item name="status" valuePropName="checked">
-        <Switch />
+      <Form.Item
+        label="Active Status"
+        name="isActive"
+        valuePropName="checked"
+        initialValue={mode === 'create' ? true : undefined}
+      >
+        <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
       </Form.Item>
     </Form>
   );

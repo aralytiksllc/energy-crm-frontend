@@ -27,11 +27,16 @@ export const httpClient = ky.create({
 
         if (response) {
           try {
-            const body = (await response.json()) as { message?: string };
+            // Clone the response to preserve the body
+            const clonedResponse = response.clone();
+            const body = (await clonedResponse.json()) as { message?: string };
 
             if (typeof body.message === 'string') {
               error.message = body.message;
             }
+
+            // Store the error body for later access
+            (error as any).errorBody = body;
 
             if (response.status === 401 || response.status === 403) {
               authStorage.clear();

@@ -1,12 +1,14 @@
 import { Progress, Space } from 'antd';
 import { DateField, NumberField, TagField, TextField } from '@refinedev/antd';
+import { useCan } from '@refinedev/core';
 
 import type { IProject } from '@interfaces/project';
 import { EditButton } from '@components/edit-button';
 import { DeleteButton } from '@components/delete-button';
 import { FilterColumn } from '@components/column-filter/column-filter.types';
 
-export const columns: FilterColumn<IProject>[] = [
+// Create a function to generate columns with permission checks
+export const createColumns = (): FilterColumn<IProject>[] => [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -110,22 +112,47 @@ export const columns: FilterColumn<IProject>[] = [
     key: 'actions',
     width: 100,
     fixed: 'right',
-    render: (_, record) => (
-      <Space size="middle">
-        <EditButton
-          resource="projects"
-          resourceId={record.id}
-          type="default"
-          size="small"
-        />
-        <DeleteButton
-          resource="projects"
-          resourceId={record.id}
-          confirmTitle={`Delete project "${record.name}"?`}
-          type="primary"
-          size="small"
-        />
-      </Space>
-    ),
+    render: (_, record) => {
+      const ActionButtons = () => {
+        const { data: canEdit } = useCan({
+          resource: 'projects',
+          action: 'edit',
+          params: { id: record.id },
+        });
+
+        const { data: canDelete } = useCan({
+          resource: 'projects',
+          action: 'delete',
+          params: { id: record.id },
+        });
+
+        return (
+          <Space size="middle">
+            {canEdit?.can && (
+              <EditButton
+                resource="projects"
+                resourceId={record.id}
+                type="default"
+                size="small"
+              />
+            )}
+            {canDelete?.can && (
+              <DeleteButton
+                resource="projects"
+                resourceId={record.id}
+                confirmTitle={`Delete project "${record.name}"?`}
+                type="primary"
+                size="small"
+              />
+            )}
+          </Space>
+        );
+      };
+
+      return <ActionButtons />;
+    },
   },
 ];
+
+// Export the columns for backward compatibility
+export const columns = createColumns();
