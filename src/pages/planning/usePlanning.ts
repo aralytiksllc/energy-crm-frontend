@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useList, useDelete } from '@refinedev/core';
+import { useList, useDelete, useGetIdentity } from '@refinedev/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { IUser } from '@interfaces/users';
 import { IProject } from '@interfaces/project';
@@ -38,10 +38,14 @@ export const usePlanning = () => {
   });
 
   const { mutate: deletePlanning, isLoading: deleteLoading } = useDelete();
+  const { data: currentUser } = useGetIdentity<IUser>();
 
   const users = usersData?.data || [];
   const projects = projectsData?.data || [];
   const plannings = planningsData?.data || [];
+
+  // Determine view mode based on user role
+  const viewMode = currentUser?.role?.name === 'manager' ? 'manager' : 'user';
 
   const calendarAssignments: PlanningAssignment[] = plannings.map(
     (planning) => ({
@@ -60,20 +64,43 @@ export const usePlanning = () => {
     }),
   );
 
+  const roleFilteredPlannings =
+    viewMode === 'manager'
+      ? plannings
+      : plannings.filter(
+          (planning) => planning.assignedUserId === currentUser?.id,
+        );
+
+  const filteredProjects =
+    viewMode === 'manager'
+      ? projects
+      : projects.filter((project) =>
+          project.members?.some(
+            (member) => String(member.userId) === String(currentUser?.id),
+          ),
+        );
+
   const filteredAssignments = calendarAssignments.filter((assignment) => {
+    const userMatch =
+      viewMode === 'manager' || assignment.userId === currentUser?.id;
+
     const projectMatch =
       selectedProject === 'all' || assignment.projectId === selectedProject;
-    return projectMatch;
+
+    return userMatch && projectMatch;
   });
 
-  const filteredProjects = projects;
-
-  const filteredPlanningsForDelete = plannings.filter((planning) => {
-    const projectMatch =
-      selectedProject === 'all' || planning.projectId === selectedProject;
-    const monthMatch = dayjs(planning.startDate).isSame(currentMonth, 'month');
-    return projectMatch && monthMatch;
-  });
+  const filteredPlanningsForDelete = roleFilteredPlannings.filter(
+    (planning) => {
+      const projectMatch =
+        selectedProject === 'all' || planning.projectId === selectedProject;
+      const monthMatch = dayjs(planning.startDate).isSame(
+        currentMonth,
+        'month',
+      );
+      return projectMatch && monthMatch;
+    },
+  );
 
   const handleDeletePlanning = (planningId: number) => {
     deletePlanning(
@@ -84,6 +111,11 @@ export const usePlanning = () => {
       {
         onSuccess: () => {
           message.success('Planning deleted successfully');
+          setSelectedDayAssignments((prev) =>
+            prev.filter(
+              (assignment) => assignment.id !== planningId.toString(),
+            ),
+          );
           refetchPlannings();
         },
         onError: (error) => {
@@ -137,6 +169,7 @@ export const usePlanning = () => {
     filteredAssignments,
     filteredProjects,
     filteredPlanningsForDelete,
+    viewMode,
     setSelectedDate,
     setCurrentMonth,
     setSelectedProject,

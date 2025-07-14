@@ -1,7 +1,7 @@
 import React from 'react';
 import { Space, Typography, Row, Col, Tag } from 'antd';
 import { useCommonStyles } from './common-styles';
-import { COLORS, FONT_SIZES } from '../../styles/constants';
+import { COLORS } from '../../styles/constants';
 
 const { Text, Title } = Typography;
 

@@ -157,7 +157,7 @@ export const GenericModal: React.FC<GenericModalProps> = ({
         onCancel={onCancel}
         footer={footerButtons || defaultFooter}
         width={width}
-        destroyOnClose={destroyOnClose}
+        destroyOnHidden={destroyOnClose}
         className={className}
         styles={{
           header: {

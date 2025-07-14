@@ -94,6 +94,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
   }, [tasks, projects]);
 
   const hoursByClient = useMemo(() => {
+    if (!tasks || !projects || !customers) {
+      return [];
+    }
+
     const customerHours = new Map<string, number>();
 
     projects.forEach((project) => {
@@ -265,7 +269,21 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               data={hoursByClient}
               angleField="value"
               colorField="type"
-              label={{ type: 'spider' }}
+              label={{
+                content: ({
+                  type,
+                  percent,
+                }: {
+                  type: string;
+                  percent: number;
+                }) => `${type}\n${(percent * 100).toFixed(1)}%`,
+                style: {
+                  fontSize: 12,
+                  textAlign: 'center',
+                  fill: '#fff',
+                  fontWeight: 'bold',
+                },
+              }}
               height={250}
               innerRadius={0.6}
             />

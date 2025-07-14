@@ -47,7 +47,7 @@ const PipelineStatus: React.FC<PipelineStatusProps> = ({ projects }) => {
         border: '1px solid #f0f0f0',
         marginBottom: 24,
       }}
-      bodyStyle={{ padding: '24px' }}
+      styles={{ body: { padding: '24px' } }}
     >
       <div style={{ marginBottom: 24 }}>
         <Title level={4} style={{ margin: 0, color: '#262626' }}>

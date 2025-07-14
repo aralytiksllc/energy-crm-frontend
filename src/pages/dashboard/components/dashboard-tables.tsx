@@ -214,7 +214,7 @@ const DashboardTables: React.FC<DashboardTablesProps> = ({ tasks }) => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
             border: '1px solid #f0f0f0',
           }}
-          bodyStyle={{ padding: '24px' }}
+          styles={{ body: { padding: '24px' } }}
         >
           <div style={{ marginBottom: 20 }}>
             <Title level={4} style={{ margin: 0, color: '#262626' }}>
@@ -243,7 +243,7 @@ const DashboardTables: React.FC<DashboardTablesProps> = ({ tasks }) => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
             border: '1px solid #f0f0f0',
           }}
-          bodyStyle={{ padding: '24px' }}
+          styles={{ body: { padding: '24px' } }}
         >
           <div style={{ marginBottom: 20 }}>
             <Title level={4} style={{ margin: 0, color: '#262626' }}>

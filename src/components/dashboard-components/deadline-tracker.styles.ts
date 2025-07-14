@@ -11,7 +11,6 @@ export const useDeadlineTrackerStyles = createStyles(() => ({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    padding: '16px',
   },
   listContainer: {
     flex: 1,

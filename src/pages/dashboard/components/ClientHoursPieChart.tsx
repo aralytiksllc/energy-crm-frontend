@@ -12,13 +12,10 @@ export const ClientHoursPieChart: React.FC<ClientHoursPieChartProps> = ({
   data,
   title,
 }) => {
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Card title={title}>
-        <Empty
-          description="No client data available"
-          style={{ height: '400px' }}
-        />
+        <Empty description="No client data available" />
       </Card>
     );
   }
@@ -34,13 +31,14 @@ export const ClientHoursPieChart: React.FC<ClientHoursPieChartProps> = ({
         radius={0.8}
         innerRadius={0.6}
         label={{
-          type: 'inner',
           offset: '-30%',
           content: ({ percent }: { percent: number }) =>
             `${(percent * 100).toFixed(0)}%`,
           style: {
             fontSize: 14,
             textAlign: 'center',
+            fill: '#fff',
+            fontWeight: 'bold',
           },
         }}
         interactions={[

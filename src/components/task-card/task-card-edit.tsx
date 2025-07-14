@@ -118,7 +118,11 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
   };
 
   return (
-    <Card className={className} style={style} bodyStyle={{ padding: 16 }}>
+    <Card
+      className={className}
+      style={style}
+      styles={{ body: { padding: 16 } }}
+    >
       <div className={styles.header}>
         {isEditing === 'type' ? (
           renderEditableField(

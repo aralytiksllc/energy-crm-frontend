@@ -6,3 +6,4 @@ export * from './priority';
 export * from './task-card';
 export * from './logo-svg';
 export * from './header';
+export * from './expandable-card';

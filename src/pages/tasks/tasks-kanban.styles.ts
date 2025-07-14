@@ -110,4 +110,7 @@ export const useTasksKanbanStyles = createStyles(() => ({
   actualHoursInput: {
     width: 100,
   },
+  viewModalHeaderActions: {
+    marginRight: '30px',
+  },
 }));

@@ -1,10 +1,20 @@
 import React from 'react';
-import { Form, Input, DatePicker, Row, Col, Button, Space, Switch } from 'antd';
+import {
+  Form,
+  Input,
+  DatePicker,
+  Row,
+  Col,
+  Button,
+  Space,
+  Switch,
+  Select,
+} from 'antd';
 import { useCreate } from '@refinedev/core';
 import { UserSelect } from '@components/user-select/user-select';
-import { RemoteSelect } from '@components/remote-select';
 import { planningValidationRules } from '@modules/planning/validation';
 import type { IPlanningFormValues } from '@interfaces/planning';
+import type { IProject } from '@interfaces/project';
 import dayjs from 'dayjs';
 
 const { TextArea } = Input;
@@ -12,9 +22,14 @@ const { TextArea } = Input;
 interface PlanningFormProps {
   onSuccess: () => void;
   onCancel: () => void;
+  filteredProjects?: IProject[];
 }
 
-const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
+const PlanningForm: React.FC<PlanningFormProps> = ({
+  onSuccess,
+  onCancel,
+  filteredProjects = [],
+}) => {
   const [form] = Form.useForm();
   const { mutate: createPlanning, isLoading } = useCreate();
 
@@ -122,13 +137,17 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
               rules={planningValidationRules.projectId}
               required
             >
-              <RemoteSelect
-                resource="projects"
-                optionLabel="name"
-                optionValue="id"
+              <Select
                 placeholder="Select a project"
                 showSearch
-              />
+                optionFilterProp="children"
+              >
+                {filteredProjects.map((project) => (
+                  <Select.Option key={project.id} value={project.id}>
+                    {project.name}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
         </Row>

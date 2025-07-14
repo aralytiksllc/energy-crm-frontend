@@ -103,6 +103,7 @@ const PermissionsMatrixContent = () => {
         );
       },
     })) || []),
+    Table.EXPAND_COLUMN,
   ];
 
   if (isLoadingRoles || isLoadingPermissions || isLoadingRolePermissions) {
@@ -123,7 +124,6 @@ const PermissionsMatrixContent = () => {
         rowExpandable: (record) =>
           !!(record.description && record.description.length > 0),
         expandRowByClick: true,
-        expandIconColumnIndex: (roles?.data.length ?? 0) + 1,
         expandIcon: () => null,
       }}
     />

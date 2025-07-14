@@ -375,8 +375,7 @@ export const Tasks: React.FC = () => {
                 {STATUS_LABELS[selectedTask?.status || 'todo']}
               </Tag>
             </Space>
-            {/* Removed viewMode === 'manager' check as per edit hint */}
-            <Space>
+            <Space className={styles.viewModalHeaderActions}>
               {canEdit?.can && (
                 <Button
                   onClick={() => handleEditCard(selectedTask?.id)}
@@ -405,9 +404,9 @@ export const Tasks: React.FC = () => {
           setSelectedTask(null);
         }}
         width={700}
-        destroyOnClose
+        destroyOnHidden
         footer={null}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
       >
         {selectedTask && (
           <div className={styles.viewModalBody}>

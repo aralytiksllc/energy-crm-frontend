@@ -6,10 +6,11 @@ export const accessControlProvider: AccessControlProvider = {
   async can({ resource, action, params }) {
     const identity = (await authProvider.getIdentity?.()) as IUser | null;
 
-    // Managers have full access to permissions, users, customers, projects, and tasks
+    // Managers have full access to permissions, roles, users, customers, projects, and tasks
     if (
       identity?.role?.name === 'manager' &&
       (resource === 'permissions' ||
+        resource === 'roles' ||
         resource === 'users' ||
         resource === 'customers' ||
         resource === 'projects' ||
