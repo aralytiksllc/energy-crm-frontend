@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Avatar, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { useExpandableCardStyles } from './expandable-card.styles';
 
 const { Text } = Typography;
 
@@ -42,6 +43,7 @@ export const ExpandableCard = <T,>({
   className,
   style,
 }: ExpandableCardProps<T>) => {
+  const { styles, cx } = useExpandableCardStyles();
   const [internalExpanded, setInternalExpanded] = useState(false);
 
   const isExpanded = controlled ? controlled.expanded : internalExpanded;
@@ -54,42 +56,26 @@ export const ExpandableCard = <T,>({
   return (
     <Card
       {...cardProps}
-      className={className}
-      style={{
-        marginBottom: 16,
-        ...style,
-      }}
-      title={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {title}
-        </div>
-      }
+      className={cx(styles.card, className)}
+      style={style}
+      title={<div className={styles.titleContainer}>{title}</div>}
       extra={actions}
     >
-      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <div className={styles.contentContainer}>
         {avatar && (
           <Avatar
             size={avatar.size || 'small'}
             src={avatar.src}
             icon={avatar.icon || <UserOutlined />}
-            style={{ alignSelf: 'flex-start', flexShrink: 0 }}
+            className={styles.avatar}
           />
         )}
 
-        <div style={{ flex: 1 }}>
+        <div className={styles.content}>
           {subtitle}
 
           {hasExpandableContent && !isExpanded && (
-            <Text
-              style={{
-                fontSize: '12px',
-                cursor: 'pointer',
-                marginTop: 4,
-                color: '#1890ff',
-                display: 'block',
-              }}
-              onClick={toggleExpanded}
-            >
+            <Text className={styles.toggleText} onClick={toggleExpanded}>
               {expandText}
             </Text>
           )}
@@ -101,14 +87,7 @@ export const ExpandableCard = <T,>({
           <br />
           {expandableContent}
           <br />
-          <Text
-            style={{
-              fontSize: '12px',
-              cursor: 'pointer',
-              color: '#1890ff',
-            }}
-            onClick={toggleExpanded}
-          >
+          <Text className={styles.collapseText} onClick={toggleExpanded}>
             {collapseText}
           </Text>
         </div>

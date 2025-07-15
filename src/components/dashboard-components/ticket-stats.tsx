@@ -25,31 +25,36 @@ interface TicketStatsProps {
   title?: string;
 }
 
-const getTaskTypeIcon = (type: string) => {
-  switch (type) {
-    case 'FEATURE':
-      return <RocketOutlined style={{ color: '#1890ff' }} />;
-    case 'BUG':
-      return <BugOutlined style={{ color: '#ff4d4f' }} />;
-    case 'CODE_REVIEW':
-      return <CodeOutlined style={{ color: '#722ed1' }} />;
-    case 'TESTING':
-      return <ExperimentOutlined style={{ color: '#fa8c16' }} />;
-    case 'DOCUMENTATION':
-      return <FileTextOutlined style={{ color: '#52c41a' }} />;
-    case 'REFACTOR':
-      return <ReloadOutlined style={{ color: '#13c2c2' }} />;
-    case 'MEETING':
-      return <TeamOutlined style={{ color: '#eb2f96' }} />;
-    case 'DEPLOYMENT':
-      return <CloudServerOutlined style={{ color: '#fa541c' }} />;
-    case 'RESEARCH':
-      return <SearchOutlined style={{ color: '#2f54eb' }} />;
-    case 'OTHER':
-      return <MoreOutlined style={{ color: '#8c8c8c' }} />;
-    default:
-      return <ToolOutlined style={{ color: '#52c41a' }} />;
-  }
+const TaskTypeIcon: React.FC<{ type: string }> = ({ type }) => {
+  const iconColorMap: Record<string, string> = {
+    FEATURE: '#1890ff',
+    BUG: '#ff4d4f',
+    CODE_REVIEW: '#722ed1',
+    TESTING: '#fa8c16',
+    DOCUMENTATION: '#52c41a',
+    REFACTOR: '#13c2c2',
+    MEETING: '#eb2f96',
+    DEPLOYMENT: '#fa541c',
+    RESEARCH: '#2f54eb',
+    OTHER: '#8c8c8c',
+  };
+  const iconColor = iconColorMap[type] || '#52c41a';
+  const { styles } = useTicketStatsStyles({ iconColor });
+
+  const icons: Record<string, React.ReactNode> = {
+    FEATURE: <RocketOutlined className={styles.icon} />,
+    BUG: <BugOutlined className={styles.icon} />,
+    CODE_REVIEW: <CodeOutlined className={styles.icon} />,
+    TESTING: <ExperimentOutlined className={styles.icon} />,
+    DOCUMENTATION: <FileTextOutlined className={styles.icon} />,
+    REFACTOR: <ReloadOutlined className={styles.icon} />,
+    MEETING: <TeamOutlined className={styles.icon} />,
+    DEPLOYMENT: <CloudServerOutlined className={styles.icon} />,
+    RESEARCH: <SearchOutlined className={styles.icon} />,
+    OTHER: <MoreOutlined className={styles.icon} />,
+  };
+
+  return <>{icons[type] || <ToolOutlined className={styles.icon} />}</>;
 };
 
 const formatTaskTypeName = (type: string) => {
@@ -59,11 +64,27 @@ const formatTaskTypeName = (type: string) => {
     .replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
+const Stat: React.FC<{
+  title: string;
+  value: number;
+  prefix: React.ReactNode;
+  color: string;
+}> = ({ title, value, prefix, color }) => {
+  return (
+    <Statistic
+      title={title}
+      value={value}
+      prefix={prefix}
+      valueStyle={{ color }}
+    />
+  );
+};
+
 export const TicketStatsCard: React.FC<TicketStatsProps> = ({
   stats,
   title = 'Task Overview',
 }) => {
-  const { styles } = useTicketStatsStyles();
+  const { styles } = useTicketStatsStyles({});
   const completionRate =
     stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
@@ -84,41 +105,35 @@ export const TicketStatsCard: React.FC<TicketStatsProps> = ({
     <Card title={title} className={styles.card}>
       <div className={styles.cardBody}>
         <div className={styles.contentContainer}>
-          <Space direction="vertical" style={{ width: '100%' }} size="large">
+          <Space direction="vertical" className={styles.fullWidth} size="large">
             <Row gutter={16}>
               <Col span={8}>
-                <Statistic
+                <Stat
                   title="Total Tasks"
                   value={stats.total}
                   prefix={<ToolOutlined />}
-                  valueStyle={{ color: '#1890ff' }}
+                  color="#1890ff"
                 />
               </Col>
               <Col span={8}>
-                <Statistic
+                <Stat
                   title="Completed"
                   value={stats.completed}
                   prefix={<CheckCircleOutlined />}
-                  valueStyle={{ color: '#52c41a' }}
+                  color="#52c41a"
                 />
               </Col>
               <Col span={8}>
-                <Statistic
+                <Stat
                   title="Overdue"
                   value={stats.overdue}
                   prefix={<ExclamationCircleOutlined />}
-                  valueStyle={{ color: '#ff4d4f' }}
+                  color="#ff4d4f"
                 />
               </Col>
             </Row>
             <div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: '8px',
-                }}
-              >
+              <div className={styles.progressHeader}>
                 <Text strong>Completion Progress</Text>
               </div>
               <Progress
@@ -131,7 +146,7 @@ export const TicketStatsCard: React.FC<TicketStatsProps> = ({
               />
             </div>
             <div className={styles.taskTypeGrid}>
-              <Text strong style={{ marginBottom: '12px', display: 'block' }}>
+              <Text strong className={styles.taskTypeHeader}>
                 Task Type Breakdown
               </Text>
               <Row gutter={[8, 8]}>
@@ -142,7 +157,7 @@ export const TicketStatsCard: React.FC<TicketStatsProps> = ({
                   return (
                     <Col span={8} key={type}>
                       <div className={styles.taskTypeItem}>
-                        {getTaskTypeIcon(type)}
+                        <TaskTypeIcon type={type} />
                         <div className={styles.taskTypeContent}>
                           <div className={styles.taskTypeCount}>{count}</div>
                           <div className={styles.taskTypeName}>

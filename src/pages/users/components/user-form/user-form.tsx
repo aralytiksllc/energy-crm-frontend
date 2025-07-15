@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Form, Input, DatePicker, Switch, Select } from 'antd';
 import type { FormProps } from 'antd/lib/form';
-import { useSelect } from '@refinedev/antd';
 import { useGetIdentity } from '@refinedev/core';
 
 // Internal imports
@@ -11,18 +10,13 @@ import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
 import { rules } from './user-form.rules';
 import { Team } from '@interfaces/team.enum';
-import { UserRole } from '@interfaces/user-role.enum';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
+import { RemoteSelect } from '@components/remote-select';
 
 const teamOptions = Object.values(Team).map((team) => ({
   label: team,
   value: team,
 }));
-
-const fallbackRoleOptions = [
-  { label: 'Manager', value: 1 },
-  { label: 'User', value: 2 },
-];
 
 interface UserFormProps {
   formProps: FormProps<IUser>;
@@ -34,22 +28,6 @@ export const UsersForm: React.FC<UserFormProps> = ({
   mode,
 }: UserFormProps) => {
   const { data: currentUser } = useGetIdentity<IUser>();
-  const [useApiRoles, setUseApiRoles] = useState(true);
-
-  const shouldFetchRoles = currentUser?.role?.name === 'manager' && useApiRoles;
-
-  const { selectProps, queryResult } = useSelect({
-    resource: 'roles',
-    optionLabel: 'name',
-    optionValue: 'id',
-    queryOptions: {
-      enabled: shouldFetchRoles,
-      retry: false,
-      onError: () => {
-        setUseApiRoles(false);
-      },
-    },
-  });
 
   const title = useMemo(() => {
     if (mode === 'create') return 'Create User';
@@ -59,11 +37,6 @@ export const UsersForm: React.FC<UserFormProps> = ({
   const { styles } = useStyles();
 
   const canManageRoles = currentUser?.role?.name === 'manager';
-
-  const roleSelectProps =
-    !useApiRoles || queryResult?.isError
-      ? { options: fallbackRoleOptions, placeholder: 'Select a role' }
-      : selectProps;
 
   const formName = `user-form-${mode}`;
 
@@ -97,12 +70,13 @@ export const UsersForm: React.FC<UserFormProps> = ({
       </Form.Item>
 
       {canManageRoles && (
-        <Form.Item
-          label="Role"
-          name="roleId"
-          rules={[{ required: true, message: 'Please select a role' }]}
-        >
-          <Select {...roleSelectProps} />
+        <Form.Item label="Role" name="roleId" rules={rules.roleId}>
+          <RemoteSelect
+            resource="roles"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a role"
+          />
         </Form.Item>
       )}
 

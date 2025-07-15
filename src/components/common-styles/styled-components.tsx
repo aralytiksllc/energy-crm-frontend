@@ -40,13 +40,9 @@ export const SmallText: React.FC<{
   color?: string;
   className?: string;
 }> = ({ children, color = COLORS.text.secondary, className }) => {
-  const { styles, cx } = useCommonStyles();
+  const { styles, cx } = useCommonStyles({ color });
 
-  return (
-    <Text className={cx(styles.textSmall, className)} style={{ color }}>
-      {children}
-    </Text>
-  );
+  return <Text className={cx(styles.textSmall, className)}>{children}</Text>;
 };
 
 export const NoMarginTitle: React.FC<{

@@ -1,6 +1,11 @@
 import { createStyles } from 'antd-style';
 
 export const useTaskCardEditStyles = createStyles(({ css }) => ({
+  card: css`
+    .ant-card-body {
+      padding: 16px;
+    }
+  `,
   header: css`
     display: flex;
     justify-content: space-between;
@@ -92,5 +97,8 @@ export const useTaskCardEditStyles = createStyles(({ css }) => ({
   `,
   actionButtons: css`
     margin-top: 8px;
+  `,
+  typeSelect: css`
+    width: 120px;
   `,
 }));

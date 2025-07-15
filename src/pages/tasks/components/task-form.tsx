@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Select, DatePicker, Row, Col, FormProps } from 'antd';
-import { useList, useGetIdentity } from '@refinedev/core';
+import { useGetIdentity } from '@refinedev/core';
 import { TaskPriority } from '@interfaces/task-priority.enum';
 import { TaskType } from '@interfaces/task-type.enum';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
@@ -9,6 +9,7 @@ import { AssigneeManager } from '@components/assignee-manager/assignee-manager';
 import { useTaskFormStyles } from './task-form.styles';
 import { IUser } from '@interfaces/users';
 import { IProject } from '@interfaces/project';
+import { rules } from './task-form.rules';
 
 const priorityOptions = Object.values(TaskPriority).map((priority) => ({
   label: priority,
@@ -22,21 +23,21 @@ const typeOptions = Object.values(TaskType).map((type) => ({
 
 export interface TaskFormProps {
   formProps: FormProps;
+  projects?: IProject[];
+  users?: IUser[];
+  projectsLoading?: boolean;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ formProps }) => {
+export const TaskForm: React.FC<TaskFormProps> = ({
+  formProps,
+  projects = [],
+  projectsLoading = false,
+}) => {
   const { form } = formProps;
   const { styles } = useTaskFormStyles();
   const { data: currentUser } = useGetIdentity<IUser>();
 
-  const { data: projectsData, isLoading: projectsLoading } = useList<IProject>({
-    resource: 'projects',
-    pagination: { mode: 'off' },
-  });
-
-  const allProjects = projectsData?.data || [];
-
-  const userProjects = allProjects.filter((project) => {
+  const userProjects = projects.filter((project) => {
     if (!currentUser?.id) return false;
 
     if (currentUser.role?.name === 'manager') {
@@ -69,11 +70,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ formProps }) => {
       <Form.Item name="status" className={styles.hiddenField}>
         <Input />
       </Form.Item>
-      <Form.Item
-        name="projectId"
-        label="Project"
-        rules={[{ required: true, message: 'Please select a project' }]}
-      >
+      <Form.Item name="projectId" label="Project" rules={rules.projectId}>
         <Select
           placeholder={getProjectPlaceholder()}
           options={projectOptions}
@@ -89,11 +86,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ formProps }) => {
         />
       </Form.Item>
 
-      <Form.Item
-        name="title"
-        label="Task Title"
-        rules={[{ required: true, message: 'Please enter a title' }]}
-      >
+      <Form.Item name="title" label="Task Title" rules={rules.title}>
         <Input placeholder="Enter task title" />
       </Form.Item>
 
@@ -103,11 +96,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ formProps }) => {
 
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item
-            name="type"
-            label="Task Type"
-            rules={[{ required: true, message: 'Please select a type' }]}
-          >
+          <Form.Item name="type" label="Task Type" rules={rules.type}>
             <Select placeholder="Select type" options={typeOptions} />
           </Form.Item>
         </Col>

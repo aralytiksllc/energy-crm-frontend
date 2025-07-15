@@ -4,7 +4,9 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { UserSelect } from '@components/user-select/user-select';
 import { FormListFieldData } from 'antd/es/form';
 import { useProjectMemberManagerStyles } from './styles';
-import { projectMemberValidationRules, roleOptions } from './constants';
+import { roleOptions } from './constants';
+import { projectMemberValidationRules } from './project-member-manager.rules';
+import { IUser } from '@interfaces/users';
 
 const { Text } = Typography;
 
@@ -12,12 +14,16 @@ interface ProjectMemberManagerProps {
   fields: FormListFieldData[];
   add: () => void;
   remove: (index: number) => void;
+  users?: IUser[];
+  usersLoading?: boolean;
 }
 
 export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
   fields,
   add,
   remove,
+  users,
+  usersLoading,
 }) => {
   const { styles } = useProjectMemberManagerStyles();
   return (
@@ -53,6 +59,8 @@ export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
               <UserSelect
                 placeholder="Select User"
                 className={styles.fullWidth}
+                users={users}
+                loading={usersLoading}
               />
             </Form.Item>
           </Col>

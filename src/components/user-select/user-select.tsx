@@ -5,10 +5,20 @@ import { useList } from '@refinedev/core';
 import type { IUser } from '@interfaces/users';
 import { UserAvatar } from '@components/user-avatar';
 
-export const UserSelect: React.FC<SelectProps> = (props) => {
-  const { data, isLoading } = useList<IUser>({ resource: 'users' });
+export interface UserSelectProps extends SelectProps {
+  users?: IUser[];
+}
 
-  const users = data?.data || [];
+export const UserSelect: React.FC<UserSelectProps> = (props) => {
+  const { users: usersFromProps, ...restProps } = props;
+  const { data, isLoading } = useList<IUser>({
+    resource: 'users',
+    queryOptions: {
+      enabled: !usersFromProps,
+    },
+  });
+
+  const users = usersFromProps || data?.data || [];
 
   const options = users.map((user) => {
     const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
@@ -47,7 +57,7 @@ export const UserSelect: React.FC<SelectProps> = (props) => {
       filterOption={(input, option) =>
         (option?.searchText ?? '').toLowerCase().includes(input.toLowerCase())
       }
-      {...props}
+      {...restProps}
     />
   );
 };

@@ -1,7 +1,7 @@
 // External imports
 import React, { useCallback, useMemo } from 'react';
 import { FormProps } from 'antd';
-import { useCan } from '@refinedev/core';
+import { useCan, useList } from '@refinedev/core';
 
 // Internal imports
 import type { IProject } from '@interfaces/project';
@@ -9,6 +9,7 @@ import { CrudTable } from '@components/crud-table/crud-table';
 import { ProjectForm } from './components/project-form';
 import { columns, createColumns } from './constants/table';
 import { augmentProjectFormProps } from './components/utils/form-helpers';
+import { IUser } from '@interfaces/users';
 
 export const Projects: React.FC = () => {
   const { data: canCreate } = useCan({
@@ -26,6 +27,11 @@ export const Projects: React.FC = () => {
     action: 'delete',
   });
 
+  const { data: usersData, isLoading: usersLoading } = useList<IUser>({
+    resource: 'users',
+    pagination: { mode: 'off' },
+  });
+
   // Check if user has any actions permissions
   const hasActionsPermission = canEdit?.can || canDelete?.can;
 
@@ -41,10 +47,19 @@ export const Projects: React.FC = () => {
     return allColumns;
   }, [hasActionsPermission]);
 
-  const renderForm = useCallback((formProps: FormProps) => {
-    const augmentedFormProps = augmentProjectFormProps(formProps);
-    return <ProjectForm formProps={augmentedFormProps} />;
-  }, []);
+  const renderForm = useCallback(
+    (formProps: FormProps) => {
+      const augmentedFormProps = augmentProjectFormProps(formProps);
+      return (
+        <ProjectForm
+          formProps={augmentedFormProps}
+          users={usersData?.data}
+          usersLoading={usersLoading}
+        />
+      );
+    },
+    [usersData, usersLoading],
+  );
 
   return (
     <CrudTable<IProject>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select, Space } from 'antd';
+import { useDropdownFilterStyles } from './dropdown-filter.styles';
 
 interface DropdownFilterProps {
   options: { label: string; value: string }[];
@@ -14,10 +15,11 @@ export const DropdownFilter: React.FC<DropdownFilterProps> = ({
   defaultValue = 'all',
   width = 155,
 }) => {
+  const { styles } = useDropdownFilterStyles({ width });
   return (
     <Space>
       <Select
-        style={{ width }}
+        className={styles.select}
         defaultValue={defaultValue}
         onChange={onChange}
         options={options}

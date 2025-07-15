@@ -16,7 +16,7 @@ import {
   UpdatePassword,
 } from '@modules/authentication';
 import { Users } from '@modules/users';
-import { Tasks } from '@modules/tasks';
+import { TasksKanban } from '@modules/tasks';
 import { Dashboard } from '@modules/dashboard';
 import { Planning } from '@modules/planning';
 import { Projects } from '@modules/projects';
@@ -90,7 +90,7 @@ export const Routes: React.FC = () => (
       <Route index element={<RoleBasedRedirect />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/users" element={<Users />} />
-      <Route path="/tasks" element={<Tasks />} />
+      <Route path="/tasks" element={<TasksKanban />} />
       <Route path="/planning" element={<Planning />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/customers" element={<Customers />} />

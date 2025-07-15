@@ -31,6 +31,7 @@ import {
 import dayjs from 'dayjs';
 import { useTasksKanbanStyles } from './tasks-kanban.styles';
 import { IUser } from '../../interfaces';
+import { IProject } from '@interfaces/project';
 
 const { Text, Title } = Typography;
 
@@ -43,13 +44,21 @@ const STATUS_LABELS: Record<string, string> = {
   done: 'Done',
 };
 
-export const Tasks: React.FC = () => {
+export const TasksKanban: React.FC = () => {
   const { mutate: updateTask } = useUpdate();
   const { mutate: deleteTask } = useDelete();
   const { mutate: createTask } = useCreate();
   const { styles } = useTasksKanbanStyles();
   const { data: identity } = useGetIdentity<IUser>();
   const { mutate: updateAssignee } = useUpdate();
+  const { data: users, isLoading: usersLoading } = useList<IUser>({
+    resource: 'users',
+    pagination: { mode: 'off' },
+  });
+  const { data: projectsData, isLoading: projectsLoading } = useList<IProject>({
+    resource: 'projects',
+    pagination: { mode: 'off' },
+  });
 
   const [form] = Form.useForm();
 
@@ -164,31 +173,22 @@ export const Tasks: React.FC = () => {
     }
     return transformedValues;
   };
-  const createModalFormPropsFixed = {
-    ...createModalFormProps,
-    formProps: {
-      ...createModalFormProps.formProps,
-      onFinish: async (values: any) => {
-        const transformed = transformTaskValues(values);
-        if (createModalFormProps.formProps.onFinish) {
-          const result =
-            await createModalFormProps.formProps.onFinish(transformed);
-          refetch();
-          return result;
-        }
-      },
+
+  const createModalProps = {
+    ...createModalFormProps.modalProps,
+    form: createModalFormProps.formProps.form,
+    onFinish: (values: any) => {
+      const transformed = transformTaskValues(values);
+      createModalFormProps.formProps.onFinish?.(transformed);
     },
   };
-  const editModalFormPropsFixed = {
-    ...editModalFormProps,
-    formProps: {
-      ...editModalFormProps.formProps,
-      onFinish: async (values: any) => {
-        const transformed = transformTaskValues(values);
-        if (editModalFormProps.formProps.onFinish) {
-          return editModalFormProps.formProps.onFinish(transformed);
-        }
-      },
+
+  const editModalProps = {
+    ...editModalFormProps.modalProps,
+    form: editModalFormProps.formProps.form,
+    onFinish: (values: any) => {
+      const transformed = transformTaskValues(values);
+      editModalFormProps.formProps.onFinish?.(transformed);
     },
   };
 
@@ -350,15 +350,33 @@ export const Tasks: React.FC = () => {
             </KanbanColumn>
           ))}
         </KanbanBoard>
+        {createModalFormProps.modalProps.open && (
+          <Modal {...createModalProps}>
+            <TaskForm
+              formProps={{
+                ...createModalFormProps.formProps,
+                onFinish: createModalProps.onFinish,
+              }}
+              projects={projectsData?.data}
+              users={users?.data}
+              projectsLoading={projectsLoading}
+            />
+          </Modal>
+        )}
+        {editModalFormProps.modalProps.open && (
+          <Modal {...editModalProps}>
+            <TaskForm
+              formProps={{
+                ...editModalFormProps.formProps,
+                onFinish: editModalProps.onFinish,
+              }}
+              projects={projectsData?.data}
+              users={users?.data}
+              projectsLoading={projectsLoading}
+            />
+          </Modal>
+        )}
       </KanbanBoardContainer>
-
-      <Modal {...createModalFormPropsFixed.modalProps}>
-        <TaskForm formProps={createModalFormPropsFixed.formProps} />
-      </Modal>
-
-      <Modal {...editModalFormPropsFixed.modalProps}>
-        <TaskForm formProps={editModalFormPropsFixed.formProps} />
-      </Modal>
 
       {/* View Task Modal */}
       <Modal

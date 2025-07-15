@@ -70,25 +70,10 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
   });
 
   const { data: userPlanningData } = useList({
-    resource: 'planning',
+    resource: 'plannings',
     filters: [
       {
         field: 'assignedUserId',
-        operator: 'eq',
-        value: resourceId,
-      },
-    ],
-    pagination: { mode: 'off' },
-    queryOptions: {
-      enabled: resource === 'users',
-    },
-  });
-
-  const { data: userProjectMembersData } = useList({
-    resource: 'project-members',
-    filters: [
-      {
-        field: 'userId',
         operator: 'eq',
         value: resourceId,
       },
@@ -103,7 +88,6 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
   const relatedTasks = tasksData?.data || [];
   const userRelatedTasks = userTasksData?.data || [];
   const userRelatedPlanning = userPlanningData?.data || [];
-  const userRelatedProjectMembers = userProjectMembersData?.data || [];
 
   const handleClick = React.useCallback(
     (event: React.MouseEvent) => {
@@ -163,10 +147,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
 
       if (resource === 'users') {
         const hasRelatedData =
-          userRelatedTasks.length > 0 ||
-          userRelatedPlanning.length > 0 ||
-          userRelatedProjectMembers.length > 0;
-
+          userRelatedTasks.length > 0 || userRelatedPlanning.length > 0;
         if (hasRelatedData) {
           const relationships = [];
 
@@ -187,12 +168,6 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
               .join(', ');
             relationships.push(
               `Planning: ${planningTitles}${userRelatedPlanning.length > 3 ? ` and ${userRelatedPlanning.length - 3} more` : ''}`,
-            );
-          }
-
-          if (userRelatedProjectMembers.length > 0) {
-            relationships.push(
-              `Project memberships: ${userRelatedProjectMembers.length} project(s)`,
             );
           }
 
@@ -278,7 +253,6 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
       relatedTasks,
       userRelatedTasks,
       userRelatedPlanning,
-      userRelatedProjectMembers,
     ],
   );
 

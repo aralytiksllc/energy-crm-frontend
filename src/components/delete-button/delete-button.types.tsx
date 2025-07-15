@@ -11,4 +11,6 @@ export interface DeleteButtonProps extends ButtonProps {
   confirmTitle?: string;
 
   confirmMessage?: string;
+
+  onSuccess?: (value: any) => void;
 }

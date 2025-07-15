@@ -72,13 +72,9 @@ export const ProductList: React.FC<ProductListProps> = (props) => {
         />
       ))}
 
-      <Divider style={{ margin: 0 }} />
+      <Divider className={styles.divider} />
 
-      <Button
-        type="dashed"
-        onClick={handleAdd}
-        style={{ width: '100%', marginTop: 8 }}
-      >
+      <Button type="dashed" onClick={handleAdd} className={styles.addButton}>
         <PlusOutlined /> Add Product
       </Button>
     </div>

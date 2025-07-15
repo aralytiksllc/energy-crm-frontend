@@ -3,8 +3,10 @@ import { Table, Checkbox, Spin, Typography, Result } from 'antd';
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { IRole, IPermission, IRolePermission } from '../../interfaces';
+import { usePermissionsMatrixStyles } from './permissions.styles';
 
 const PermissionsMatrixContent = () => {
+  const { styles } = usePermissionsMatrixStyles();
   const { data: roles, isLoading: isLoadingRoles } = useList<IRole>({
     resource: 'roles',
     pagination: { pageSize: 100 },
@@ -77,12 +79,10 @@ const PermissionsMatrixContent = () => {
         <Typography.Text strong>{text}</Typography.Text>
       ),
       onCell: (record: IPermission) => ({
-        style: {
-          cursor:
-            record.description && record.description.length > 0
-              ? 'pointer'
-              : 'default',
-        },
+        className:
+          record.description && record.description.length > 0
+            ? styles.permissionCellClickable
+            : styles.permissionCell,
       }),
     },
     ...(roles?.data.map((role) => ({
@@ -119,7 +119,7 @@ const PermissionsMatrixContent = () => {
       bordered
       expandable={{
         expandedRowRender: (record) => (
-          <p style={{ margin: 0, fontSize: '12px' }}>{record.description}</p>
+          <p className={styles.descriptionParagraph}>{record.description}</p>
         ),
         rowExpandable: (record) =>
           !!(record.description && record.description.length > 0),

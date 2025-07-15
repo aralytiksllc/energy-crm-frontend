@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FormProps, Form, Typography, Alert } from 'antd';
 import type { UploadFile } from 'antd';
 import { FileUpload } from '@components/file-upload';
+import { useProjectAttachmentsFormStyles } from './project-attachments-form.styles';
 
 const { Title, Text } = Typography;
 
@@ -14,6 +15,7 @@ export const ProjectAttachmentsForm: React.FC<ProjectAttachmentsFormProps> = ({
 }) => {
   const [uploadingCount, setUploadingCount] = useState(0);
   const [files, setFiles] = useState<UploadFile[]>([]);
+  const { styles } = useProjectAttachmentsFormStyles();
 
   const handleFilesChange = (newFiles: UploadFile[]) => {
     setFiles(newFiles);
@@ -33,21 +35,23 @@ export const ProjectAttachmentsForm: React.FC<ProjectAttachmentsFormProps> = ({
   }, [formProps.form, files.length]);
 
   return (
-    <div style={{ padding: '16px 0' }}>
-      <Title level={4} style={{ marginBottom: '16px' }}>
+    <div className={styles.container}>
+      <Title level={4} className={styles.title}>
         Project Attachments
       </Title>
-      <Text type="secondary" style={{ display: 'block', marginBottom: '16px' }}>
+      <Text type="secondary" className={styles.secondaryText}>
         Upload files related to this project such as documents, images, or other
         resources.
       </Text>
       {uploadingCount > 0 && (
         <Alert
-          message={`Uploading ${uploadingCount} file${uploadingCount > 1 ? 's' : ''}...`}
+          message={`Uploading ${uploadingCount} file${
+            uploadingCount > 1 ? 's' : ''
+          }...`}
           description="Please wait while your files are being uploaded. Do not close this window."
           type="info"
           showIcon
-          style={{ marginBottom: '16px' }}
+          className={styles.alert}
         />
       )}
 

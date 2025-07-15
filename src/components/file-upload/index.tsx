@@ -20,7 +20,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
-import { useFileUploadStyles } from './file-upload.styles';
+import { useFileUploadStyles, cx } from './file-upload.styles';
 
 const { Text } = Typography;
 
@@ -164,11 +164,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 >
                   <Space
                     align="start"
-                    className={styles.fileContent}
+                    className={cx(styles.fileContent, styles.fullWidth)}
                     direction="vertical"
-                    style={{ width: '100%' }}
                   >
-                    <Space align="start" style={{ width: '100%' }}>
+                    <Space align="start" className={styles.fullWidth}>
                       {isUploading(file) ? (
                         <div className={styles.fileIcon}>
                           <Spin size="small" />
@@ -215,7 +214,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                           title="Delete file"
                           description={`Are you sure you want to delete "${file.name}"?`}
                           icon={
-                            <QuestionCircleOutlined style={{ color: 'red' }} />
+                            <QuestionCircleOutlined
+                              className={styles.popconfirmIcon}
+                            />
                           }
                           onConfirm={() => handleRemove(file)}
                           okText="Yes, Delete"
@@ -242,11 +243,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                         status="active"
                         strokeColor={getStatusColor(file.status || '')}
                         showInfo={false}
-                        style={{ width: '100%' }}
+                        className={styles.fullWidth}
                       />
                     )}
                     {file.status === 'error' && (
-                      <Text type="danger" style={{ fontSize: '12px' }}>
+                      <Text type="danger" className={styles.errorMessage}>
                         Upload failed. Please try again.
                       </Text>
                     )}

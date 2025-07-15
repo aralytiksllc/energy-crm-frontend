@@ -9,7 +9,6 @@ import {
   DatePicker,
   Select,
 } from 'antd';
-import { useList, useGetIdentity } from '@refinedev/core';
 import { IUser, IPlanning, IProject, ICustomer, Task } from '@interfaces/index';
 import dayjs, { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -45,32 +44,28 @@ dayjs.extend(isBetween);
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
-export const UserDashboard: React.FC = () => {
+interface UserDashboardProps {
+  currentUser?: IUser;
+  plannings?: IPlanning[];
+  tasks?: Task[];
+  projects?: IProject[];
+  customers?: ICustomer[];
+}
+
+export const UserDashboard: React.FC<UserDashboardProps> = ({
+  currentUser,
+  plannings,
+  tasks,
+  projects,
+  customers,
+}) => {
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [quickFilter, setQuickFilter] = useState<string>('month');
 
-  const { data: currentUser, isLoading: userLoading } = useGetIdentity<IUser>();
-
-  const { data: planningsData, isLoading: planningsLoading } =
-    useList<IPlanning>({ resource: 'plannings', pagination: { mode: 'off' } });
-  const { data: tasksData, isLoading: tasksLoading } = useList<Task>({
-    resource: 'tasks',
-    pagination: { mode: 'off' },
-  });
-  const { data: projectsData, isLoading: projectsLoading } = useList<IProject>({
-    resource: 'projects',
-    pagination: { mode: 'off' },
-  });
-  const { data: customersData, isLoading: customersLoading } =
-    useList<ICustomer>({
-      resource: 'customers',
-      pagination: { mode: 'off' },
-    });
-
-  const allPlannings = planningsData?.data || [];
-  const allTasks = tasksData?.data || [];
-  const allProjects = projectsData?.data || [];
-  const allCustomers = customersData?.data || [];
+  const allPlannings = plannings || [];
+  const allTasks = tasks || [];
+  const allProjects = projects || [];
+  const allCustomers = customers || [];
 
   const currentDateRange = useMemo(
     () => getDateRangeFromFilter(quickFilter, dateRange),
@@ -215,22 +210,7 @@ export const UserDashboard: React.FC = () => {
     setQuickFilter('custom');
   };
 
-  const isLoading =
-    userLoading ||
-    planningsLoading ||
-    tasksLoading ||
-    projectsLoading ||
-    customersLoading;
-
   const { styles } = useUserDashboardStyles();
-
-  if (isLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <Spin size="large" />
-      </div>
-    );
-  }
 
   const renderProductivityReport = () => {
     if (currentUser?.role?.name === 'manager') {

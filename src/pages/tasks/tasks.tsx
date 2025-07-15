@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import type { FormProps } from 'antd';
-import { useCan } from '@refinedev/core';
+import { useCan, useList } from '@refinedev/core';
 import type { Task } from '@interfaces/task';
+import { IProject } from '@interfaces/project';
+import { IUser } from '@interfaces/users';
 import { CrudTable } from '@components/crud-table/crud-table';
 import { TaskForm } from './components/task-form';
 import { columns, createColumns } from './constants/table';
@@ -27,6 +29,16 @@ export const Tasks: React.FC = () => {
     action: 'delete',
   });
 
+  const { data: projectsData, isLoading: projectsLoading } = useList<IProject>({
+    resource: 'projects',
+    pagination: { mode: 'off' },
+  });
+
+  const { data: usersData, isLoading: usersLoading } = useList<IUser>({
+    resource: 'users',
+    pagination: { mode: 'off' },
+  });
+
   // Check if user has any actions permissions
   const hasActionsPermission = canEdit?.can || canDelete?.can;
 
@@ -42,44 +54,54 @@ export const Tasks: React.FC = () => {
     return allColumns;
   }, [hasActionsPermission]);
 
-  const renderForm = useCallback((formProps: FormProps) => {
-    const { onFinish, initialValues, ...restFormProps } = formProps;
+  const renderForm = useCallback(
+    (formProps: FormProps) => {
+      const { onFinish, initialValues, ...restFormProps } = formProps;
 
-    const handleFinish = async (values: any) => {
-      const transformedValues = { ...values };
+      const handleFinish = async (values: any) => {
+        const transformedValues = { ...values };
 
-      if (Array.isArray(transformedValues.assignees)) {
-        transformedValues.assignees = transformedValues.assignees
-          .filter((a: AssigneeValue) => a && a.userId)
-          .map((a: AssigneeValue) => ({
-            userId: a.userId,
-            estimatedHours: a.estimatedHours || 0,
-          }));
-      } else {
-        transformedValues.assignees = [];
-      }
-
-      if (onFinish) {
-        await onFinish(transformedValues);
-      }
-    };
-
-    const augmentedFormProps = {
-      ...restFormProps,
-      onFinish: handleFinish,
-      initialValues: initialValues
-        ? {
-            ...initialValues,
-            assignees: initialValues.assignees?.map((a: any) => ({
+        if (Array.isArray(transformedValues.assignees)) {
+          transformedValues.assignees = transformedValues.assignees
+            .filter((a: AssigneeValue) => a && a.userId)
+            .map((a: AssigneeValue) => ({
               userId: a.userId,
-              estimatedHours: a.estimatedHours,
-            })),
-          }
-        : undefined,
-    };
+              estimatedHours: a.estimatedHours || 0,
+            }));
+        } else {
+          transformedValues.assignees = [];
+        }
 
-    return <TaskForm formProps={augmentedFormProps} />;
-  }, []);
+        if (onFinish) {
+          await onFinish(transformedValues);
+        }
+      };
+
+      const augmentedFormProps = {
+        ...restFormProps,
+        onFinish: handleFinish,
+        initialValues: initialValues
+          ? {
+              ...initialValues,
+              assignees: initialValues.assignees?.map((a: any) => ({
+                userId: a.userId,
+                estimatedHours: a.estimatedHours,
+              })),
+            }
+          : undefined,
+      };
+
+      return (
+        <TaskForm
+          formProps={augmentedFormProps}
+          projects={projectsData?.data}
+          users={usersData?.data}
+          projectsLoading={projectsLoading}
+        />
+      );
+    },
+    [projectsData, usersData, projectsLoading],
+  );
 
   return (
     <CrudTable<Task>

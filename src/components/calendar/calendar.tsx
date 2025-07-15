@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar as AntCalendar, Spin } from 'antd';
 import { type Dayjs } from 'dayjs';
 import { type CalendarProps } from './calendar.types';
-import { createStyles } from './calendar.styles';
+import { useCalendarStyles } from './calendar.styles';
 import CalendarCell from './calendar-cell';
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -16,7 +16,7 @@ const Calendar: React.FC<CalendarProps> = ({
   height = 800,
   showHeader = true,
 }) => {
-  const { styles } = createStyles();
+  const { styles } = useCalendarStyles({ minHeight: height });
   const assignmentRows = React.useMemo(() => {
     const spanningAssignments = assignments.filter(
       (assignment) =>
@@ -56,7 +56,7 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <div className={styles.calendarContainer} style={{ minHeight: height }}>
+    <div className={`${styles.calendarContainer} ${styles.calendarWrapper}`}>
       {loading && (
         <div className={styles.loadingOverlay}>
           <Spin size="large" />

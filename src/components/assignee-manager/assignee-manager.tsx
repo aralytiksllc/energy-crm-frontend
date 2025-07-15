@@ -3,7 +3,8 @@ import { Form, Row, Col, Button, InputNumber, Typography } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { UserSelect } from '@components/user-select/user-select';
 import { FormListFieldData } from 'antd/es/form';
-import { assigneeManagerStyles } from './styles';
+import { useAssigneeManagerStyles } from './styles';
+import { rules } from './assignee-manager.rules';
 
 const { Text } = Typography;
 
@@ -18,9 +19,10 @@ export const AssigneeManager: React.FC<AssigneeManagerProps> = ({
   add,
   remove,
 }) => {
+  const { styles } = useAssigneeManagerStyles();
   return (
-    <div style={assigneeManagerStyles.container}>
-      <div style={assigneeManagerStyles.header}>
+    <div className={styles.container}>
+      <div className={styles.header}>
         <Row align="middle">
           <Col span={12}>
             <Text strong>User</Text>
@@ -32,37 +34,35 @@ export const AssigneeManager: React.FC<AssigneeManagerProps> = ({
       </div>
 
       {fields.map(({ key, name: fieldName, ...restField }) => (
-        <Row
-          key={key}
-          align="middle"
-          gutter={[16, 0]}
-          style={{ marginBottom: '8px' }}
-        >
+        <Row key={key} align="middle" gutter={[16, 0]} className={styles.row}>
           <Col span={12}>
             <Form.Item
               {...restField}
               name={[fieldName, 'userId']}
-              rules={[{ required: true, message: 'Please select a user' }]}
+              rules={rules.userId}
               noStyle
             >
-              <UserSelect placeholder="Select User" style={{ width: '100%' }} />
+              <UserSelect
+                placeholder="Select User"
+                className={styles.fullWidth}
+              />
             </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item
               {...restField}
               name={[fieldName, 'estimatedHours']}
-              rules={[{ required: true, message: 'Hours?' }]}
+              rules={rules.estimatedHours}
               noStyle
             >
               <InputNumber
                 placeholder="Hours"
                 min={0}
-                style={{ width: '100%' }}
+                className={styles.fullWidth}
               />
             </Form.Item>
           </Col>
-          <Col span={4} style={{ textAlign: 'center' }}>
+          <Col span={4} className={styles.removeButtonCol}>
             <MinusCircleOutlined onClick={() => remove(fieldName)} />
           </Col>
         </Row>
@@ -72,7 +72,7 @@ export const AssigneeManager: React.FC<AssigneeManagerProps> = ({
         type="link"
         onClick={() => add()}
         icon={<PlusOutlined />}
-        style={{ paddingLeft: 0, marginTop: '8px' }}
+        className={styles.addButton}
       >
         Add Assignee
       </Button>

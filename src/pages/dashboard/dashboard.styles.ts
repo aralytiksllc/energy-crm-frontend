@@ -331,4 +331,11 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
     font-size: 11px;
     text-align: left;
   `,
+
+  spinnerContainer: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+  `,
 }));
