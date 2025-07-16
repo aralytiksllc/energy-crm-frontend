@@ -60,6 +60,11 @@ export const TasksKanban: React.FC = () => {
     pagination: { mode: 'off' },
   });
 
+  const { data: canEditTasks } = useCan({
+    resource: 'tasks',
+    action: 'edit',
+  });
+
   const [form] = Form.useForm();
 
   // View card modal state
@@ -88,40 +93,45 @@ export const TasksKanban: React.FC = () => {
 
   const tasks = data?.data || [];
 
-  // Filter tasks based on user role
   const filteredTasks = useMemo(() => {
-    if (identity?.role?.name === 'manager') {
-      return tasks; // Managers see all tasks
+    if (!tasks || !identity) return tasks;
+
+    if (identity.role?.name === 'superadmin') {
+      return tasks;
     }
 
-    if (!identity?.id) {
-      return []; // No user logged in
-    }
+    return tasks.filter((task: any) => {
+      if (!task.assignees || !Array.isArray(task.assignees)) {
+        return false;
+      }
 
-    // Regular users only see tasks they are assigned to
-    return tasks.filter((task: any) =>
-      task.assignees?.some(
-        (assignee: any) => assignee.userId === Number(identity.id),
-      ),
-    );
-  }, [tasks, identity?.id, identity?.role?.name]);
+      return task.assignees.some(
+        (assignee: any) => assignee.userId === identity.id,
+      );
+    });
+  }, [tasks, identity]);
 
   // Group tasks by status - handle tasks without status field
   const sections = useMemo(() => {
     return STATUS_ORDER.map((status) => ({
       id: status,
       title: STATUS_LABELS[status],
-      count: filteredTasks.filter(
-        (task: any) => (task.status || 'todo') === status,
-      ).length,
-      tasks: filteredTasks.filter(
-        (task: any) => (task.status || 'todo') === status,
-      ),
+      count:
+        filteredTasks?.filter((task: any) => (task.status || 'todo') === status)
+          .length || 0,
+      tasks:
+        filteredTasks?.filter(
+          (task: any) => (task.status || 'todo') === status,
+        ) || [],
     }));
   }, [filteredTasks]);
 
   const handleDragEnd = useCallback(
     (event: any) => {
+      if (!canEditTasks?.can) {
+        return;
+      }
+
       const { active, over } = event;
       if (!active || !over || active.data.current?.status === over.id) return;
 
@@ -145,7 +155,7 @@ export const TasksKanban: React.FC = () => {
         },
       });
     },
-    [updateTask],
+    [updateTask, canEditTasks?.can],
   );
 
   const createModalFormProps = useModalForm({
@@ -316,7 +326,9 @@ export const TasksKanban: React.FC = () => {
   return (
     <div className={styles.pageContainer}>
       <KanbanBoardContainer>
-        <KanbanBoard onDragEnd={handleDragEnd}>
+        <KanbanBoard
+          onDragEnd={canEditTasks?.can ? handleDragEnd : () => void 0}
+        >
           {sections.map((section) => (
             <KanbanColumn
               key={section.id}
@@ -334,11 +346,7 @@ export const TasksKanban: React.FC = () => {
                   <KanbanCard
                     task={task}
                     onClick={() => handleCardClick(task)}
-                    onDelete={
-                      identity?.role?.name === 'manager'
-                        ? () => handleDeleteCard(task.id)
-                        : undefined
-                    }
+                    onDelete={() => handleDeleteCard(task.id)}
                   />
                 </KanbanItem>
               ))}
@@ -485,10 +493,7 @@ export const TasksKanban: React.FC = () => {
               </div>
             )}
             <Divider className={styles.modalDivider} />
-            {(identity?.role?.name === 'manager' ||
-              selectedTask?.assignees?.some(
-                (assignee: any) => assignee.userId === Number(identity?.id),
-              )) && (
+            {selectedTask?.assignees && (
               <>
                 <div className={styles.assigneeHeader}>
                   <Title level={5} className={styles.assigneeTitle}>
@@ -583,22 +588,45 @@ export const TasksKanban: React.FC = () => {
   );
 };
 
-const PageSkeleton = () => {
+const PageSkeleton: React.FC = () => {
   const columnCount = 4;
   const itemCount = 3;
-  const { styles } = useTasksKanbanStyles();
 
   return (
-    <div className={styles.skeletonContainer}>
-      <KanbanBoardContainer>
+    <div style={{ padding: '24px' }}>
+      <div style={{ display: 'flex', gap: '16px' }}>
         {Array.from({ length: columnCount }).map((_, index) => (
-          <KanbanColumn key={index} id={`skeleton-${index}`} title="" count={0}>
+          <div
+            key={index}
+            style={{
+              width: '280px',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '8px',
+              padding: '16px',
+            }}
+          >
+            <div
+              style={{
+                height: '24px',
+                backgroundColor: '#e0e0e0',
+                borderRadius: '4px',
+                marginBottom: '16px',
+              }}
+            />
             {Array.from({ length: itemCount }).map((_, itemIndex) => (
-              <div key={itemIndex} className={styles.skeletonCard} />
+              <div
+                key={itemIndex}
+                style={{
+                  height: '80px',
+                  backgroundColor: '#e0e0e0',
+                  borderRadius: '4px',
+                  marginBottom: '8px',
+                }}
+              />
             ))}
-          </KanbanColumn>
+          </div>
         ))}
-      </KanbanBoardContainer>
+      </div>
     </div>
   );
 };

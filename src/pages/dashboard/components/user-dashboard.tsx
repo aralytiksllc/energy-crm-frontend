@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Row,
-  Col,
-  Card,
-  Space,
-  Typography,
-  Spin,
-  DatePicker,
-  Select,
-} from 'antd';
+import { Row, Col, Card, Space, Typography, DatePicker, Select } from 'antd';
 import { IUser, IPlanning, IProject, ICustomer, Task } from '@interfaces/index';
 import dayjs, { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -28,12 +19,7 @@ import {
   type ProductivityMetrics,
 } from '../utils';
 import { useMockDashboardTrends } from '../hooks/useDashboardTrends';
-import {
-  DeadlineTracker,
-  TicketStatsCard,
-} from '../../../components/dashboard-components';
 import { ManagerStatsCards } from './ManagerStatsCards';
-import { UserStatsCards } from './UserStatsCards';
 import { ClientHoursPieChart } from './ClientHoursPieChart';
 import { ProjectHoursBarChart } from './ProjectHoursBarChart';
 import { LegacyTicketStats } from './LegacyTicketStats';
@@ -77,24 +63,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     [allTasks, currentDateRange],
   );
 
-  // For regular users, filter tasks to only show their assigned tasks
-  // For managers, show all tasks
-  const userFilteredTasks = useMemo(() => {
-    if (currentUser?.role?.name === 'manager') {
-      return filteredTasks; // Managers see all tasks
-    }
-
-    if (!currentUser?.id) {
-      return []; // No user logged in
-    }
-
-    // Regular users only see their assigned tasks
-    return filteredTasks.filter((task) =>
-      task.assignees?.some(
-        (assignee) => assignee.userId === Number(currentUser.id),
-      ),
-    );
-  }, [filteredTasks, currentUser?.id, currentUser?.role?.name]);
+  const userFilteredTasks = filteredTasks;
 
   const stats = useMemo(
     () => calculateDashboardStats(allCustomers, allProjects, userFilteredTasks),
@@ -154,12 +123,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   }, [allProjects, userFilteredTasks, currentUser?.id]);
 
   const ticketStats: TicketStats = useMemo(
-    () =>
-      calculateTicketStats(
-        userFilteredTasks,
-        Number(currentUser?.id),
-        currentUser?.role?.name === 'manager',
-      ),
+    () => calculateTicketStats(userFilteredTasks, Number(currentUser?.id)),
     [userFilteredTasks, currentUser],
   );
 
@@ -213,74 +177,32 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   const { styles } = useUserDashboardStyles();
 
   const renderProductivityReport = () => {
-    if (currentUser?.role?.name === 'manager') {
-      const { plannedHours, workedHours } = stats;
-      const percent =
-        plannedHours > 0 ? Math.round((workedHours / plannedHours) * 100) : 0;
-      const overworkedProject = hoursByProject.find(
-        (p) => p.actualHours > p.plannedHours,
-      );
-      return (
-        <Card title="Kohë reale: Raporti i produktivitetit">
-          <Typography.Paragraph>
-            Në këtë periudhë janë kryer <strong>{percent}%</strong> e orëve të
-            planifikuara.
-            {percent >= 100 ? ' Ekipi ka tejkaluar pritshmëritë!' : null}
-            <br />
-            <br />
-            {overworkedProject ? (
-              <>
-                <strong>Rekomandim:</strong> Rishiko prioritetet për projektin{' '}
-                <strong>{overworkedProject.name}</strong>, ku janë alokuar më
-                shumë orë ({overworkedProject.actualHours}) se sa është
-                planifikuar ({overworkedProject.plannedHours}).
-              </>
-            ) : (
-              <>
-                <strong>Rekomandim:</strong> Ekipi po performon mirë në të
-                gjitha projektet.
-              </>
-            )}
-          </Typography.Paragraph>
-        </Card>
-      );
-    }
+    const { plannedHours, workedHours } = stats;
+    const percent =
+      plannedHours > 0 ? Math.round((workedHours / plannedHours) * 100) : 0;
+    const overworkedProject = hoursByProject.find(
+      (p) => p.actualHours > p.plannedHours,
+    );
     return (
-      <Card title="Kohë reale: Raporti i produktivitetit personal">
+      <Card title="Kohë reale: Raporti i produktivitetit">
         <Typography.Paragraph>
-          {productivityMetrics.totalUserTasks > 0 ? (
+          Në këtë periudhë janë kryer <strong>{percent}%</strong> e orëve të
+          planifikuara.
+          {percent >= 100 ? ' Ekipi ka tejkaluar pritshmëritë!' : null}
+          <br />
+          <br />
+          {overworkedProject ? (
             <>
-              You have completed{' '}
-              <strong>{productivityMetrics.completedTasks}</strong> out of{' '}
-              <strong>{productivityMetrics.totalUserTasks}</strong> tasks.
-              {productivityMetrics.taskCompletionRate > 80
-                ? " Excellent work! You're exceeding expectations."
-                : productivityMetrics.taskCompletionRate > 60
-                  ? ' Good progress! Keep up the momentum.'
-                  : ' Consider prioritizing task completion to improve your efficiency.'}
-              <br />
-              <br />
-              <strong>Your Performance:</strong>
-              <ul>
-                <li>
-                  Most active project:{' '}
-                  <strong>
-                    {productivityMetrics.mostActiveProject?.name || 'N/A'}
-                  </strong>{' '}
-                  ({productivityMetrics.mostActiveProject?.hours || 0})
-                </li>
-                <li>
-                  Tasks due this week:{' '}
-                  <strong>{productivityMetrics.thisWeekTasks}</strong>
-                </li>
-                <li>
-                  Overdue tasks:{' '}
-                  <strong>{productivityMetrics.overdueTasks}</strong>
-                </li>
-              </ul>
+              <strong>Rekomandim:</strong> Rishiko prioritetet për projektin{' '}
+              <strong>{overworkedProject.name}</strong>, ku janë alokuar më
+              shumë orë ({overworkedProject.actualHours}) se sa është
+              planifikuar ({overworkedProject.plannedHours}).
             </>
           ) : (
-            <Text>No tasks assigned in the selected period.</Text>
+            <>
+              <strong>Rekomandim:</strong> Ekipi po performon mirë në të gjitha
+              projektet.
+            </>
           )}
         </Typography.Paragraph>
       </Card>
@@ -295,10 +217,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             <Title level={3}>
               Welcome back, {currentUser?.firstName} {currentUser?.lastName}!
             </Title>
-            <Text type="secondary">
-              {currentUser?.role?.name === 'manager' ? 'Manager' : 'User'}{' '}
-              Account
-            </Text>
+            <Text type="secondary">Account</Text>
           </div>
           <div className={styles.controlsSection}>
             <Space size="large">
@@ -328,79 +247,31 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         </div>
       </Card>
 
-      {currentUser?.role?.name === 'manager' ? (
-        <ManagerStatsCards
-          activePlannings={allPlannings.filter((p) => !p.isCompleted).length}
-          totalProjects={stats.totalProjects}
-          plannedHours={stats.plannedHours}
-          workedHours={stats.workedHours}
-          trends={managerTrends}
-        />
-      ) : (
-        <UserStatsCards
-          activeTasks={userFilteredTasks.filter((t) => !t.isCompleted).length}
-          projectCount={
-            [...new Set(userFilteredTasks.map((t) => t.projectId))].length
-          }
-          completionRate={productivityMetrics.taskCompletionRate}
-          plannedHours={userFilteredTasks.reduce((total, task) => {
-            const userAssignee = task.assignees?.find(
-              (assignee) => assignee.userId === Number(currentUser?.id),
-            );
-            return total + (userAssignee?.estimatedHours || 0);
-          }, 0)}
-        />
-      )}
+      <ManagerStatsCards
+        activePlannings={allPlannings.filter((p) => !p.isCompleted).length}
+        totalProjects={stats.totalProjects}
+        plannedHours={stats.plannedHours}
+        workedHours={stats.workedHours}
+        trends={managerTrends}
+      />
 
       <Row gutter={24}>
         <Col span={24}>
-          {currentUser?.role?.name === 'manager' ? (
-            <>
-              <Row gutter={16}>
-                <Col span={10}>
-                  <ClientHoursPieChart
-                    data={hoursByClient}
-                    title="Shpërndarja e orëve për klient"
-                  />
-                </Col>
-                <Col span={14}>
-                  <ProjectHoursBarChart
-                    data={hoursByProject}
-                    title="Top 5 projektet sipas orëve të shpenzuara"
-                  />
-                </Col>
-              </Row>
-              <LegacyTicketStats stats={legacyStats} />
-            </>
-          ) : (
-            <>
-              <Row gutter={16} style={{ alignItems: 'stretch' }}>
-                <Col span={14} style={{ display: 'flex' }}>
-                  <TicketStatsCard
-                    stats={ticketStats}
-                    title="My Task Statistics"
-                  />
-                </Col>
-                <Col span={10} style={{ display: 'flex' }}>
-                  <DeadlineTracker
-                    deadlines={upcomingDeadlines}
-                    title="My Upcoming Deadlines"
-                  />
-                </Col>
-              </Row>
-
-              {userHoursByProject.length > 0 && (
-                <Row style={{ marginTop: 16 }}>
-                  <Col span={24}>
-                    <ProjectHoursBarChart
-                      data={userHoursByProject}
-                      title="My Project Hours"
-                    />
-                  </Col>
-                </Row>
-              )}
-            </>
-          )}
+          <Row gutter={16}>
+            <Col span={10}>
+              <ClientHoursPieChart
+                data={hoursByClient}
+                title="Shpërndarja e orëve për klient"
+              />
+            </Col>
+            <Col span={14}>
+              <ProjectHoursBarChart
+                data={hoursByProject}
+                title="Top 5 projektet sipas orëve të shpenzuara"
+              />
+            </Col>
+          </Row>
+          <LegacyTicketStats stats={legacyStats} />
         </Col>
       </Row>
       {renderProductivityReport()}

@@ -193,14 +193,8 @@ export interface ProductivityMetrics {
 export const calculateTicketStats = (
   tasks: Task[],
   userId?: number,
-  isManager?: boolean,
 ): TicketStats => {
-  // Filter tasks for counting - managers see all, users see only assigned
-  const tasksForCounting = isManager
-    ? tasks
-    : tasks.filter((task) =>
-        task.assignees?.some((assignee: any) => assignee.userId === userId),
-      );
+  const tasksForCounting = tasks;
 
   const stats = {
     total: tasksForCounting.length,
@@ -220,19 +214,7 @@ export const calculateTicketStats = (
       const isOverdue = dayjs(item.dueDate).isBefore(dayjs(), 'day');
       if (!isOverdue) return false;
 
-      // For managers, include all overdue tasks
-      if (isManager) {
-        return true;
-      }
-
-      // For users, only include tasks assigned to them
-      if (userId) {
-        return item.assignees?.some(
-          (assignee: any) => assignee.userId === userId,
-        );
-      }
-
-      return false;
+      return true;
     }).length,
     FEATURE: tasksForCounting.filter((task) => task.type === 'FEATURE').length,
     BUG: tasksForCounting.filter((task) => task.type === 'BUG').length,

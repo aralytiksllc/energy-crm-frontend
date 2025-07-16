@@ -19,14 +19,7 @@ export const authProvider: AuthProvider = {
 
       authStorage.set(data.accessToken);
 
-      // Determine redirect based on user role
-      let redirectTo = '/dashboard'; // Default fallback
-
-      if (data.user?.role?.name === 'manager') {
-        redirectTo = '/dashboard'; // Managers go to dashboard
-      } else if (data.user?.role?.name === 'user') {
-        redirectTo = '/tasks'; // Regular users go to tasks (filtered to their assignments)
-      }
+      const redirectTo = '/dashboard';
 
       return {
         success: true,

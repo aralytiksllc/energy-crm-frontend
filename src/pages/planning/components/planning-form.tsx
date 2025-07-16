@@ -12,9 +12,11 @@ import {
 } from 'antd';
 import { useCreate } from '@refinedev/core';
 import { UserSelect } from '@components/user-select/user-select';
+import { UserAvatar } from '@components/user-avatar';
 import { planningValidationRules } from '@modules/planning/validation';
 import type { IPlanningFormValues } from '@interfaces/planning';
 import type { IProject } from '@interfaces/project';
+import type { IUser } from '@interfaces/users';
 import dayjs from 'dayjs';
 
 const { TextArea } = Input;
@@ -23,15 +25,35 @@ interface PlanningFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   filteredProjects?: IProject[];
+  users?: IUser[];
+  usersLoading?: boolean;
 }
 
 const PlanningForm: React.FC<PlanningFormProps> = ({
   onSuccess,
   onCancel,
   filteredProjects = [],
+  users = [],
+  usersLoading = false,
 }) => {
   const [form] = Form.useForm();
   const { mutate: createPlanning, isLoading } = useCreate();
+
+  const renderUserOption = (user: IUser) => {
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    return (
+      <Space>
+        <UserAvatar user={user} size="small" />
+        {fullName}
+      </Space>
+    );
+  };
+
+  const getUserLabel = (user: IUser) => {
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  };
+
+  const getUserValue = (user: IUser) => user.id || 0;
 
   const handleSubmit = (values: IPlanningFormValues) => {
     const transformedValues = {
@@ -127,7 +149,17 @@ const PlanningForm: React.FC<PlanningFormProps> = ({
               rules={planningValidationRules.assignedUserId}
               required
             >
-              <UserSelect placeholder="Select a user to assign" showSearch />
+              <UserSelect<IUser>
+                entities={users}
+                optionValue={getUserValue}
+                optionLabel={getUserLabel}
+                renderOption={renderUserOption}
+                renderLabel={renderUserOption}
+                searchText={getUserLabel}
+                loading={usersLoading}
+                placeholder="Select a user to assign"
+                showSearch
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -201,7 +233,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({
         </Row>
 
         <Row gutter={[16, 16]}>
-          <Col xs={24} md={12}>
+          <Col xs={24}>
             <Form.Item
               label="Mark as Completed"
               name="isCompleted"
@@ -211,7 +243,10 @@ const PlanningForm: React.FC<PlanningFormProps> = ({
               <Switch onChange={handleCompletedChange} />
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24}>
             <Form.Item
               label="Completed Date"
               name="completedDate"
@@ -243,14 +278,12 @@ const PlanningForm: React.FC<PlanningFormProps> = ({
               justifyContent: 'flex-end',
             }}
           >
-            <Space>
-              <Button onClick={handleCancel} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button type="primary" htmlType="submit" loading={isLoading}>
-                Create Planning
-              </Button>
-            </Space>
+            <Button onClick={handleCancel} disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              Create Planning
+            </Button>
           </div>
         </Form.Item>
       </Form>

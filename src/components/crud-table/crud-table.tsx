@@ -10,6 +10,7 @@ import { PopoverSelect } from '@components/dropdown-select';
 import { DrawerFormProvider } from '@components/drawer-form';
 import { ColumnFilter } from '@components/column-filter';
 import { IUser } from '@interfaces/users';
+import { UserRole } from '@interfaces/user-role.enum';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
@@ -95,18 +96,15 @@ export function CrudTable<TData extends { id: number }>(
           return column;
         }
 
-        if (identity?.role?.name === 'manager') {
-          return {
-            ...column,
-            filterIcon: () => <FilterOutlined />,
-            filterDropdown: () => (
-              <ColumnFilter column={column} setFilters={setFilters} />
-            ),
-          };
-        }
-        return column;
+        return {
+          ...column,
+          filterIcon: () => <FilterOutlined />,
+          filterDropdown: () => (
+            <ColumnFilter column={column} setFilters={setFilters} />
+          ),
+        };
       }),
-    [columns, setFilters, identity?.role],
+    [columns, setFilters],
   );
 
   const [selectedColumns, setSelectedColumns] = React.useState(() => {

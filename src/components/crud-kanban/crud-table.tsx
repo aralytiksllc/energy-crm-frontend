@@ -108,10 +108,12 @@ export function CrudKanban<TData extends { id: number; status: string }>({
         title={drawerTitles.view || 'Details'}
         width={drawerWidth}
         extra={
-          <DeleteButton
-            recordItemId={showId}
-            onSuccess={() => setShowId(undefined)}
-          />
+          showId && item ? (
+            <DeleteButton
+              recordItemId={showId}
+              onSuccess={() => setShowId(undefined)}
+            />
+          ) : null
         }
       >
         <DetailsComponent record={item as TData} />

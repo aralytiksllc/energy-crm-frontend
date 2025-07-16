@@ -4,6 +4,7 @@ import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { IRole, IPermission, IRolePermission } from '../../interfaces';
 import { usePermissionsMatrixStyles } from './permissions.styles';
+import { UserRole } from '../../interfaces/user-role.enum';
 
 const PermissionsMatrixContent = () => {
   const { styles } = usePermissionsMatrixStyles();
@@ -36,6 +37,10 @@ const PermissionsMatrixContent = () => {
     role: IRole,
     permission: IPermission,
   ) => {
+    if (role.name === UserRole.SuperAdmin) {
+      return;
+    }
+
     if (checked) {
       createRolePermission(
         {
@@ -70,6 +75,9 @@ const PermissionsMatrixContent = () => {
     }
   };
 
+  const displayRoles =
+    roles?.data.filter((role) => role.name !== UserRole.SuperAdmin) || [];
+
   const columns = [
     {
       title: 'Permission',
@@ -85,7 +93,7 @@ const PermissionsMatrixContent = () => {
             : styles.permissionCell,
       }),
     },
-    ...(roles?.data.map((role) => ({
+    ...(displayRoles.map((role) => ({
       title: <Typography.Text strong>{role.name}</Typography.Text>,
       key: role.id,
       align: 'center' as const,
@@ -93,6 +101,7 @@ const PermissionsMatrixContent = () => {
         const isChecked = rolePermissions?.data.some(
           (rp) => rp.roleId === role.id && rp.permissionId === record.id,
         );
+
         return (
           <Checkbox
             checked={isChecked}
@@ -139,7 +148,7 @@ export const PermissionsMatrix = () => {
         <Result
           status="403"
           title="Access Denied"
-          subTitle="You don't have permission to access this page."
+          subTitle="Only SuperAdmin can access this page."
         />
       }
     >

@@ -26,28 +26,21 @@ export interface TaskFormProps {
   projects?: IProject[];
   users?: IUser[];
   projectsLoading?: boolean;
+  usersLoading?: boolean;
 }
 
 export const TaskForm: React.FC<TaskFormProps> = ({
   formProps,
   projects = [],
+  users = [],
   projectsLoading = false,
+  usersLoading = false,
 }) => {
   const { form } = formProps;
   const { styles } = useTaskFormStyles();
   const { data: currentUser } = useGetIdentity<IUser>();
 
-  const userProjects = projects.filter((project) => {
-    if (!currentUser?.id) return false;
-
-    if (currentUser.role?.name === 'manager') {
-      return true;
-    }
-
-    return project.members?.some(
-      (member) => String(member.userId) === String(currentUser.id),
-    );
-  });
+  const userProjects = projects;
 
   const projectOptions = userProjects.map((project) => ({
     label: project.name,
@@ -55,13 +48,10 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   }));
 
   const hasProjectAccess = projectOptions.length > 0;
-  const isManager = currentUser?.role?.name === 'manager';
 
   const getProjectPlaceholder = () => {
     if (projectsLoading) return 'Loading projects...';
-    if (!hasProjectAccess && isManager) return 'No projects available';
-    if (!hasProjectAccess)
-      return 'You have not been assigned to any projects yet';
+    if (!hasProjectAccess) return 'No projects available';
     return 'Select project';
   };
 
@@ -78,9 +68,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           disabled={!hasProjectAccess}
           notFoundContent={
             !hasProjectAccess && !projectsLoading
-              ? isManager
-                ? 'No projects available'
-                : 'You need to be added to a project to create tasks'
+              ? 'No projects available'
               : 'No projects found'
           }
         />
@@ -121,7 +109,13 @@ export const TaskForm: React.FC<TaskFormProps> = ({
 
       <Form.List name="assignees">
         {(fields, { add, remove }) => (
-          <AssigneeManager fields={fields} add={add} remove={remove} />
+          <AssigneeManager
+            fields={fields}
+            add={add}
+            remove={remove}
+            users={users}
+            usersLoading={usersLoading}
+          />
         )}
       </Form.List>
     </Form>

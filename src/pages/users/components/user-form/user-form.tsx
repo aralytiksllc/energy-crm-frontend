@@ -36,8 +36,6 @@ export const UsersForm: React.FC<UserFormProps> = ({
 
   const { styles } = useStyles();
 
-  const canManageRoles = currentUser?.role?.name === 'manager';
-
   const formName = `user-form-${mode}`;
 
   return (
@@ -69,16 +67,14 @@ export const UsersForm: React.FC<UserFormProps> = ({
         <Input autoComplete="off" />
       </Form.Item>
 
-      {canManageRoles && (
-        <Form.Item label="Role" name="roleId" rules={rules.roleId}>
-          <RemoteSelect
-            resource="roles"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select a role"
-          />
-        </Form.Item>
-      )}
+      <Form.Item label="Role" name="roleId" rules={rules.roleId}>
+        <RemoteSelect
+          resource="roles"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select a role"
+        />
+      </Form.Item>
 
       <Form.Item label="Team" name="team" className={styles.formItem}>
         <Select placeholder="Select a team" options={teamOptions} allowClear />

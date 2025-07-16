@@ -44,8 +44,7 @@ export const usePlanning = () => {
   const projects = projectsData?.data || [];
   const plannings = planningsData?.data || [];
 
-  // Determine view mode based on user role
-  const viewMode = currentUser?.role?.name === 'manager' ? 'manager' : 'user';
+  const roleFilteredPlannings = plannings;
 
   const calendarAssignments: PlanningAssignment[] = plannings.map(
     (planning) => ({
@@ -64,30 +63,13 @@ export const usePlanning = () => {
     }),
   );
 
-  const roleFilteredPlannings =
-    viewMode === 'manager'
-      ? plannings
-      : plannings.filter(
-          (planning) => planning.assignedUserId === currentUser?.id,
-        );
-
-  const filteredProjects =
-    viewMode === 'manager'
-      ? projects
-      : projects.filter((project) =>
-          project.members?.some(
-            (member) => String(member.userId) === String(currentUser?.id),
-          ),
-        );
+  const filteredProjects = projects;
 
   const filteredAssignments = calendarAssignments.filter((assignment) => {
-    const userMatch =
-      viewMode === 'manager' || assignment.userId === currentUser?.id;
-
     const projectMatch =
       selectedProject === 'all' || assignment.projectId === selectedProject;
 
-    return userMatch && projectMatch;
+    return projectMatch;
   });
 
   const filteredPlanningsForDelete = roleFilteredPlannings.filter(
@@ -169,7 +151,6 @@ export const usePlanning = () => {
     filteredAssignments,
     filteredProjects,
     filteredPlanningsForDelete,
-    viewMode,
     setSelectedDate,
     setCurrentMonth,
     setSelectedProject,

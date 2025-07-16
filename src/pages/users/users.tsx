@@ -1,135 +1,195 @@
-import React, { useCallback, useState, useMemo } from 'react';
-import type { FormProps } from 'antd';
-import { LogicalFilter } from '@refinedev/core';
-import { IUser } from '@interfaces/users';
-import { Team } from '@interfaces/team.enum';
+// External imports
+import React, { useCallback, useMemo } from 'react';
+import { FormProps } from 'antd';
+import { useCan, useList } from '@refinedev/core';
+
+// Internal imports
+import type { IUser } from '@interfaces/users';
+import { CrudTable } from '@components/crud-table/crud-table';
 import { UsersForm } from './components/user-form';
 import { createColumns } from './constants/table';
-import { CrudTable } from '@components/crud-table/crud-table';
-import { DropdownFilter } from '@components/dropdown-filter/dropdown-filter';
-import { useGetIdentity } from '@refinedev/core';
-import { useResourcePermissions } from '../../hooks/use-resource-permissions';
-import { filterColumnsByPermissions } from '../../utils/table-utils';
-
-const TEAM_OPTIONS = [
-  { label: 'All Teams', value: 'all' },
-  ...Object.values(Team).map((team) => ({
-    label: team,
-    value: team,
-  })),
-];
+import { useResourcePermissions } from '@hooks/use-resource-permissions';
+import { DeleteButton } from '@components/delete-button';
+import { EditButton } from '@components/edit-button';
+import { Space } from 'antd';
 
 export const Users: React.FC = () => {
-  const [teamFilter, setTeamFilter] = useState<LogicalFilter | undefined>(
-    undefined,
-  );
+  const { data: canCreate } = useCan({
+    resource: 'users',
+    action: 'create',
+  });
 
-  const handleTeamChange = (value: string) => {
-    if (value === 'all') {
-      setTeamFilter(undefined);
-    } else {
-      setTeamFilter({
-        field: 'team',
-        operator: 'eq',
-        value,
-      });
-    }
-  };
+  const { data: canEdit } = useCan({
+    resource: 'users',
+    action: 'edit',
+  });
 
-  const { data: identity } = useGetIdentity<IUser>();
+  const { data: canDelete } = useCan({
+    resource: 'users',
+    action: 'delete',
+  });
+
   const permissions = useResourcePermissions({ resource: 'users' });
+
+  const { data: tasksData } = useList({
+    resource: 'tasks',
+    pagination: { mode: 'off' },
+  });
+
+  const { data: planningsData } = useList({
+    resource: 'plannings',
+    pagination: { mode: 'off' },
+  });
+
+  const userRelationships = useMemo(() => {
+    const tasks = tasksData?.data || [];
+    const plannings = planningsData?.data || [];
+    const map: Record<
+      number,
+      { hasRelated: boolean; message: React.ReactNode }
+    > = {};
+
+    tasks.forEach((task: any) => {
+      (task.assignees || []).forEach((assignee: any) => {
+        if (!map[assignee.userId]) {
+          map[assignee.userId] = { hasRelated: false, message: null };
+        }
+        map[assignee.userId].hasRelated = true;
+      });
+    });
+
+    plannings.forEach((planning: any) => {
+      if (!map[planning.assignedUserId]) {
+        map[planning.assignedUserId] = { hasRelated: false, message: null };
+      }
+      map[planning.assignedUserId].hasRelated = true;
+    });
+
+    Object.keys(map).forEach((userId) => {
+      const relatedTasks = tasks.filter((task: any) =>
+        (task.assignees || []).some(
+          (assignee: any) => assignee.userId === Number(userId),
+        ),
+      );
+      const relatedPlannings = plannings.filter(
+        (planning: any) => planning.assignedUserId === Number(userId),
+      );
+
+      if (relatedTasks.length > 0 || relatedPlannings.length > 0) {
+        const taskNames = relatedTasks
+          .slice(0, 3)
+          .map((t: any) => t.title)
+          .join(', ');
+        const planningNames = relatedPlannings
+          .slice(0, 3)
+          .map((p: any) => p.title)
+          .join(', ');
+
+        let message =
+          'This user cannot be deleted because they have active assignments:';
+        if (relatedTasks.length > 0) {
+          message += `\n• Tasks: ${taskNames}`;
+          if (relatedTasks.length > 3)
+            message += ` (and ${relatedTasks.length - 3} more)`;
+        }
+        if (relatedPlannings.length > 0) {
+          message += `\n• Planning: ${planningNames}`;
+          if (relatedPlannings.length > 3)
+            message += ` (and ${relatedPlannings.length - 3} more)`;
+        }
+        message +=
+          '\n\nPlease reassign or delete these items first before deleting the user.';
+
+        map[Number(userId)].message = (
+          <div style={{ whiteSpace: 'pre-line' }}>{message}</div>
+        );
+      }
+    });
+    return map;
+  }, [tasksData, planningsData]);
+
+  const hasActionsPermission = canEdit?.can || canDelete?.can;
 
   const tableColumns = useMemo(() => {
     const allColumns = createColumns();
-    return filterColumnsByPermissions(
-      allColumns,
-      permissions.hasActionsPermission,
-    );
-  }, [permissions.hasActionsPermission]);
+
+    if (!hasActionsPermission) {
+      return allColumns.filter((column) => column.key !== 'actions');
+    }
+
+    return allColumns.map((col) => {
+      if (col.key === 'actions') {
+        return {
+          ...col,
+          render: (_: any, record: IUser) => {
+            const ActionButtons = () => {
+              const { data: canEditRecord } = useCan({
+                resource: 'users',
+                action: 'edit',
+                params: { id: record.id },
+              });
+
+              const { data: canDeleteRecord } = useCan({
+                resource: 'users',
+                action: 'delete',
+                params: { id: record.id },
+              });
+
+              const userRel = userRelationships[record.id as number] || {
+                hasRelated: false,
+                message: null,
+              };
+
+              return (
+                <Space size="middle">
+                  {canEditRecord?.can && (
+                    <EditButton
+                      resource="users"
+                      resourceId={record.id as number}
+                      type="default"
+                      size="small"
+                    />
+                  )}
+                  {canDeleteRecord?.can && (
+                    <DeleteButton
+                      resource="users"
+                      resourceId={record.id as number}
+                      confirmTitle={`Delete user "${record.firstName} ${record.lastName}"?`}
+                      type="primary"
+                      size="small"
+                      hasRelatedData={userRel.hasRelated}
+                      relatedInfoMessage={userRel.message}
+                    />
+                  )}
+                </Space>
+              );
+            };
+            return <ActionButtons />;
+          },
+        };
+      }
+      return col;
+    });
+  }, [hasActionsPermission, userRelationships]);
 
   const renderForm = useCallback((formProps: FormProps) => {
-    const { onFinish, ...restFormProps } = formProps;
     const isEdit = !!formProps?.initialValues?.id;
-
-    const handleFinish = async (values: any) => {
-      const transformedValues = { ...values };
-
-      Object.keys(transformedValues).forEach((key) => {
-        if (
-          transformedValues[key] === undefined ||
-          transformedValues[key] === ''
-        ) {
-          delete transformedValues[key];
-        }
-      });
-
-      if (
-        transformedValues.isActive === undefined ||
-        transformedValues.isActive === null
-      ) {
-        transformedValues.isActive = true;
-      } else {
-        transformedValues.isActive = Boolean(transformedValues.isActive);
-      }
-
-      if (!transformedValues.team || transformedValues.team === '') {
-        delete transformedValues.team;
-      }
-
-      if (
-        isEdit &&
-        (!transformedValues.password || transformedValues.password === '')
-      ) {
-        delete transformedValues.password;
-      }
-
-      if (onFinish) {
-        await onFinish(transformedValues);
-      }
-    };
-
     return (
-      <UsersForm
-        formProps={{ ...restFormProps, onFinish: handleFinish }}
-        mode={isEdit ? 'edit' : 'create'}
-      />
+      <UsersForm formProps={formProps} mode={isEdit ? 'edit' : 'create'} />
     );
   }, []);
-
-  const permanentFilters = useMemo(() => {
-    const filters: LogicalFilter[] = [];
-    if (teamFilter) {
-      filters.push(teamFilter);
-    }
-    if (identity?.role?.name === 'user') {
-      filters.push({
-        field: 'id',
-        operator: 'eq',
-        value: identity.id,
-      });
-    }
-    return filters;
-  }, [teamFilter, identity]);
-
-  const isManager = identity?.role?.name === 'manager';
 
   return (
     <CrudTable<IUser & { id: number }>
       resource="users"
       renderForm={renderForm}
       columns={tableColumns}
-      headerActions={
-        isManager ? (
-          <DropdownFilter options={TEAM_OPTIONS} onChange={handleTeamChange} />
-        ) : undefined
-      }
-      permanentFilters={permanentFilters}
       drawerTitles={{
         create: 'Create User',
         edit: 'Edit User',
         view: 'User Details',
       }}
-      showCreateButton={permissions.canCreate}
+      showCreateButton={canCreate?.can}
     />
   );
 };

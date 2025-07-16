@@ -1,7 +1,9 @@
+// External imports
 import React from 'react';
 import { Form, Row, Col, Button, Select, Switch, Typography } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { UserSelect } from '@components/user-select/user-select';
+import { UserAvatar } from '@components/user-avatar';
 import { FormListFieldData } from 'antd/es/form';
 import { useProjectMemberManagerStyles } from './styles';
 import { roleOptions } from './constants';
@@ -26,6 +28,23 @@ export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
   usersLoading,
 }) => {
   const { styles } = useProjectMemberManagerStyles();
+
+  const renderUserOption = (user: IUser) => {
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <UserAvatar user={user} size="small" />
+        {fullName}
+      </div>
+    );
+  };
+
+  const getUserLabel = (user: IUser) => {
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  };
+
+  const getUserValue = (user: IUser) => user.id || 0;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -56,11 +75,17 @@ export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
               rules={projectMemberValidationRules.user}
               noStyle
             >
-              <UserSelect
+              <UserSelect<IUser>
+                entities={users || []}
+                optionValue={getUserValue}
+                optionLabel={getUserLabel}
+                renderOption={renderUserOption}
+                renderLabel={renderUserOption}
+                searchText={getUserLabel}
+                loading={usersLoading}
                 placeholder="Select User"
                 className={styles.fullWidth}
-                users={users}
-                loading={usersLoading}
+                showSearch
               />
             </Form.Item>
           </Col>

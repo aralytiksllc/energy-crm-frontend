@@ -23,7 +23,6 @@ import { Projects } from '@modules/projects';
 import { Customers } from '@modules/customers';
 import { PermissionsMatrix } from '@modules/permissions';
 import { IUser } from '@interfaces/users';
-import { Result } from 'antd';
 
 // Role-based redirect component
 const RoleBasedRedirect: React.FC = () => {
@@ -34,27 +33,7 @@ const RoleBasedRedirect: React.FC = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  if (identity.role?.name === 'manager') {
-    return <Navigate to="/dashboard" replace />;
-  } else if (identity.role?.name === 'user') {
-    return <Navigate to="/tasks" replace />;
-  }
-
-  // Fallback for unknown roles
   return <Navigate to="/dashboard" replace />;
-};
-
-// Protected route wrapper for permissions
-const ProtectedPermissions: React.FC = () => {
-  return (
-    <CanAccess
-      resource="permissions"
-      action="list"
-      fallback={<Navigate to="/dashboard" replace />}
-    >
-      <PermissionsMatrix />
-    </CanAccess>
-  );
 };
 
 export const Routes: React.FC = () => (
@@ -94,7 +73,7 @@ export const Routes: React.FC = () => (
       <Route path="/planning" element={<Planning />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/customers" element={<Customers />} />
-      <Route path="/permissions" element={<ProtectedPermissions />} />
+      <Route path="/permissions" element={<PermissionsMatrix />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route
