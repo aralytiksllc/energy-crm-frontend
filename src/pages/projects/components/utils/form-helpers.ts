@@ -119,7 +119,7 @@ const transformMembers = (
     .filter((member) => member?.userId && member?.role)
     .map((member) => ({
       userId: Number(member.userId),
-      role: member.role,
+      role: member.role || '',
       isActive: member.isActive !== false,
     }));
 };

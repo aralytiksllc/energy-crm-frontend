@@ -1,5 +1,5 @@
 // External imports
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDeleteButton } from '@refinedev/core';
@@ -23,29 +23,50 @@ export const useDeleteMenuItem = (
     label,
   } = props;
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const { onConfirm } = useDeleteButton({ resource, id: resourceId });
 
   const onConfirmRef = useLatestRef(onConfirm);
 
   const handleConfirm = React.useCallback(() => onConfirm(), [onConfirm]);
 
-  const handleClick = React.useCallback(
-    (info: MenuInfo) => {
-      info.domEvent.stopPropagation();
+  const handleOk = async () => {
+    setIsDeleting(true);
+    try {
+      await handleConfirm();
+    } catch (error) {
+      console.error('Delete error:', error);
+    } finally {
+      setIsDeleting(false);
+      setIsModalVisible(false);
+    }
+  };
 
-      Modal.confirm({
-        title: confirmTitle,
-        content: confirmMessage,
-        okText: 'Delete',
-        okType: 'danger',
-        cancelText: 'Cancel',
-        centered: true,
-        transitionName: 'fade',
-        maskTransitionName: 'fade',
-        onOk: onConfirm,
-      });
-    },
-    [confirmTitle, confirmMessage, onConfirm],
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleClick = React.useCallback((info: MenuInfo) => {
+    info.domEvent.stopPropagation();
+    setIsModalVisible(true);
+  }, []);
+
+  const DeleteModal = () => (
+    <Modal
+      title={confirmTitle}
+      open={isModalVisible}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      confirmLoading={isDeleting}
+      okText="Delete"
+      cancelText="Cancel"
+      okType="danger"
+      centered
+    >
+      <p>{confirmMessage}</p>
+    </Modal>
   );
 
   return React.useMemo(
@@ -55,6 +76,7 @@ export const useDeleteMenuItem = (
       label: label ?? 'Delete',
       danger: true,
       onClick: handleClick,
+      modal: <DeleteModal />,
     }),
     [label, handleClick],
   );

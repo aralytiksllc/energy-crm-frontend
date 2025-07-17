@@ -10,7 +10,6 @@ import { PopoverSelect } from '@components/dropdown-select';
 import { DrawerFormProvider } from '@components/drawer-form';
 import { ColumnFilter } from '@components/column-filter';
 import { IUser } from '@interfaces/users';
-import { UserRole } from '@interfaces/user-role.enum';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
@@ -82,11 +81,6 @@ export function CrudTable<TData extends { id: number }>(
   const createButtonProps = React.useMemo(
     () => ({ onClick: handleCreate }),
     [handleCreate],
-  );
-
-  const filterableColumns = React.useMemo(
-    () => columns.filter((c: any) => c.key !== 'actions' && c.dataIndex),
-    [columns],
   );
 
   const augmentedColumns = React.useMemo(

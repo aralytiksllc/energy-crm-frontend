@@ -1,2 +1,2 @@
-export * from './user-avatars';
-export * from './user-avatars.types';
+export { UserAvatars } from './user-avatars';
+export type { UserAvatarsProps } from './user-avatars.types';

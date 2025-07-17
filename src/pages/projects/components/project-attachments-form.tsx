@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FormProps, Form, Typography, Alert } from 'antd';
 import type { UploadFile } from 'antd';
 import { FileUpload } from '@components/file-upload';
@@ -14,11 +14,9 @@ export const ProjectAttachmentsForm: React.FC<ProjectAttachmentsFormProps> = ({
   formProps,
 }) => {
   const [uploadingCount, setUploadingCount] = useState(0);
-  const [files, setFiles] = useState<UploadFile[]>([]);
   const { styles } = useProjectAttachmentsFormStyles();
 
   const handleFilesChange = (newFiles: UploadFile[]) => {
-    setFiles(newFiles);
     formProps.form?.setFieldValue('attachments', newFiles);
 
     const uploading = newFiles.filter(
@@ -27,12 +25,7 @@ export const ProjectAttachmentsForm: React.FC<ProjectAttachmentsFormProps> = ({
     setUploadingCount(uploading);
   };
 
-  useEffect(() => {
-    const formFiles = formProps.form?.getFieldValue('attachments');
-    if (formFiles && formFiles.length > 0 && files.length === 0) {
-      setFiles(formFiles);
-    }
-  }, [formProps.form, files.length]);
+  const files = formProps.form?.getFieldValue('attachments') || [];
 
   return (
     <div className={styles.container}>

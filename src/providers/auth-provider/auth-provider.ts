@@ -4,7 +4,7 @@ import type { AuthProvider } from '@refinedev/core';
 // Internal imports
 import type { IAuthResponse } from '@interfaces/authentication';
 import type { IUser } from '@interfaces/users';
-import type { IRolePermission } from '@interfaces/role';
+import type { IRolePermissionMapping } from '@interfaces/role';
 import { httpClient } from '@helpers/http-client';
 import { authStorage } from '@helpers/auth-storage';
 
@@ -80,7 +80,7 @@ export const authProvider: AuthProvider = {
       const data = await response.json<IUser>();
       return (
         data.role?.rolePermissions?.map(
-          (rp: IRolePermission) => rp.permission.name,
+          (rp: IRolePermissionMapping) => rp.permission.name,
         ) || []
       );
     } catch (error) {

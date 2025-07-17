@@ -5,7 +5,7 @@ import { TaskPriority } from '@interfaces/task-priority.enum';
 import { TaskType } from '@interfaces/task-type.enum';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { Wysiwyg } from '@components/rich-text-editor';
-import { AssigneeManager } from '@components/assignee-manager/assignee-manager';
+import { AssigneeManager } from '@components/assignee-manager';
 import { useTaskFormStyles } from './task-form.styles';
 import { IUser } from '@interfaces/users';
 import { IProject } from '@interfaces/project';

@@ -1,6 +1,6 @@
 // External imports
 import * as React from 'react';
-import { Form, Input, DatePicker, Switch, Select } from 'antd';
+import { Form, Input, DatePicker, Select } from 'antd';
 import type { FormProps } from 'antd/lib/form';
 import { useGetIdentity } from '@refinedev/core';
 
@@ -12,6 +12,7 @@ import { rules } from './user-form.rules';
 import { Team } from '@interfaces/team.enum';
 import { useMemo } from 'react';
 import { RemoteSelect } from '@components/remote-select';
+import { ActiveSwitch } from '@components/active-switch';
 
 const teamOptions = Object.values(Team).map((team) => ({
   label: team,
@@ -126,7 +127,7 @@ export const UsersForm: React.FC<UserFormProps> = ({
         valuePropName="checked"
         initialValue={mode === 'create' ? true : undefined}
       >
-        <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+        <ActiveSwitch />
       </Form.Item>
     </Form>
   );

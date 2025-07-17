@@ -1,5 +1,5 @@
 import { AccessControlProvider } from '@refinedev/core';
-import { authProvider } from '../auth-provider';
+import { authProvider } from '@providers/auth-provider';
 import { IUser } from '../../interfaces';
 import { UserRole } from '../../interfaces/user-role.enum';
 

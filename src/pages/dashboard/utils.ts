@@ -292,10 +292,7 @@ export const calculateProductivityMetrics = (
   projects: IProject[],
   userId: number,
 ): ProductivityMetrics => {
-  // Filter tasks assigned to the user
-  const userTasks = tasks.filter((task) =>
-    task.assignees?.some((assignee: Assignee) => assignee.userId === userId),
-  );
+  const userTasks = tasks;
 
   const completedTasks = userTasks.filter(
     (task) => task.status?.toLowerCase() === 'done' || task.isCompleted,

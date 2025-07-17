@@ -58,7 +58,7 @@ const PermissionsMatrixContent = () => {
       const link = rolePermissions?.data.find(
         (rp) => rp.roleId === role.id && rp.permissionId === permission.id,
       );
-      if (link) {
+      if (link && link.id) {
         deleteRolePermission(
           {
             resource: 'role-permissions',

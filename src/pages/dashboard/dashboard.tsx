@@ -1,10 +1,9 @@
 import { Spin } from 'antd';
 import { useGetIdentity, useList } from '@refinedev/core';
 import { UserDashboard } from './components/user-dashboard';
-import { IUser, IPlanning } from '@interfaces/index';
+import { IUser, IPlanning, Task } from '@interfaces/index';
 
 import { IProject } from '@interfaces/project';
-import { Task } from '@components/task-card/task-card.types';
 import { ICustomer } from '@interfaces/customer';
 import { useDashboardStyles } from './dashboard.styles';
 

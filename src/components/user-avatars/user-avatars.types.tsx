@@ -2,8 +2,9 @@
 import type { AvatarGroupProps } from 'antd/es/avatar/AvatarGroup';
 
 // Internal dependencies
-import type { IUser } from '@interfaces/users';
+import type { User } from '@components/user-avatar';
 
 export interface UserAvatarsProps extends AvatarGroupProps {
-  users: IUser[];
+  users: User[];
+  maxCount?: number;
 }

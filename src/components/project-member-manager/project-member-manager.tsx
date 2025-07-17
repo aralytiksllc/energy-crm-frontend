@@ -1,10 +1,11 @@
 // External imports
 import React from 'react';
-import { Form, Row, Col, Button, Select, Switch, Typography } from 'antd';
+import { Form, Row, Col, Button, Select, Typography } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { UserSelect } from '@components/user-select/user-select';
 import { UserAvatar } from '@components/user-avatar';
 import { FormListFieldData } from 'antd/es/form';
+import { ActiveSwitch } from '@components/active-switch';
 import { useProjectMemberManagerStyles } from './styles';
 import { roleOptions } from './constants';
 import { projectMemberValidationRules } from './project-member-manager.rules';
@@ -110,7 +111,7 @@ export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
               valuePropName="checked"
               noStyle
             >
-              <Switch defaultChecked />
+              <ActiveSwitch defaultChecked />
             </Form.Item>
           </Col>
           <Col span={4} className={styles.removeButtonCol}>

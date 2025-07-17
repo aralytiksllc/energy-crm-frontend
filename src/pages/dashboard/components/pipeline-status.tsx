@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Card, Row, Col, Typography } from 'antd';
-import type { Task } from '@modules/tasks/types';
+import type { Task } from '../../../interfaces/task';
 import type { ProjectSummary } from '@modules/projects/api/projects';
 
 const { Title, Text } = Typography;

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Form, Input, Switch, FormProps } from 'antd';
+import { Form, Input, FormProps } from 'antd';
 import { rules } from './customer-form.rules';
+import { ActiveSwitch } from '@components/active-switch';
 
 export interface CustomerFormProps {
   formProps: FormProps;
@@ -19,7 +20,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ formProps }) => {
         />
       </Form.Item>
       <Form.Item name="isActive" label="Active Status" valuePropName="checked">
-        <Switch />
+        <ActiveSwitch />
       </Form.Item>
     </Form>
   );

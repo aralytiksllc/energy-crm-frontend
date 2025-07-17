@@ -1,5 +1,5 @@
 // External imports
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, message } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDeleteButton } from '@refinedev/core';
@@ -18,6 +18,9 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
     relatedInfoMessage,
     ...restProps
   } = props;
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { canAccess, onConfirm } = useDeleteButton({
     resource,
@@ -38,44 +41,51 @@ export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
         return;
       }
 
-      Modal.confirm({
-        title: confirmTitle,
-        content: confirmMessage,
-        okText: 'Delete',
-        okType: 'danger',
-        cancelText: 'Cancel',
-        centered: true,
-        transitionName: 'fade',
-        maskTransitionName: 'fade',
-        onOk: async () => {
-          try {
-            await onConfirm();
-            onSuccess?.(resourceId);
-          } catch (error: any) {
-            message.error(`Failed to delete ${resource.slice(0, -1)}`);
-            console.error('Delete error:', error);
-          }
-        },
-      });
+      setIsModalVisible(true);
     },
-    [
-      confirmTitle,
-      confirmMessage,
-      onConfirm,
-      hasRelatedData,
-      relatedInfoMessage,
-      resource,
-      resourceId,
-      onSuccess,
-    ],
+    [hasRelatedData, relatedInfoMessage],
   );
 
+  const handleOk = async () => {
+    setIsDeleting(true);
+    try {
+      await onConfirm();
+      onSuccess?.(resourceId);
+      message.success(`${resource.slice(0, -1)} deleted successfully`);
+    } catch (error: any) {
+      message.error(`Failed to delete ${resource.slice(0, -1)}`);
+      console.error('Delete error:', error);
+    } finally {
+      setIsDeleting(false);
+      setIsModalVisible(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
-    <Button
-      icon={<DeleteOutlined />}
-      danger
-      onClick={handleClick}
-      {...restProps}
-    />
+    <>
+      <Button
+        icon={<DeleteOutlined />}
+        danger
+        onClick={handleClick}
+        {...restProps}
+      />
+      <Modal
+        title={confirmTitle}
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        confirmLoading={isDeleting}
+        okText="Delete"
+        cancelText="Cancel"
+        okType="danger"
+        centered
+      >
+        <p>{confirmMessage}</p>
+      </Modal>
+    </>
   );
 };

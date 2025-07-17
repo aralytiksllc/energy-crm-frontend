@@ -5,7 +5,6 @@ import {
   InputNumber,
   Select,
   DatePicker,
-  Switch,
   Row,
   Col,
   FormProps,
@@ -16,6 +15,7 @@ import { ProjectPriority } from '@interfaces/project-priority.enum';
 import { Wysiwyg } from '@components/rich-text-editor';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { RemoteSelect } from '@components/remote-select';
+import { ActiveSwitch } from '@components/active-switch';
 import { rules } from './project-overview-form.rules';
 import { useProjectOverviewFormStyles } from './project-overview-form.styles';
 
@@ -139,7 +139,7 @@ export const ProjectOverviewForm: React.FC<ProjectOverviewFormProps> = () => {
         name="isPrivate"
         valuePropName="checked"
       >
-        <Switch />
+        <ActiveSwitch checkedLabel="Private" uncheckedLabel="Public" />
       </Form.Item>
     </>
   );
