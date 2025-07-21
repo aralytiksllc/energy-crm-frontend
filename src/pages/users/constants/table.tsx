@@ -36,6 +36,14 @@ export const createColumns = (): FilterColumn<IUser>[] => [
     filterType: 'text',
   },
   {
+    title: 'Role',
+    dataIndex: ['role', 'name'],
+    key: 'role',
+    sorter: true,
+    filterType: 'text',
+    render: (_, record) => record.role?.name || '-',
+  },
+  {
     title: 'Team',
     dataIndex: 'team',
     key: 'team',
@@ -61,6 +69,7 @@ export const createColumns = (): FilterColumn<IUser>[] => [
     dataIndex: 'isActive',
     key: 'isActive',
     sorter: true,
+    filterType: 'text',
     render: (value: boolean) => (value ? 'Yes' : 'No'),
   },
   {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useMemo, useCallback, useEffect, useState } from 'react';
 import { Table, Space } from 'antd';
 import { List, useTable, useDrawerForm } from '@refinedev/antd';
 import { useGetIdentity } from '@refinedev/core';
@@ -13,7 +13,7 @@ import { IUser } from '@interfaces/users';
 
 export interface CrudTableProps<TData extends { id: number }> {
   resource: string;
-  columns: any;
+  columns: any[];
   renderForm: (formProps: FormProps) => React.ReactNode;
   headerActions?: React.ReactNode;
   permanentFilters?: any[];
@@ -73,17 +73,17 @@ export function CrudTable<TData extends { id: number }>(
     resource,
   });
 
-  const handleCreate = React.useCallback(
+  const handleCreate = useCallback(
     () => createDrawerForm.show(),
     [createDrawerForm.show],
   );
 
-  const createButtonProps = React.useMemo(
+  const createButtonProps = useMemo(
     () => ({ onClick: handleCreate }),
     [handleCreate],
   );
 
-  const augmentedColumns = React.useMemo(
+  const augmentedColumns = useMemo(
     () =>
       columns.map((column: any) => {
         if (column.key === 'actions' || !column.dataIndex) {
@@ -101,8 +101,7 @@ export function CrudTable<TData extends { id: number }>(
     [columns, setFilters],
   );
 
-  const [selectedColumns, setSelectedColumns] = React.useState(() => {
-    // Initialize with actions column fixed to the right
+  const [selectedColumns, setSelectedColumns] = useState(() => {
     const actionsColumn = augmentedColumns.find(
       (col: any) => col.key === 'actions',
     );
@@ -117,8 +116,7 @@ export function CrudTable<TData extends { id: number }>(
     return augmentedColumns;
   });
 
-  React.useEffect(() => {
-    // Ensure actions column is always fixed to the right when augmentedColumns change
+  useEffect(() => {
     const actionsColumn = augmentedColumns.find(
       (col: any) => col.key === 'actions',
     );
@@ -136,44 +134,26 @@ export function CrudTable<TData extends { id: number }>(
     }
   }, [augmentedColumns]);
 
-  const onSelectColumn = (column: any) => {
-    setSelectedColumns((prev: any[]) => {
-      const map = new Map(prev.map((c) => [c.dataIndex, c]));
-      map.has(column.dataIndex)
-        ? map.delete(column.dataIndex)
-        : map.set(column.dataIndex, column);
+  const getDataIndexKey = useCallback((dataIndex: any) => {
+    return Array.isArray(dataIndex) ? dataIndex.join('.') : dataIndex;
+  }, []);
 
-      // Get all columns from map, maintaining original order
-      const orderedColumns = augmentedColumns.filter((col: any) =>
-        map.has(col.dataIndex),
-      );
+  const onSelectColumn = useCallback(
+    (column: any) => {
+      setSelectedColumns((prev: any[]) => {
+        const map = new Map(prev.map((c) => [getDataIndexKey(c.dataIndex), c]));
+        const columnKey = getDataIndexKey(column.dataIndex);
 
-      // Ensure actions column is always at the end and fixed
-      const actionsColumn = orderedColumns.find(
-        (col: any) => col.key === 'actions',
-      );
-      const nonActionsColumns = orderedColumns.filter(
-        (col: any) => col.key !== 'actions',
-      );
+        map.has(columnKey) ? map.delete(columnKey) : map.set(columnKey, column);
 
-      if (actionsColumn) {
-        return [...nonActionsColumns, { ...actionsColumn, fixed: 'right' }];
-      }
+        const orderedColumns = augmentedColumns.filter((col: any) =>
+          map.has(getDataIndexKey(col.dataIndex)),
+        );
 
-      return orderedColumns;
-    });
-  };
-
-  const onToggleAll = () => {
-    setSelectedColumns((prev: any[]) => {
-      if (prev.length === columns.length) {
-        return [];
-      } else {
-        // When selecting all, maintain order and ensure actions column is fixed at the end
-        const actionsColumn = augmentedColumns.find(
+        const actionsColumn = orderedColumns.find(
           (col: any) => col.key === 'actions',
         );
-        const nonActionsColumns = augmentedColumns.filter(
+        const nonActionsColumns = orderedColumns.filter(
           (col: any) => col.key !== 'actions',
         );
 
@@ -181,10 +161,34 @@ export function CrudTable<TData extends { id: number }>(
           return [...nonActionsColumns, { ...actionsColumn, fixed: 'right' }];
         }
 
-        return [...augmentedColumns];
+        return orderedColumns;
+      });
+    },
+    [augmentedColumns, getDataIndexKey],
+  );
+
+  const onToggleAll = useCallback(() => {
+    setSelectedColumns((prev: any[]) => {
+      if (prev.length === columns.length) {
+        return [];
       }
+
+      const actionsColumn = augmentedColumns.find(
+        (col: any) => col.key === 'actions',
+      );
+      const nonActionsColumns = augmentedColumns.filter(
+        (col: any) => col.key !== 'actions',
+      );
+
+      if (actionsColumn) {
+        return [...nonActionsColumns, { ...actionsColumn, fixed: 'right' }];
+      }
+
+      return [...augmentedColumns];
     });
-  };
+  }, [augmentedColumns, columns.length]);
+
+  const isUserRole = identity?.role?.name === 'user';
 
   return (
     <DrawerFormProvider drawerForm={editDrawerForm}>
@@ -198,7 +202,7 @@ export function CrudTable<TData extends { id: number }>(
               selected={selectedColumns}
               onSelect={onSelectColumn}
               onToggleAll={onToggleAll}
-              optionKey={(col: any) => col.dataIndex}
+              optionKey={(col: any) => getDataIndexKey(col.dataIndex)}
               optionLabel={(col: any) => col.title}
               buttonLabel="Select Columns"
             />
@@ -222,9 +226,7 @@ export function CrudTable<TData extends { id: number }>(
           {...editDrawerForm}
           renderForm={renderForm}
           title={
-            identity?.role?.name === 'user'
-              ? drawerTitles.view || 'View Details'
-              : drawerTitles.edit
+            isUserRole ? drawerTitles.view || 'View Details' : drawerTitles.edit
           }
           width={drawerWidth}
         />

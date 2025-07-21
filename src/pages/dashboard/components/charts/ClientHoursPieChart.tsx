@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Empty } from 'antd';
 import { Pie } from '@ant-design/plots';
-import { PIE_CHART_COLORS } from '../constants';
+import { PIE_CHART_COLORS } from '../../constants';
 
 interface ClientHoursPieChartProps {
   data: { type: string; value: number }[];
@@ -37,7 +37,7 @@ export const ClientHoursPieChart: React.FC<ClientHoursPieChartProps> = ({
           style: {
             fontSize: 14,
             textAlign: 'center',
-            fill: '#fff',
+            fill: 'var(--color-text-white)',
             fontWeight: 'bold',
           },
         }}

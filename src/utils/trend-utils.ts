@@ -66,12 +66,12 @@ export const getTrendColor = (
 ): string => {
   const { isPositiveGood = true } = config;
 
-  if (trend === 'neutral') return '#8c8c8c';
+  if (trend === 'neutral') return 'var(--color-trend-neutral)';
 
   if (isPositiveGood) {
-    return trend === 'up' ? '#3f8600' : '#cf1322';
+    return trend === 'up' ? 'var(--color-trend-up)' : 'var(--color-trend-down)';
   } else {
-    return trend === 'up' ? '#cf1322' : '#3f8600';
+    return trend === 'up' ? 'var(--color-trend-down)' : 'var(--color-trend-up)';
   }
 };
 

@@ -18,8 +18,8 @@ const DateFilter: React.FC<DateFilterProps> = ({ value, onChange, style }) => {
       format="YYYY-MM-DD"
       width={280}
       showIcon={true}
-      iconColor="#1890ff"
-      labelColor="#666"
+      iconColor="var(--color-primary)"
+      labelColor="var(--color-text-secondary)"
       allowClear={true}
       allowEmpty={[false, true]}
       autoSetEndDate={true}

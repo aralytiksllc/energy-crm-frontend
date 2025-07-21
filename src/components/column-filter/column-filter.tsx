@@ -19,22 +19,36 @@ export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (
+      const isEmptyValue =
         filterValues.value === '' ||
         filterValues.value === null ||
-        filterValues.value === undefined
-      ) {
+        filterValues.value === undefined;
+
+      if (isEmptyValue) {
         setFilters([], 'replace');
-      } else if (dataIndex && filterValues.operator) {
-        const filter: LogicalFilter = {
-          field: dataIndex.toString(),
-          operator: filterValues.operator as any,
-          value: ['ilike', 'like'].includes(filterValues.operator)
-            ? `%${filterValues.value}%`
-            : filterValues.value,
-        };
-        setFilters([filter], 'replace');
+        return;
       }
+
+      if (!dataIndex || !filterValues.operator) {
+        return;
+      }
+
+      const field = Array.isArray(dataIndex)
+        ? dataIndex.join('.')
+        : dataIndex.toString();
+
+      const isLikeOperator = ['ilike', 'like'].includes(filterValues.operator);
+      const value = isLikeOperator
+        ? `%${filterValues.value}%`
+        : filterValues.value;
+
+      const filter: LogicalFilter = {
+        field,
+        operator: filterValues.operator as any,
+        value,
+      };
+
+      setFilters([filter], 'replace');
     }, 300);
 
     return () => clearTimeout(timeoutId);

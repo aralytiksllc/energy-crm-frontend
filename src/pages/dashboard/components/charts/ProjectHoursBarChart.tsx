@@ -10,7 +10,8 @@ import {
   Legend,
   LabelList,
 } from 'recharts';
-import { BAR_CHART_COLORS } from '../constants';
+import { BAR_CHART_COLORS } from '../../constants';
+import { useProjectHoursBarChartStyles } from './ProjectHoursBarChart.styles';
 
 interface ProjectHoursData {
   name: string;
@@ -26,7 +27,13 @@ interface ProjectHoursBarChartProps {
 const ProjectNameLabel = (props: any) => {
   const { x, y, value } = props;
   return (
-    <text x={x} y={y} dy={-10} textAnchor="start" fill="#666">
+    <text
+      x={x}
+      y={y}
+      dy={-10}
+      textAnchor="start"
+      fill="var(--color-icon-secondary)"
+    >
       {value}
     </text>
   );
@@ -36,12 +43,13 @@ export const ProjectHoursBarChart: React.FC<ProjectHoursBarChartProps> = ({
   data,
   title,
 }) => {
+  const { styles } = useProjectHoursBarChartStyles();
   if (data.length === 0) {
     return (
       <Card title={title}>
         <Empty
           description="No project data available"
-          style={{ height: '400px' }}
+          className={styles.emptyContainer}
         />
       </Card>
     );

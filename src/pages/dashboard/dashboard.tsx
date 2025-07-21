@@ -1,8 +1,7 @@
 import { Spin } from 'antd';
 import { useGetIdentity, useList } from '@refinedev/core';
-import { UserDashboard } from './components/user-dashboard';
+import { UserDashboard, ManagerDashboard } from './components';
 import { IUser, IPlanning, Task } from '@interfaces/index';
-
 import { IProject } from '@interfaces/project';
 import { ICustomer } from '@interfaces/customer';
 import { useDashboardStyles } from './dashboard.styles';
@@ -45,6 +44,22 @@ export function Dashboard() {
       </div>
     );
   }
+
+  const isManagerOrAdmin =
+    identity?.role?.name === 'superadmin' || identity?.role?.name === 'manager';
+
+  if (isManagerOrAdmin) {
+    return (
+      <ManagerDashboard
+        currentUser={identity}
+        plannings={planningsData?.data}
+        tasks={tasksData?.data}
+        projects={projectsData?.data}
+        customers={customersData?.data}
+      />
+    );
+  }
+
   return (
     <UserDashboard
       currentUser={identity}

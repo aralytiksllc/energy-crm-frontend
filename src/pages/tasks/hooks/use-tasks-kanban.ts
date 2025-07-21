@@ -97,6 +97,11 @@ export const useTasksKanban = () => {
 
       const taskId = active.id;
       const newStatus = over.id;
+      const task = tasks.find(
+        (t: any) => t.id.toString() === taskId.toString(),
+      );
+      const taskTitle = task?.title || 'Task';
+      const statusLabel = STATUS_LABELS[newStatus] || newStatus;
 
       updateTask({
         resource: 'tasks',
@@ -106,34 +111,39 @@ export const useTasksKanban = () => {
         },
         mutationMode: 'optimistic',
         successNotification: {
-          message: 'Task status updated successfully',
+          message: `Task "${taskTitle}" has been updated successfully to the ${statusLabel} status`,
           type: 'success',
         },
         errorNotification: {
-          message: 'Error updating task status',
+          message: `Error updating task "${taskTitle}" status`,
           type: 'error',
         },
       });
     },
-    [updateTask, canEditTasks?.can],
+    [updateTask, canEditTasks?.can, tasks],
   );
 
   const handleDeleteCard = useCallback(
     (taskId: string) => {
+      const task = tasks.find(
+        (t: any) => t.id.toString() === taskId.toString(),
+      );
+      const taskTitle = task?.title || 'Task';
+
       deleteTask({
         resource: 'tasks',
         id: taskId,
         successNotification: {
-          message: 'Task deleted successfully',
+          message: `Task "${taskTitle}" deleted successfully`,
           type: 'success',
         },
         errorNotification: {
-          message: 'Error deleting task',
+          message: `Error deleting task "${taskTitle}"`,
           type: 'error',
         },
       });
     },
-    [deleteTask],
+    [deleteTask, tasks],
   );
 
   const transformTaskValues = (values: any) => {

@@ -1,5 +1,8 @@
 import { ICustomer, IProject, Task, Assignee } from '@interfaces/index';
 import dayjs, { Dayjs } from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(isBetween);
 
 export const getDateRangeFromFilter = (
   filter: string,

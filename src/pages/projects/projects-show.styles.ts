@@ -4,10 +4,10 @@ export const projectShowStyles = {
   richTextContainer: {
     maxHeight: '200px',
     overflowY: 'auto' as const,
-    border: '1px solid #f0f0f0',
+    border: '1px solid var(--color-border)',
     borderRadius: '6px',
     padding: '12px',
-    backgroundColor: '#fafafa',
+    backgroundColor: 'var(--color-bg-light)',
     lineHeight: '1.6',
   } as CSSProperties,
 };

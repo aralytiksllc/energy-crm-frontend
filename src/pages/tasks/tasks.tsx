@@ -37,6 +37,25 @@ export const Tasks: React.FC = () => {
     titleField: 'title',
   });
 
+  const userProjects = useMemo(() => {
+    if (!projectsData?.data || !identity?.id) {
+      return [];
+    }
+
+    const isAdminOrManager =
+      identity.role?.name === 'superadmin' || identity.role?.name === 'manager';
+
+    if (isAdminOrManager) {
+      return projectsData.data;
+    }
+
+    return projectsData.data.filter((project) => {
+      return project.members?.some(
+        (member) => member.userId === identity.id && member.isActive,
+      );
+    });
+  }, [projectsData?.data, identity]);
+
   // Create columns based on permissions
   const tableColumns = useMemo(() => {
     const allColumns = createColumns();
@@ -96,12 +115,12 @@ export const Tasks: React.FC = () => {
           }}
           users={usersData?.data}
           usersLoading={usersLoading}
-          projects={projectsData?.data}
+          projects={userProjects}
           projectsLoading={projectsLoading}
         />
       );
     },
-    [projectsData?.data, usersData?.data, projectsLoading, usersLoading],
+    [userProjects, usersData?.data, projectsLoading, usersLoading],
   );
 
   const permanentFilters = useMemo(() => {

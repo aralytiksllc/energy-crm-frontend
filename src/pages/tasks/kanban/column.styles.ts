@@ -24,7 +24,7 @@ export const useKanbanColumnStyles = createStyles(
       flex: 1;
       overflow-y: ${active ? 'unset' : 'auto'};
       border: 2px dashed transparent;
-      border-color: ${isOver ? '#00000040' : 'transparent'};
+      border-color: ${isOver ? 'var(--color-overlay-drag)' : 'transparent'};
       border-radius: 4px;
     `,
     itemContainer: css`

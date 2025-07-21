@@ -16,7 +16,7 @@ export const useKanbanBoardStyles = createStyles(({ css }) => ({
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: #f5f6fa;
+    background: var(--color-bg-kanban);
     border-radius: 12px;
   `,
 }));

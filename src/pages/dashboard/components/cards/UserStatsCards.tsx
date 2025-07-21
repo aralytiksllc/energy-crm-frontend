@@ -5,6 +5,7 @@ import {
   ProjectOutlined,
   ArrowUpOutlined,
 } from '@ant-design/icons';
+import { useDashboardStyles } from '../../dashboard.styles';
 
 interface UserStatsCardsProps {
   activeTasks: number;
@@ -19,6 +20,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
   completionRate,
   plannedHours,
 }) => {
+  const { styles } = useDashboardStyles();
   return (
     <Row gutter={16}>
       <Col span={6}>
@@ -26,7 +28,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
           <Statistic
             title="My Active Tasks"
             value={activeTasks}
-            valueStyle={{ color: '#1890ff' }}
+            className={styles.statValuePrimary}
             prefix={<ClockCircleOutlined />}
           />
         </Card>
@@ -36,7 +38,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
           <Statistic
             title="My Projects"
             value={projectCount}
-            valueStyle={{ color: '#52c41a' }}
+            className={styles.statValueSuccess}
             prefix={<ProjectOutlined />}
           />
         </Card>
@@ -47,14 +49,13 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
             title="Completion Rate"
             value={completionRate}
             suffix="%"
-            valueStyle={{
-              color:
-                completionRate >= 80
-                  ? '#52c41a'
-                  : completionRate >= 60
-                    ? '#faad14'
-                    : '#ff4d4f',
-            }}
+            className={
+              completionRate >= 80
+                ? styles.statValueSuccess
+                : completionRate >= 60
+                  ? styles.statIconWarning
+                  : styles.iconCyan
+            }
             prefix={<ArrowUpOutlined />}
           />
         </Card>
@@ -65,7 +66,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
             title="Planned Hours"
             value={plannedHours}
             suffix="h"
-            valueStyle={{ color: '#722ed1' }}
+            className={styles.statValueTesting}
             prefix={<ClockCircleOutlined />}
           />
         </Card>

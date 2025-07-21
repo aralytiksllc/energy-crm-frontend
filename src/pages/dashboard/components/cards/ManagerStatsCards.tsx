@@ -10,7 +10,8 @@ import {
   getTrendIcon,
   getTrendColor,
   type TrendData,
-} from '../../../utils/trend-utils';
+} from '../../../../utils/trend-utils';
+import { useManagerStatsCardsStyles } from './ManagerStatsCards.styles';
 
 interface ManagerStatsCardsProps {
   activePlannings: number;
@@ -32,26 +33,33 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
   workedHours,
   trends,
 }) => {
+  const { styles } = useManagerStatsCardsStyles();
   const getStatTrendIcon = (trendData?: TrendData) => {
     if (!trendData) return null;
     const IconComponent = getTrendIcon(trendData.trend);
     return React.createElement(IconComponent);
   };
 
-  const getStatTrendColor = (trendData?: TrendData, isPositiveGood = true) => {
-    if (!trendData) return '#3f8600';
-    return getTrendColor(trendData.trend, { isPositiveGood });
+  const getStatTrendColorClass = (
+    trendData?: TrendData,
+    isPositiveGood = true,
+  ) => {
+    if (!trendData) return styles.statValueTrendUp;
+    const color = getTrendColor(trendData.trend, { isPositiveGood });
+    return color === 'var(--color-trend-up)'
+      ? styles.statValueTrendUp
+      : styles.statValueTrendDown;
   };
   return (
     <Row gutter={16}>
       <Col span={6}>
         <Card variant="outlined">
           <Space>
-            <CalendarOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
+            <CalendarOutlined className={styles.calendarIcon} />
             <Statistic
               title="Active Plannings"
               value={activePlannings}
-              valueStyle={{ color: getStatTrendColor(trends?.plannings) }}
+              className={getStatTrendColorClass(trends?.plannings)}
               prefix={getStatTrendIcon(trends?.plannings)}
             />
           </Space>
@@ -61,11 +69,11 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
       <Col span={6}>
         <Card variant="outlined">
           <Space>
-            <ProjectOutlined style={{ fontSize: '24px', color: '#52c41a' }} />
+            <ProjectOutlined className={styles.projectIcon} />
             <Statistic
               title="Active Projects"
               value={totalProjects}
-              valueStyle={{ color: getStatTrendColor(trends?.projects) }}
+              className={getStatTrendColorClass(trends?.projects)}
               prefix={getStatTrendIcon(trends?.projects)}
             />
           </Space>
@@ -75,14 +83,12 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
       <Col span={6}>
         <Card variant="outlined">
           <Space>
-            <ClockCircleOutlined
-              style={{ fontSize: '24px', color: '#faad14' }}
-            />
+            <ClockCircleOutlined className={styles.clockIcon} />
             <Statistic
               title="Planned Hours"
               value={plannedHours}
               suffix="h"
-              valueStyle={{ color: getStatTrendColor(trends?.plannedHours) }}
+              className={getStatTrendColorClass(trends?.plannedHours)}
               prefix={getStatTrendIcon(trends?.plannedHours)}
             />
           </Space>
@@ -92,14 +98,12 @@ export const ManagerStatsCards: React.FC<ManagerStatsCardsProps> = ({
       <Col span={6}>
         <Card variant="outlined">
           <Space>
-            <CheckCircleOutlined
-              style={{ fontSize: '24px', color: '#13c2c2' }}
-            />
+            <CheckCircleOutlined className={styles.checkIcon} />
             <Statistic
               title="Hours Worked"
               value={workedHours}
               suffix="h"
-              valueStyle={{ color: getStatTrendColor(trends?.workedHours) }}
+              className={getStatTrendColorClass(trends?.workedHours)}
               prefix={getStatTrendIcon(trends?.workedHours)}
             />
           </Space>

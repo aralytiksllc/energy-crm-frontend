@@ -53,17 +53,19 @@ export const useTaskViewModal = (updateAssignee: any, refetch: any) => {
         return;
       }
 
+      const taskTitle = selectedTask?.title || 'Task';
+
       updateAssignee(
         {
           resource: `tasks/${selectedTask.id}/assignee`,
           id: assigneeId,
           values: { actualHours: hours },
           successNotification: {
-            message: 'Actual hours updated successfully!',
+            message: `Actual hours for task "${taskTitle}" updated successfully!`,
             type: 'success',
           },
           errorNotification: {
-            message: 'Failed to update actual hours.',
+            message: `Failed to update actual hours for task "${taskTitle}".`,
             type: 'error',
           },
         },
@@ -74,7 +76,13 @@ export const useTaskViewModal = (updateAssignee: any, refetch: any) => {
         },
       );
     },
-    [actualHours, selectedTask?.id, updateAssignee, refetch],
+    [
+      actualHours,
+      selectedTask?.id,
+      selectedTask?.title,
+      updateAssignee,
+      refetch,
+    ],
   );
 
   return {

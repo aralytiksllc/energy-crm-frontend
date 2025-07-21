@@ -19,7 +19,6 @@ import {
   CheckCircleOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  MinusOutlined,
 } from '@ant-design/icons';
 import type { Task } from '@interfaces/task';
 import type { IProject } from '@interfaces/project';
@@ -56,7 +55,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         {payload.map((entry: any, index: number) => (
           <div key={`item-${index}`} className={styles.legendItem}>
             <div
-              className={styles.legendColorBox}
+              className={cx(
+                styles.legendColorBox,
+                styles.legendColorBoxEnhanced,
+              )}
               style={{ backgroundColor: entry.color }}
             />
             <span className={styles.legendLabel}>{entry.value}</span>
@@ -167,31 +169,6 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
     return mockData;
   }, []);
 
-  const ticketStats = useMemo(() => {
-    const stats = new Map<string, number>();
-
-    tasks.forEach((task) => {
-      const key = `${task.type} - ${task.isCompleted ? 'Completed' : 'Open'}`;
-      stats.set(key, (stats.get(key) || 0) + 1);
-    });
-
-    const result = Array.from(stats.entries()).map(([type, count]) => ({
-      type,
-      count,
-    }));
-
-    if (result.length === 0) {
-      return [
-        { type: 'Bug - Open', count: 12 },
-        { type: 'Feature - Completed', count: 8 },
-        { type: 'Task - Open', count: 15 },
-        { type: 'Enhancement - Completed', count: 6 },
-      ];
-    }
-
-    return result;
-  }, [tasks]);
-
   return (
     <Space direction="vertical" size="large" className={styles.fullWidth}>
       <Row gutter={16}>
@@ -204,7 +181,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               <Statistic
                 title="Klientë Aktivë"
                 value={stats.totalClients}
-                valueStyle={{ color: '#3f8600' }}
+                className={styles.statValueTrendUp}
                 prefix={<ArrowUpOutlined />}
               />
             </Space>
@@ -220,7 +197,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               <Statistic
                 title="Projekte Aktive"
                 value={stats.totalProjects}
-                valueStyle={{ color: '#3f8600' }}
+                className={styles.statValueTrendUp}
                 prefix={<ArrowUpOutlined />}
               />
             </Space>
@@ -237,7 +214,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                 title="Ore të Planifikuara"
                 value={stats.plannedHours}
                 suffix="h"
-                valueStyle={{ color: '#3f8600' }}
+                className={styles.statValueTrendUp}
                 prefix={<ArrowUpOutlined />}
               />
             </Space>
@@ -254,7 +231,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                 title="Ore të Punësuara"
                 value={stats.workedHours}
                 suffix="h"
-                valueStyle={{ color: '#cf1322' }}
+                className={styles.statValueTrendDown}
                 prefix={<ArrowDownOutlined />}
               />
             </Space>
@@ -280,7 +257,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                 style: {
                   fontSize: 12,
                   textAlign: 'center',
-                  fill: '#fff',
+                  fill: 'var(--color-text-white)',
                   fontWeight: 'bold',
                 },
               }}
@@ -292,7 +269,11 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         <Col span={12}>
           <Card title="Top 5 projektet sipas orëve të shpenzuara">
             <div
-              className={cx(styles.hideChartTopLine, styles.fullWidth)}
+              className={cx(
+                styles.hideChartTopLine,
+                styles.fullWidth,
+                styles.chartContainer,
+              )}
               style={{
                 height: Math.max(400, hoursByProject.length * 80),
               }}
@@ -312,7 +293,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                 >
                   <CartesianGrid
                     strokeDasharray="none"
-                    stroke="#f0f0f0"
+                    stroke="var(--color-border)"
                     horizontal={true}
                     vertical={false}
                   />
@@ -344,13 +325,13 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                   <Bar
                     dataKey="plannedHours"
                     name="Planned"
-                    fill="#8884d8"
+                    fill="var(--color-chart-planned)"
                     barSize={10}
                   />
                   <Bar
                     dataKey="actualHours"
                     name="Actual"
-                    fill="#82ca9d"
+                    fill="var(--color-chart-actual)"
                     barSize={10}
                   >
                     <LabelList
@@ -359,7 +340,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                         <WordWrapLabel
                           labelHeight={40}
                           style={{
-                            color: '#262626',
+                            color: 'var(--color-text-primary)',
                             fontWeight: 600,
                             fontSize: '11px',
                             textAlign: 'left',

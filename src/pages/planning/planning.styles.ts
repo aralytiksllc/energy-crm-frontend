@@ -177,7 +177,7 @@ export const createStyles = createAntdStyles(({ token }) => ({
   },
 
   deleteIcon: {
-    color: '#ff4d4f',
+    color: 'var(--color-error)',
     cursor: 'pointer',
     fontSize: '14px',
     marginLeft: 'auto',

@@ -1,14 +1,11 @@
-// External imports
-import * as React from 'react';
 import { Form, Input, DatePicker, Select } from 'antd';
 import type { FormProps } from 'antd/lib/form';
 import { useGetIdentity } from '@refinedev/core';
 
-// Internal imports
 import type { IUser } from '@interfaces/users';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
-import { rules } from './user-form.rules';
+import { createRules } from './user-form.rules';
 import { Team } from '@interfaces/team.enum';
 import { useMemo } from 'react';
 import { RemoteSelect } from '@components/remote-select';
@@ -30,10 +27,14 @@ export const UsersForm: React.FC<UserFormProps> = ({
 }: UserFormProps) => {
   const { data: currentUser } = useGetIdentity<IUser>();
 
-  const title = useMemo(() => {
-    if (mode === 'create') return 'Create User';
-    return 'Edit User';
-  }, [mode]);
+  const canManageRoles = useMemo(() => {
+    return (
+      currentUser?.role?.name === 'superadmin' ||
+      currentUser?.role?.name === 'manager'
+    );
+  }, [currentUser?.role?.name]);
+
+  const rules = useMemo(() => createRules(canManageRoles), [canManageRoles]);
 
   const { styles } = useStyles();
 
@@ -68,14 +69,16 @@ export const UsersForm: React.FC<UserFormProps> = ({
         <Input autoComplete="off" />
       </Form.Item>
 
-      <Form.Item label="Role" name="roleId" rules={rules.roleId}>
-        <RemoteSelect
-          resource="roles"
-          optionLabel="name"
-          optionValue="id"
-          placeholder="Select a role"
-        />
-      </Form.Item>
+      {canManageRoles && (
+        <Form.Item label="Role" name="roleId" rules={rules.roleId}>
+          <RemoteSelect
+            resource="roles"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a role"
+          />
+        </Form.Item>
+      )}
 
       <Form.Item label="Team" name="team" className={styles.formItem}>
         <Select placeholder="Select a team" options={teamOptions} allowClear />

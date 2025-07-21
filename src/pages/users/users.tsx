@@ -1,8 +1,7 @@
-// External imports
 import React, { useCallback, useMemo } from 'react';
 import { FormProps } from 'antd';
+import { useGetIdentity } from '@refinedev/core';
 
-// Internal imports
 import type { IUser } from '@interfaces/users';
 import { CrudTable } from '@components/crud-table/crud-table';
 import { UsersForm } from './components/user-form';
@@ -12,6 +11,7 @@ import { usePermissions } from '@hooks/use-permissions';
 import { useUserRelationships } from '@hooks/use-user-relationships';
 
 export const Users: React.FC = () => {
+  const { data: identity } = useGetIdentity<IUser>();
   const permissions = usePermissions({ resource: 'users' });
   const userRelationships = useUserRelationships();
 
@@ -47,6 +47,14 @@ export const Users: React.FC = () => {
     );
   }, []);
 
+  const permanentFilters = useMemo(() => {
+    const isAdminOrManager =
+      identity?.role?.name === 'superadmin' ||
+      identity?.role?.name === 'manager';
+
+    return isAdminOrManager ? [] : [];
+  }, [identity]);
+
   return (
     <CrudTable<IUser & { id: number }>
       resource="users"
@@ -58,6 +66,7 @@ export const Users: React.FC = () => {
         view: 'User Details',
       }}
       showCreateButton={permissions.canCreate}
+      permanentFilters={permanentFilters}
     />
   );
 };

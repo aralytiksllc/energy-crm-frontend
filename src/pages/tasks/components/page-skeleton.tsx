@@ -12,7 +12,7 @@ export const PageSkeleton: React.FC = () => {
             key={index}
             style={{
               width: '280px',
-              backgroundColor: '#f5f5f5',
+              backgroundColor: 'var(--color-bg-skeleton)',
               borderRadius: '8px',
               padding: '16px',
             }}
@@ -20,7 +20,7 @@ export const PageSkeleton: React.FC = () => {
             <div
               style={{
                 height: '24px',
-                backgroundColor: '#e0e0e0',
+                backgroundColor: 'var(--color-bg-skeleton-dark)',
                 borderRadius: '4px',
                 marginBottom: '16px',
               }}
@@ -30,7 +30,7 @@ export const PageSkeleton: React.FC = () => {
                 key={itemIndex}
                 style={{
                   height: '80px',
-                  backgroundColor: '#e0e0e0',
+                  backgroundColor: 'var(--color-bg-skeleton-dark)',
                   borderRadius: '4px',
                   marginBottom: '8px',
                 }}
