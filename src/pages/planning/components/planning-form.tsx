@@ -263,14 +263,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({
           </Col>
         </Row>
 
-        <Form.Item
-          style={{
-            marginBottom: 0,
-            marginTop: '24px',
-            paddingTop: '16px',
-            borderTop: '1px solid var(--color-border)',
-          }}
-        >
+        <Form.Item>
           <div
             style={{
               display: 'flex',

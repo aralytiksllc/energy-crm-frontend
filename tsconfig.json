@@ -27,7 +27,8 @@
       "@interfaces/*": ["src/interfaces/*"],
       "@helpers/*": ["src/helpers/*"],
       "@config": ["src/config.tsx"],
-      "@routes": ["src/routes.tsx"]
+      "@routes": ["src/routes.tsx"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"],

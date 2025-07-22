@@ -3,7 +3,6 @@ import { Drawer, Typography, Tag, Empty, List, Popconfirm } from 'antd';
 import {
   ProjectOutlined,
   ClockCircleOutlined,
-  CheckCircleOutlined,
   UserOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
@@ -137,11 +136,6 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
                             {item.endDate &&
                               new Date(item.endDate).toLocaleDateString()}
                           </Tag>
-                          {item.isCompleted && (
-                            <Tag icon={<CheckCircleOutlined />} color="green">
-                              Completed
-                            </Tag>
-                          )}
                         </div>
                         <div className={styles.cardSubtitleSpacing}>
                           <Text strong>

@@ -19,7 +19,7 @@ export const useTasksKanbanStyles = createStyles(() => ({
   },
   skeletonCard: {
     height: '80px',
-    background: 'var(--color-bg-lightest)',
+    background: '#f0f0f0',
     borderRadius: '8px',
     marginBottom: '8px',
   },
@@ -39,7 +39,7 @@ export const useTasksKanbanStyles = createStyles(() => ({
     width: '100%',
   },
   modalSectionText: {
-    color: 'var(--color-text-secondary)',
+    color: '#888',
     fontSize: 13,
   },
   modalDivider: {
@@ -49,7 +49,7 @@ export const useTasksKanbanStyles = createStyles(() => ({
     marginBottom: 24,
   },
   descriptionContent: {
-    background: 'var(--color-bg-white)',
+    background: '#f0f0f0',
     borderRadius: 8,
     padding: 16,
     marginTop: 8,
@@ -73,16 +73,16 @@ export const useTasksKanbanStyles = createStyles(() => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '12px 16px',
-    border: '1px solid var(--color-border)',
+    border: '1px solid #e0e0e0',
     borderRadius: 8,
-    backgroundColor: 'var(--color-bg-light)',
+    backgroundColor: '#f0f0f0',
   },
   assigneeAvatar: {
     width: 32,
     height: 32,
     borderRadius: '50%',
-    backgroundColor: 'var(--color-primary)',
-    color: 'var(--color-text-white)',
+    backgroundColor: 'gray',
+    color: '#ffffff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -95,7 +95,7 @@ export const useTasksKanbanStyles = createStyles(() => ({
   },
   assigneeEmail: {
     fontSize: 12,
-    color: 'var(--color-text-muted-dark)',
+    color: '#888',
   },
   assigneeHoursContainer: {
     display: 'flex',

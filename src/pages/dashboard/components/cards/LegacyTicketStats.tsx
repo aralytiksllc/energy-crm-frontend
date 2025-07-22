@@ -20,8 +20,12 @@ export const LegacyTicketStats: React.FC<LegacyTicketStatsProps> = ({
       <Row gutter={16}>
         {stats.map((ticket, index) => (
           <Col span={6} key={index} className={styles.column}>
-            <Card>
-              <Statistic title={ticket.type} value={ticket.count} />
+            <Card className={styles.card}>
+              <Statistic
+                title={ticket.type}
+                value={ticket.count}
+                className={styles.statistic}
+              />
             </Card>
           </Col>
         ))}

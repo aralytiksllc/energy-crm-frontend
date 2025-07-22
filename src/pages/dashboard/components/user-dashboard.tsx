@@ -37,16 +37,12 @@ interface UserDashboardProps {
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({
   currentUser,
-  plannings,
   tasks,
   projects,
-  customers,
 }) => {
   const { styles } = useUserDashboardStyles();
-  const allPlannings = plannings || [];
   const allTasks = tasks || [];
   const allProjects = projects || [];
-  const allCustomers = customers || [];
 
   const {
     quickFilter,
