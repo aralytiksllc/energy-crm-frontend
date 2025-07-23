@@ -138,10 +138,20 @@ export const TaskViewModal: React.FC<TaskViewModalProps> = ({
                   {selectedTask.type}
                 </Tag>
               </Space>
+              <Text className={styles.modalSectionText}>Start Date</Text>
+              <Space>
+                <Tag color="default">
+                  {selectedTask.startDate
+                    ? dayjs(selectedTask.startDate).format('DD/MM/YYYY')
+                    : 'Not set'}
+                </Tag>
+              </Space>
               <Text className={styles.modalSectionText}>Due Date</Text>
               <Space>
                 <Tag color="default">
-                  {dayjs(selectedTask.dueDate).format('DD/MM/YYYY')}
+                  {selectedTask.dueDate
+                    ? dayjs(selectedTask.dueDate).format('DD/MM/YYYY')
+                    : 'Not set'}
                 </Tag>
               </Space>
             </Space>

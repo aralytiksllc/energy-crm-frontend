@@ -40,4 +40,18 @@ export const useScrollableListCardStyles = createStyles(() => ({
     fontSize: '12px',
     fontWeight: '500',
   },
+  overdueItem: {
+    backgroundColor: '#fff2f0',
+    border: '1px solid #ffccc7',
+    borderRadius: '6px',
+    padding: '8px 12px',
+    margin: '4px 0',
+  },
+  overdueText: {
+    color: '#cf1322',
+    fontWeight: '600',
+  },
+  overdueSubtitle: {
+    color: '#a8071a',
+  },
 }));

@@ -4,6 +4,7 @@ export interface Task {
   description?: string;
   projectId: number;
   isCompleted: boolean;
+  startDate?: string;
   dueDate?: string;
   createdAt: string;
   updatedAt: string;

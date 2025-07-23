@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import {
   calculateTicketStats,
   getUpcomingDeadlines,
+  getOverdueDeadlines,
   calculateProductivityMetrics,
   type TicketStats,
   type DeadlineInfo,
@@ -119,6 +120,16 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     [userFilteredTasks, allProjects, currentUser?.id],
   );
 
+  const overdueDeadlines: DeadlineInfo[] = useMemo(
+    () =>
+      getOverdueDeadlines(
+        userFilteredTasks,
+        allProjects,
+        Number(currentUser?.id),
+      ),
+    [userFilteredTasks, allProjects, currentUser?.id],
+  );
+
   const productivityMetrics: ProductivityMetrics = useMemo(() => {
     if (!currentUser?.id)
       return {
@@ -173,9 +184,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     title: deadline.title,
     subtitle: `${deadline.projectName ? `${deadline.projectName} • ` : ''}${dayjs(deadline.dueDate).format('MMM DD, YYYY')}`,
     tag: {
-      text: deadline.priority.toUpperCase(),
-      color: getPriorityColor(deadline.priority),
+      text: deadline.isOverdue ? 'OVERDUE' : deadline.priority.toUpperCase(),
+      color: deadline.isOverdue
+        ? '#ff4d4f'
+        : getPriorityColor(deadline.priority),
     },
+    isOverdue: deadline.isOverdue,
+  }));
+
+  const overdueListData = overdueDeadlines.map((deadline) => ({
+    id: deadline.title,
+    title: deadline.title,
+    subtitle: `${deadline.projectName ? `${deadline.projectName} • ` : ''}${dayjs(deadline.dueDate).format('MMM DD, YYYY')}`,
+    tag: {
+      text: 'OVERDUE',
+      color: '#ff4d4f',
+    },
+    isOverdue: true,
   }));
 
   const projectHoursListData = userHoursByProject.map((project) => ({
@@ -229,6 +254,18 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           />
         </Col>
       </Row>
+
+      {overdueDeadlines.length > 0 && (
+        <Row gutter={[16, 16]}>
+          <Col xs={24}>
+            <ScrollableListCard
+              title="Overdue Deadlines"
+              data={overdueListData}
+              emptyMessage="No overdue deadlines"
+            />
+          </Col>
+        </Row>
+      )}
     </DashboardLayout>
   );
 };

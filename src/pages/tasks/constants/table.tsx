@@ -47,6 +47,14 @@ export const createColumns = (): FilterColumn<Task>[] => [
     ),
   },
   {
+    title: 'Start Date',
+    dataIndex: 'startDate',
+    key: 'startDate',
+    sorter: true,
+    render: (date?: string) => formatTableDate(date),
+    filterType: 'date',
+  },
+  {
     title: 'Due Date',
     dataIndex: 'dueDate',
     key: 'dueDate',

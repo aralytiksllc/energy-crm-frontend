@@ -178,6 +178,7 @@ export interface DeadlineInfo {
   priority: 'high' | 'medium' | 'low';
   type: 'task' | 'planning';
   projectName?: string;
+  isOverdue?: boolean;
 }
 
 export interface ProductivityMetrics {
@@ -271,7 +272,10 @@ export const getUpcomingDeadlines = (
     })
     .forEach((task) => {
       const dueDate = dayjs(task.dueDate);
-      if (dueDate.isBefore(cutoffDate)) {
+      const isOverdue = dueDate.isBefore(dayjs(), 'day');
+
+      // Include both upcoming and overdue deadlines
+      if (dueDate.isBefore(cutoffDate) || isOverdue) {
         const project = projects.find((p) => p.id === task.projectId);
         deadlines.push({
           title: task.title,
@@ -281,11 +285,64 @@ export const getUpcomingDeadlines = (
             'medium',
           type: 'task',
           projectName: project?.name,
+          isOverdue,
         });
       }
     });
 
   return deadlines
+    .sort((a, b) => {
+      // Sort overdue items first, then by due date
+      if (a.isOverdue && !b.isOverdue) return -1;
+      if (!a.isOverdue && b.isOverdue) return 1;
+      return dayjs(a.dueDate).diff(dayjs(b.dueDate));
+    })
+    .slice(0, 10); // Increased limit to show more items including overdue
+};
+
+export const getOverdueDeadlines = (
+  tasks: Task[],
+  projects: IProject[] = [],
+  userId?: number,
+): DeadlineInfo[] => {
+  const overdueDeadlines: DeadlineInfo[] = [];
+
+  tasks
+    .filter((task) => {
+      // Exclude completed tasks
+      const isTaskCompleted =
+        task.isCompleted || task.status?.toLowerCase() === 'done';
+      if (isTaskCompleted) return false;
+
+      // Must have a due date and be overdue
+      if (!task.dueDate) return false;
+      if (!dayjs(task.dueDate).isBefore(dayjs(), 'day')) return false;
+
+      // If userId is provided, only show tasks assigned to this user
+      if (userId) {
+        const isAssignedToUser = task.assignees?.some(
+          (assignee) => assignee.userId === userId,
+        );
+        if (!isAssignedToUser) return false;
+      }
+
+      return true;
+    })
+    .forEach((task) => {
+      const project = projects.find((p) => p.id === task.projectId);
+      overdueDeadlines.push({
+        title: task.title,
+        dueDate: task.dueDate!,
+        priority:
+          (task.priority?.toLowerCase() as 'high' | 'medium' | 'low') ||
+          'medium',
+        type: 'task',
+        projectName: project?.name,
+        isOverdue: true,
+      });
+    });
+
+  return overdueDeadlines
     .sort((a, b) => dayjs(a.dueDate).diff(dayjs(b.dueDate)))
     .slice(0, 5);
 };

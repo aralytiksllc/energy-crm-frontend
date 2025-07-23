@@ -22,4 +22,36 @@ export const rules: TaskFormRules = {
       message: 'Please select a type',
     },
   ],
+  startDate: [
+    {
+      validator: async (_: any, value: any, context: any) => {
+        if (!value) return Promise.resolve();
+
+        const dueDate = context.getFieldValue?.('dueDate');
+        if (dueDate && value && value.isAfter(dueDate)) {
+          return Promise.reject(
+            new Error('Start date cannot be after due date'),
+          );
+        }
+
+        return Promise.resolve();
+      },
+    },
+  ],
+  dueDate: [
+    {
+      validator: async (_: any, value: any, context: any) => {
+        if (!value) return Promise.resolve();
+
+        const startDate = context.getFieldValue?.('startDate');
+        if (startDate && value && value.isBefore(startDate)) {
+          return Promise.reject(
+            new Error('Due date cannot be before start date'),
+          );
+        }
+
+        return Promise.resolve();
+      },
+    },
+  ],
 };

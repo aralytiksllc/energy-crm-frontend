@@ -14,6 +14,7 @@ interface ListItem {
     color: string;
   };
   rightContent?: React.ReactNode;
+  isOverdue?: boolean;
 }
 
 interface ScrollableListCardProps {
@@ -38,14 +39,30 @@ export const ScrollableListCard: React.FC<ScrollableListCardProps> = ({
             dataSource={data}
             renderItem={(item) => (
               <List.Item>
-                <div className={styles.itemContainer}>
+                <div
+                  className={cx(
+                    styles.itemContainer,
+                    item.isOverdue && styles.overdueItem,
+                  )}
+                >
                   <div className={styles.itemContent}>
                     <div>
-                      <Text strong>{item.title}</Text>
+                      <Text
+                        strong
+                        className={item.isOverdue ? styles.overdueText : ''}
+                      >
+                        {item.title}
+                      </Text>
                       {item.subtitle && (
                         <>
                           <br />
-                          <Text type="secondary" className={styles.subtitle}>
+                          <Text
+                            type="secondary"
+                            className={cx(
+                              styles.subtitle,
+                              item.isOverdue && styles.overdueSubtitle,
+                            )}
+                          >
                             {item.subtitle}
                           </Text>
                         </>

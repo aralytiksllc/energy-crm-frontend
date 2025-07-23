@@ -95,17 +95,36 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         </Col>
       </Row>
 
-      <Form.Item
-        name="dueDate"
-        label="Due Date"
-        getValueProps={DayjsTransformer.toValueProps}
-        normalize={DayjsTransformer.toNormalizedDate}
-      >
-        <DatePicker
-          className={styles.fullWidthDatePicker}
-          format="DD-MM-YYYY"
-        />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item
+            name="startDate"
+            label="Start Date"
+            getValueProps={DayjsTransformer.toValueProps}
+            normalize={DayjsTransformer.toNormalizedDate}
+          >
+            <DatePicker
+              className={styles.fullWidthDatePicker}
+              format="DD-MM-YYYY"
+              placeholder="Select start date"
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="dueDate"
+            label="Due Date"
+            getValueProps={DayjsTransformer.toValueProps}
+            normalize={DayjsTransformer.toNormalizedDate}
+          >
+            <DatePicker
+              className={styles.fullWidthDatePicker}
+              format="DD-MM-YYYY"
+              placeholder="Select due date"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Form.List name="assignees">
         {(fields, { add, remove }) => (
