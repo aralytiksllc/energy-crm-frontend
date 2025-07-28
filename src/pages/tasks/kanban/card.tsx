@@ -172,7 +172,7 @@ export const KanbanCard = ({ task, onClick, onDelete }: KanbanCardProps) => {
                   count: 3,
                   style: {
                     color: 'black',
-                    backgroundColor: '#fff7e6',
+                    backgroundColor: 'var(--color-bg-avatar-group)',
                     fontWeight: 400,
                   },
                 }}

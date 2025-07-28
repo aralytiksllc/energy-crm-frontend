@@ -5,7 +5,16 @@ import {
   type CalendarCellProps,
   type CalendarAssignment,
 } from './calendar.types';
-import { createStyles } from './calendar.styles';
+import {
+  useCalendarStyles,
+  getSpanningAssignmentItemStyles,
+  getAvatarStyles,
+  getPriorityIndicatorStyles,
+  getStatusIndicatorStyles,
+  getSingleDayContainerStyles,
+  getAssignmentItemStyles,
+  getCancelledTextStyles,
+} from './calendar.styles';
 
 const CalendarCell: React.FC<CalendarCellProps> = ({
   date,
@@ -15,7 +24,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   onAssignmentClick,
   assignmentRows = {},
 }) => {
-  const { styles, cx } = createStyles();
+  const { styles, cx } = useCalendarStyles({ minHeight: 0 });
   const defaultUserColor = '#1677ff';
   const defaultTextColor = '#fff';
 
@@ -135,13 +144,14 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
             className={cx(
               styles.spanningAssignmentItem,
               `assignment-${position}`,
+              getSpanningAssignmentItemStyles(
+                userColor,
+                textColor,
+                assignment.status === 'cancelled' ? 0.5 : 1,
+              ),
             )}
             style={{
               top: `${4 + rowIndex * 24}px`,
-              backgroundColor: userColor,
-              borderColor: userColor,
-              color: textColor,
-              opacity: assignment.status === 'cancelled' ? 0.5 : 1,
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -152,8 +162,10 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
               <Avatar
                 size={16}
                 src={user.avatar}
-                className={styles.avatar}
-                style={{ backgroundColor: userColor, color: textColor }}
+                className={cx(
+                  styles.avatar,
+                  getAvatarStyles(userColor, textColor),
+                )}
               >
                 {user.firstName?.[0]}
                 {user.lastName?.[0]}
@@ -165,8 +177,8 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
                 assignment.status === 'cancelled'
                   ? styles.cancelledText
                   : styles.assignmentText,
+                getCancelledTextStyles(textColor),
               )}
-              style={{ color: textColor }}
             >
               {position === 'start' && user
                 ? `${user.firstName} ${user.lastName}`
@@ -178,10 +190,12 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
             </span>
             {position === 'start' && assignment.priority === 'high' && (
               <div
-                className={styles.priorityIndicator}
-                style={{
-                  backgroundColor: getPriorityColor(assignment.priority),
-                }}
+                className={cx(
+                  styles.priorityIndicator,
+                  getPriorityIndicatorStyles(
+                    getPriorityColor(assignment.priority),
+                  ),
+                )}
               />
             )}
           </div>
@@ -189,10 +203,19 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
       })}
 
       <div
-        className={styles.singleDayAssignmentsContainer}
-        style={{
-          marginTop: `${spanningAssignments.length > 0 ? (Math.max(...spanningAssignments.map((a) => assignmentRows[a.id] ?? 0)) + 1) * 24 + 8 : 8}px`,
-        }}
+        className={cx(
+          styles.singleDayAssignmentsContainer,
+          getSingleDayContainerStyles(
+            spanningAssignments.length > 0
+              ? (Math.max(
+                  ...spanningAssignments.map((a) => assignmentRows[a.id] ?? 0),
+                ) +
+                  1) *
+                  24 +
+                  8
+              : 8,
+          ),
+        )}
       >
         {singleDayAssignments.map((assignment) => {
           const user = getUserInfo(assignment.userId);
@@ -203,15 +226,15 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
           return (
             <div
               key={`single-${assignment.id}`}
-              className={styles.assignmentItem}
-              style={{
-                backgroundColor: userColor,
-                borderColor: userColor,
-                borderLeftWidth: assignment.priority === 'high' ? '3px' : '1px',
-                borderLeftColor: priorityColor,
-                color: textColor,
-                opacity: assignment.status === 'cancelled' ? 0.5 : 1,
-              }}
+              className={cx(
+                styles.assignmentItem,
+                getAssignmentItemStyles(
+                  userColor,
+                  textColor,
+                  priorityColor,
+                  assignment.status === 'cancelled' ? 0.5 : 1,
+                ),
+              )}
               onClick={(e) => {
                 e.stopPropagation();
                 onAssignmentClick?.(assignment);
@@ -221,8 +244,10 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
                 <Avatar
                   size={16}
                   src={user.avatar}
-                  className={styles.avatar}
-                  style={{ backgroundColor: userColor, color: textColor }}
+                  className={cx(
+                    styles.avatar,
+                    getAvatarStyles(userColor, textColor),
+                  )}
                 >
                   {user.firstName?.[0]}
                   {user.lastName?.[0]}
@@ -234,18 +259,18 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
                   assignment.status === 'cancelled'
                     ? styles.cancelledText
                     : styles.assignmentText,
+                  getCancelledTextStyles(textColor),
                 )}
-                style={{ color: textColor }}
               >
                 {user
                   ? `${user.firstName} ${user.lastName}`
                   : assignment.title || 'Assignment'}
               </span>
               <div
-                className={styles.statusIndicator}
-                style={{
-                  backgroundColor: statusColor,
-                }}
+                className={cx(
+                  styles.statusIndicator,
+                  getStatusIndicatorStyles(statusColor),
+                )}
               />
             </div>
           );

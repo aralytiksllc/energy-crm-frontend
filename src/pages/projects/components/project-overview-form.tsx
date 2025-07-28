@@ -5,7 +5,6 @@ import {
   InputNumber,
   Select,
   DatePicker,
-  Switch,
   Row,
   Col,
   FormProps,
@@ -16,6 +15,9 @@ import { ProjectPriority } from '@interfaces/project-priority.enum';
 import { Wysiwyg } from '@components/rich-text-editor';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { RemoteSelect } from '@components/remote-select';
+import { ActiveSwitch } from '@components/active-switch';
+import { rules } from './project-overview-form.rules';
+import { useProjectOverviewFormStyles } from './project-overview-form.styles';
 
 const statusOptions = Object.values(ProjectStatus).map((status) => ({
   label: status,
@@ -32,13 +34,10 @@ export interface ProjectOverviewFormProps {
 }
 
 export const ProjectOverviewForm: React.FC<ProjectOverviewFormProps> = () => {
+  const { styles } = useProjectOverviewFormStyles();
   return (
     <>
-      <Form.Item
-        name="customerId"
-        label="Customer"
-        rules={[{ required: true, message: 'Please select a customer' }]}
-      >
+      <Form.Item name="customerId" label="Customer" rules={rules.customerId}>
         <RemoteSelect
           resource="customers"
           optionValue="id"
@@ -47,40 +46,36 @@ export const ProjectOverviewForm: React.FC<ProjectOverviewFormProps> = () => {
         />
       </Form.Item>
 
-      <Form.Item name="name" label="Project Name" rules={[{ required: true }]}>
+      <Form.Item name="name" label="Project Name" rules={rules.name}>
         <Input placeholder="Enter project name" />
       </Form.Item>
 
       <Form.Item
         name="description"
         label="Description"
-        rules={[{ required: true }]}
+        rules={rules.description}
       >
         <Wysiwyg />
       </Form.Item>
 
-      <Form.Item name="budget" label="Budget" rules={[{ required: true }]}>
+      <Form.Item name="budget" label="Budget" rules={rules.budget}>
         <InputNumber
           placeholder="Enter budget amount"
           min={0}
           precision={2}
           prefix="€"
-          style={{ width: '100%' }}
+          className={styles.fullWidth}
         />
       </Form.Item>
 
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item name="status" label="Status" rules={[{ required: true }]}>
+          <Form.Item name="status" label="Status" rules={rules.status}>
             <Select placeholder="Select status" options={statusOptions} />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            name="priority"
-            label="Priority"
-            rules={[{ required: true }]}
-          >
+          <Form.Item name="priority" label="Priority" rules={rules.priority}>
             <Select placeholder="Select priority" options={priorityOptions} />
           </Form.Item>
         </Col>
@@ -93,9 +88,9 @@ export const ProjectOverviewForm: React.FC<ProjectOverviewFormProps> = () => {
             label="Start Date"
             getValueProps={DayjsTransformer.toValueProps}
             normalize={DayjsTransformer.toNormalizedDate}
-            rules={[{ required: true }]}
+            rules={rules.startDate}
           >
-            <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
+            <DatePicker className={styles.fullWidth} format="DD-MM-YYYY" />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -105,7 +100,7 @@ export const ProjectOverviewForm: React.FC<ProjectOverviewFormProps> = () => {
             getValueProps={DayjsTransformer.toValueProps}
             normalize={DayjsTransformer.toNormalizedDate}
           >
-            <DatePicker style={{ width: '100%' }} format="DD-MM-YYYY" />
+            <DatePicker className={styles.fullWidth} format="DD-MM-YYYY" />
           </Form.Item>
         </Col>
       </Row>
@@ -144,7 +139,7 @@ export const ProjectOverviewForm: React.FC<ProjectOverviewFormProps> = () => {
         name="isPrivate"
         valuePropName="checked"
       >
-        <Switch />
+        <ActiveSwitch checkedLabel="Private" uncheckedLabel="Public" />
       </Form.Item>
     </>
   );

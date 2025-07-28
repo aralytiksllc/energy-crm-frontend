@@ -1,10 +1,22 @@
 import React from 'react';
-import { Form, Input, DatePicker, Row, Col, Button, Space, Switch } from 'antd';
+import {
+  Form,
+  Input,
+  DatePicker,
+  Row,
+  Col,
+  Button,
+  Space,
+  Switch,
+  Select,
+} from 'antd';
 import { useCreate } from '@refinedev/core';
 import { UserSelect } from '@components/user-select/user-select';
-import { RemoteSelect } from '@components/remote-select';
+import { UserAvatar } from '@components/user-avatar';
 import { planningValidationRules } from '@modules/planning/validation';
 import type { IPlanningFormValues } from '@interfaces/planning';
+import type { IProject } from '@interfaces/project';
+import type { IUser } from '@interfaces/users';
 import dayjs from 'dayjs';
 
 const { TextArea } = Input;
@@ -12,11 +24,36 @@ const { TextArea } = Input;
 interface PlanningFormProps {
   onSuccess: () => void;
   onCancel: () => void;
+  filteredProjects?: IProject[];
+  users?: IUser[];
+  usersLoading?: boolean;
 }
 
-const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
+const PlanningForm: React.FC<PlanningFormProps> = ({
+  onSuccess,
+  onCancel,
+  filteredProjects = [],
+  users = [],
+  usersLoading = false,
+}) => {
   const [form] = Form.useForm();
   const { mutate: createPlanning, isLoading } = useCreate();
+
+  const renderUserOption = (user: IUser) => {
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    return (
+      <Space>
+        <UserAvatar user={user} size="small" />
+        {fullName}
+      </Space>
+    );
+  };
+
+  const getUserLabel = (user: IUser) => {
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  };
+
+  const getUserValue = (user: IUser) => user.id || 0;
 
   const handleSubmit = (values: IPlanningFormValues) => {
     const transformedValues = {
@@ -112,7 +149,17 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
               rules={planningValidationRules.assignedUserId}
               required
             >
-              <UserSelect placeholder="Select a user to assign" showSearch />
+              <UserSelect<IUser>
+                entities={users}
+                optionValue={getUserValue}
+                optionLabel={getUserLabel}
+                renderOption={renderUserOption}
+                renderLabel={renderUserOption}
+                searchText={getUserLabel}
+                loading={usersLoading}
+                placeholder="Select a user to assign"
+                showSearch
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -122,13 +169,17 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
               rules={planningValidationRules.projectId}
               required
             >
-              <RemoteSelect
-                resource="projects"
-                optionLabel="name"
-                optionValue="id"
+              <Select
                 placeholder="Select a project"
                 showSearch
-              />
+                optionFilterProp="children"
+              >
+                {filteredProjects.map((project) => (
+                  <Select.Option key={project.id} value={project.id}>
+                    {project.name}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
         </Row>
@@ -182,7 +233,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
         </Row>
 
         <Row gutter={[16, 16]}>
-          <Col xs={24} md={12}>
+          <Col xs={24}>
             <Form.Item
               label="Mark as Completed"
               name="isCompleted"
@@ -192,7 +243,10 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
               <Switch onChange={handleCompletedChange} />
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24}>
             <Form.Item
               label="Completed Date"
               name="completedDate"
@@ -209,14 +263,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
           </Col>
         </Row>
 
-        <Form.Item
-          style={{
-            marginBottom: 0,
-            marginTop: '24px',
-            paddingTop: '16px',
-            borderTop: '1px solid #f0f0f0',
-          }}
-        >
+        <Form.Item>
           <div
             style={{
               display: 'flex',
@@ -224,14 +271,12 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSuccess, onCancel }) => {
               justifyContent: 'flex-end',
             }}
           >
-            <Space>
-              <Button onClick={handleCancel} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button type="primary" htmlType="submit" loading={isLoading}>
-                Create Planning
-              </Button>
-            </Space>
+            <Button onClick={handleCancel} disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              Create Planning
+            </Button>
           </div>
         </Form.Item>
       </Form>

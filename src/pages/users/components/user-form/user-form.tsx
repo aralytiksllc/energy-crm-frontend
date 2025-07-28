@@ -1,26 +1,19 @@
-// External imports
-import * as React from 'react';
-import { Form, Input, DatePicker, Switch, Select } from 'antd';
+import { Form, Input, DatePicker, Select } from 'antd';
 import type { FormProps } from 'antd/lib/form';
-import { useSelect } from '@refinedev/antd';
+import { useGetIdentity } from '@refinedev/core';
 
-// Internal imports
 import type { IUser } from '@interfaces/users';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
-import { rules } from './user-form.rules';
+import { createRules } from './user-form.rules';
 import { Team } from '@interfaces/team.enum';
-import { UserRole } from '@interfaces/user-role.enum';
 import { useMemo } from 'react';
+import { RemoteSelect } from '@components/remote-select';
+import { ActiveSwitch } from '@components/active-switch';
 
 const teamOptions = Object.values(Team).map((team) => ({
   label: team,
   value: team,
-}));
-
-const roleOptions = Object.values(UserRole).map((role) => ({
-  label: role.charAt(0).toUpperCase() + role.slice(1),
-  value: role,
 }));
 
 interface UserFormProps {
@@ -32,21 +25,23 @@ export const UsersForm: React.FC<UserFormProps> = ({
   formProps,
   mode,
 }: UserFormProps) => {
-  const { selectProps } = useSelect({
-    resource: 'roles',
-    optionLabel: 'name',
-    optionValue: 'id',
-  });
+  const { data: currentUser } = useGetIdentity<IUser>();
 
-  const title = useMemo(() => {
-    if (mode === 'create') return 'Create User';
-    return 'Edit User';
-  }, [mode]);
+  const canManageRoles = useMemo(() => {
+    return (
+      currentUser?.role?.name === 'superadmin' ||
+      currentUser?.role?.name === 'manager'
+    );
+  }, [currentUser?.role?.name]);
+
+  const rules = useMemo(() => createRules(canManageRoles), [canManageRoles]);
 
   const { styles } = useStyles();
 
+  const formName = `user-form-${mode}`;
+
   return (
-    <Form {...formProps} layout="vertical" autoComplete="off">
+    <Form {...formProps} layout="vertical" autoComplete="off" name={formName}>
       <Form.Item
         label="First Name"
         name="firstName"
@@ -74,13 +69,16 @@ export const UsersForm: React.FC<UserFormProps> = ({
         <Input autoComplete="off" />
       </Form.Item>
 
-      <Form.Item
-        label="Role"
-        name="roleId"
-        rules={[{ required: true, message: 'Please select a role' }]}
-      >
-        <Select {...selectProps} placeholder="Select a role" />
-      </Form.Item>
+      {canManageRoles && (
+        <Form.Item label="Role" name="roleId" rules={rules.roleId}>
+          <RemoteSelect
+            resource="roles"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a role"
+          />
+        </Form.Item>
+      )}
 
       <Form.Item label="Team" name="team" className={styles.formItem}>
         <Select placeholder="Select a team" options={teamOptions} allowClear />
@@ -126,8 +124,13 @@ export const UsersForm: React.FC<UserFormProps> = ({
         <DatePicker className={styles.datePicker} />
       </Form.Item>
 
-      <Form.Item name="status" valuePropName="checked">
-        <Switch />
+      <Form.Item
+        label="Active Status"
+        name="isActive"
+        valuePropName="checked"
+        initialValue={mode === 'create' ? true : undefined}
+      >
+        <ActiveSwitch />
       </Form.Item>
     </Form>
   );

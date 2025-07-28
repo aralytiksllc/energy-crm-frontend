@@ -4,7 +4,7 @@ import type { AuthProvider } from '@refinedev/core';
 // Internal imports
 import type { IAuthResponse } from '@interfaces/authentication';
 import type { IUser } from '@interfaces/users';
-import type { IRolePermission } from '@interfaces/role';
+import type { IRolePermissionMapping } from '@interfaces/role';
 import { httpClient } from '@helpers/http-client';
 import { authStorage } from '@helpers/auth-storage';
 
@@ -19,9 +19,11 @@ export const authProvider: AuthProvider = {
 
       authStorage.set(data.accessToken);
 
+      const redirectTo = '/dashboard';
+
       return {
         success: true,
-        redirectTo: '/',
+        redirectTo,
       };
     } catch (error) {
       console.error('Login failed:', error);
@@ -37,6 +39,8 @@ export const authProvider: AuthProvider = {
 
   async logout() {
     authStorage.clear();
+    // Clear any URL state by redirecting to login explicitly
+    window.history.replaceState(null, '', '/login');
     return {
       success: true,
       redirectTo: '/login',
@@ -66,13 +70,22 @@ export const authProvider: AuthProvider = {
   },
 
   async getPermissions() {
-    const identity = (await this.getIdentity?.()) as IUser | null;
-    if (identity?.role?.rolePermissions) {
-      return identity.role.rolePermissions.map(
-        (rp: IRolePermission) => rp.permission.name,
-      );
+    const token = authStorage.get();
+    if (!token) {
+      return null;
     }
-    return [];
+
+    try {
+      const response = await httpClient.get('me');
+      const data = await response.json<IUser>();
+      return (
+        data.role?.rolePermissions?.map(
+          (rp: IRolePermissionMapping) => rp.permission.name,
+        ) || []
+      );
+    } catch (error) {
+      return null;
+    }
   },
 
   async getIdentity() {

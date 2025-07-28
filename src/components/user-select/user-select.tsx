@@ -1,53 +1,55 @@
 // External dependencies
 import React from 'react';
-import { Select, SelectProps, Space } from 'antd';
-import { useList } from '@refinedev/core';
-import type { IUser } from '@interfaces/users';
-import { UserAvatar } from '@components/user-avatar';
+import { Select } from 'antd';
+import type { BaseRecord } from '@refinedev/core';
 
-export const UserSelect: React.FC<SelectProps> = (props) => {
-  const { data, isLoading } = useList<IUser>({ resource: 'users' });
+// Internal dependencies
+import type { UserSelectProps } from './user-select.types';
 
-  const users = data?.data || [];
+export const UserSelect = <T extends BaseRecord>(props: UserSelectProps<T>) => {
+  const {
+    entities,
+    optionValue,
+    optionLabel,
+    renderOption,
+    renderLabel,
+    searchText,
+    loading,
+    ...restProps
+  } = props;
 
-  const options = users.map((user) => {
-    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  const options = entities.map((item: T) => {
+    const value = optionValue(item);
+    const label = optionLabel(item);
+    const searchValue = searchText ? searchText(item) : label;
+
     return {
-      value: user.id,
-      label: (
-        <Space>
-          <UserAvatar user={user} size="small" />
-          {fullName}
-        </Space>
-      ),
-      searchText: fullName,
-      title: fullName,
+      value,
+      label: renderOption ? renderOption(item) : label,
+      searchText: searchValue,
+      title: searchValue,
     };
   });
+
   const labelRender = (option: any) => {
-    const selectedUser = users.find((user) => user.id === option.value);
-    if (selectedUser) {
-      const fullName =
-        `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim();
-      return (
-        <Space>
-          <UserAvatar user={selectedUser} size="small" />
-          {fullName}
-        </Space>
-      );
+    const selectedItem = entities.find(
+      (item: T) => optionValue(item) === option.value,
+    );
+    if (selectedItem && renderLabel) {
+      return renderLabel(selectedItem);
     }
     return option.label;
   };
 
   return (
     <Select
-      loading={isLoading}
+      loading={loading}
       options={options}
-      labelRender={labelRender}
+      labelRender={renderLabel ? labelRender : undefined}
       filterOption={(input, option) =>
         (option?.searchText ?? '').toLowerCase().includes(input.toLowerCase())
       }
-      {...props}
+      {...restProps}
     />
   );
 };

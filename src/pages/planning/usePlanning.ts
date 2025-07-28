@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useList, useDelete } from '@refinedev/core';
+import { useList, useDelete, useGetIdentity } from '@refinedev/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { IUser } from '@interfaces/users';
 import { IProject } from '@interfaces/project';
@@ -38,10 +38,13 @@ export const usePlanning = () => {
   });
 
   const { mutate: deletePlanning, isLoading: deleteLoading } = useDelete();
+  const { data: currentUser } = useGetIdentity<IUser>();
 
   const users = usersData?.data || [];
   const projects = projectsData?.data || [];
   const plannings = planningsData?.data || [];
+
+  const roleFilteredPlannings = plannings;
 
   const calendarAssignments: PlanningAssignment[] = plannings.map(
     (planning) => ({
@@ -60,20 +63,26 @@ export const usePlanning = () => {
     }),
   );
 
+  const filteredProjects = projects;
+
   const filteredAssignments = calendarAssignments.filter((assignment) => {
     const projectMatch =
       selectedProject === 'all' || assignment.projectId === selectedProject;
+
     return projectMatch;
   });
 
-  const filteredProjects = projects;
-
-  const filteredPlanningsForDelete = plannings.filter((planning) => {
-    const projectMatch =
-      selectedProject === 'all' || planning.projectId === selectedProject;
-    const monthMatch = dayjs(planning.startDate).isSame(currentMonth, 'month');
-    return projectMatch && monthMatch;
-  });
+  const filteredPlanningsForDelete = roleFilteredPlannings.filter(
+    (planning) => {
+      const projectMatch =
+        selectedProject === 'all' || planning.projectId === selectedProject;
+      const monthMatch = dayjs(planning.startDate).isSame(
+        currentMonth,
+        'month',
+      );
+      return projectMatch && monthMatch;
+    },
+  );
 
   const handleDeletePlanning = (planningId: number) => {
     deletePlanning(
@@ -84,6 +93,11 @@ export const usePlanning = () => {
       {
         onSuccess: () => {
           message.success('Planning deleted successfully');
+          setSelectedDayAssignments((prev) =>
+            prev.filter(
+              (assignment) => assignment.id !== planningId.toString(),
+            ),
+          );
           refetchPlannings();
         },
         onError: (error) => {

@@ -13,13 +13,16 @@ import { ProjectMembersForm } from './project-members-form';
 import { ProjectAttachmentsForm } from './project-attachments-form';
 import { ProjectPagesForm } from './project-pages-form';
 import { ProjectCommentsForm } from './project-comments-form';
+import { IUser } from '@interfaces/users';
 
 export interface ProjectFormProps {
   formProps: FormProps;
+  users?: IUser[];
+  usersLoading?: boolean;
 }
 
 export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
-  const { formProps } = props;
+  const { formProps, users, usersLoading } = props;
   const [activeTab, setActiveTab] = useState<string>('overview');
 
   const tabs: GenericTabItem[] = [
@@ -33,7 +36,13 @@ export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
       key: 'members',
       label: 'Members',
       icon: <TeamOutlined />,
-      children: <ProjectMembersForm formProps={formProps} />,
+      children: (
+        <ProjectMembersForm
+          formProps={formProps}
+          users={users}
+          usersLoading={usersLoading}
+        />
+      ),
     },
     {
       key: 'attachments',

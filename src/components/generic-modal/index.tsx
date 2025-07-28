@@ -157,17 +157,11 @@ export const GenericModal: React.FC<GenericModalProps> = ({
         onCancel={onCancel}
         footer={footerButtons || defaultFooter}
         width={width}
-        destroyOnClose={destroyOnClose}
+        destroyOnHidden={destroyOnClose}
         className={className}
-        styles={{
-          header: {
-            borderBottom: '1px solid #f0f0f0',
-            paddingBottom: '16px',
-            marginBottom: '24px',
-          },
-          body: {
-            padding: '5px',
-          },
+        classNames={{
+          header: styles.modalHeader,
+          body: styles.modalBody,
         }}
       >
         <Spin spinning={loading}>{renderContent()}</Spin>

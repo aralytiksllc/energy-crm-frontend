@@ -1,9 +1,6 @@
 import { httpClient } from '@helpers/http-client';
-import type {
-  IProject,
-  CreateProjectDto,
-  UpdateProjectDto,
-} from '@modules/projects/types/types';
+import { AxiosResponse } from 'axios';
+import { CreateProjectDto, UpdateProjectDto, IProject } from '../types/types';
 
 export interface ProjectSummary {
   id: number;

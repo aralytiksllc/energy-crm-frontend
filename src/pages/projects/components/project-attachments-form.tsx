@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FormProps, Form, Typography, Alert } from 'antd';
 import type { UploadFile } from 'antd';
 import { FileUpload } from '@components/file-upload';
+import { useProjectAttachmentsFormStyles } from './project-attachments-form.styles';
 
 const { Title, Text } = Typography;
 
@@ -13,10 +14,9 @@ export const ProjectAttachmentsForm: React.FC<ProjectAttachmentsFormProps> = ({
   formProps,
 }) => {
   const [uploadingCount, setUploadingCount] = useState(0);
-  const [files, setFiles] = useState<UploadFile[]>([]);
+  const { styles } = useProjectAttachmentsFormStyles();
 
   const handleFilesChange = (newFiles: UploadFile[]) => {
-    setFiles(newFiles);
     formProps.form?.setFieldValue('attachments', newFiles);
 
     const uploading = newFiles.filter(
@@ -25,29 +25,26 @@ export const ProjectAttachmentsForm: React.FC<ProjectAttachmentsFormProps> = ({
     setUploadingCount(uploading);
   };
 
-  useEffect(() => {
-    const formFiles = formProps.form?.getFieldValue('attachments');
-    if (formFiles && formFiles.length > 0 && files.length === 0) {
-      setFiles(formFiles);
-    }
-  }, [formProps.form, files.length]);
+  const files = formProps.form?.getFieldValue('attachments') || [];
 
   return (
-    <div style={{ padding: '16px 0' }}>
-      <Title level={4} style={{ marginBottom: '16px' }}>
+    <div className={styles.container}>
+      <Title level={4} className={styles.title}>
         Project Attachments
       </Title>
-      <Text type="secondary" style={{ display: 'block', marginBottom: '16px' }}>
+      <Text type="secondary" className={styles.secondaryText}>
         Upload files related to this project such as documents, images, or other
         resources.
       </Text>
       {uploadingCount > 0 && (
         <Alert
-          message={`Uploading ${uploadingCount} file${uploadingCount > 1 ? 's' : ''}...`}
+          message={`Uploading ${uploadingCount} file${
+            uploadingCount > 1 ? 's' : ''
+          }...`}
           description="Please wait while your files are being uploaded. Do not close this window."
           type="info"
           showIcon
-          style={{ marginBottom: '16px' }}
+          className={styles.alert}
         />
       )}
 

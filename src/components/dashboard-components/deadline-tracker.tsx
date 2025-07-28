@@ -32,16 +32,21 @@ const getPriorityColor = (priority: 'high' | 'medium' | 'low'): string => {
   }
 };
 
-const getPriorityIcon = (priority: 'high' | 'medium' | 'low') => {
+const PriorityIcon: React.FC<{ priority: 'high' | 'medium' | 'low' }> = ({
+  priority,
+}) => {
+  const iconColor = getPriorityColor(priority);
+  const { styles } = useDeadlineTrackerStyles({ iconColor });
+
   switch (priority) {
     case 'high':
-      return <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />;
+      return <ExclamationCircleOutlined className={styles.icon} />;
     case 'medium':
-      return <ClockCircleOutlined style={{ color: '#faad14' }} />;
+      return <ClockCircleOutlined className={styles.icon} />;
     case 'low':
-      return <CalendarOutlined style={{ color: '#52c41a' }} />;
+      return <CalendarOutlined className={styles.icon} />;
     default:
-      return <CalendarOutlined style={{ color: '#d9d9d9' }} />;
+      return <CalendarOutlined className={styles.icon} />;
   }
 };
 
@@ -49,11 +54,56 @@ const isOverdue = (dueDate: string): boolean => {
   return dayjs(dueDate).isBefore(dayjs(), 'day');
 };
 
+const DeadlineItem: React.FC<{ deadline: DeadlineInfo }> = ({ deadline }) => {
+  const overdue = isOverdue(deadline.dueDate);
+  const priorityColor = getPriorityColor(deadline.priority);
+  const { styles } = useDeadlineTrackerStyles({ overdue, priorityColor });
+  const dueDate = dayjs(deadline.dueDate);
+  const relativeTimeStr = dueDate.fromNow();
+
+  return (
+    <List.Item className={styles.listItem}>
+      <div className={styles.fullWidth}>
+        <div className={styles.itemContainer}>
+          <div className={styles.itemContent}>
+            <div className={styles.itemHeader}>
+              <PriorityIcon priority={deadline.priority} />
+              <Text strong className={styles.title}>
+                {deadline.title}
+              </Text>
+              <Tag color={deadline.type === 'task' ? 'blue' : 'green'}>
+                {deadline.type}
+              </Tag>
+            </div>
+            {deadline.projectName && (
+              <Text type="secondary" className={styles.projectName}>
+                {deadline.projectName}
+              </Text>
+            )}
+          </div>
+          <div className={styles.itemRight}>
+            <Tooltip title={dueDate.format('MMM DD, YYYY')}>
+              <Text className={styles.dueDate}>
+                {overdue ? 'Overdue' : relativeTimeStr}
+              </Text>
+            </Tooltip>
+            <div>
+              <Tag className={styles.priorityTag}>
+                {deadline.priority.toUpperCase()}
+              </Tag>
+            </div>
+          </div>
+        </div>
+      </div>
+    </List.Item>
+  );
+};
+
 export const DeadlineTracker: React.FC<DeadlineTrackerProps> = ({
   deadlines,
   title = 'Upcoming Deadlines',
 }) => {
-  const { styles } = useDeadlineTrackerStyles();
+  const { styles } = useDeadlineTrackerStyles({});
 
   if (deadlines.length === 0) {
     return (
@@ -62,7 +112,7 @@ export const DeadlineTracker: React.FC<DeadlineTrackerProps> = ({
           <div className={styles.emptyContainer}>
             <Empty
               description="No upcoming deadlines"
-              style={{ padding: '20px 0' }}
+              className={styles.empty}
             />
           </div>
         </div>
@@ -77,72 +127,7 @@ export const DeadlineTracker: React.FC<DeadlineTrackerProps> = ({
           <List
             size="small"
             dataSource={deadlines}
-            renderItem={(deadline) => {
-              const overdue = isOverdue(deadline.dueDate);
-              const dueDate = dayjs(deadline.dueDate);
-              const relativeTimeStr = dueDate.fromNow();
-
-              return (
-                <List.Item className={styles.listItem}>
-                  <div style={{ width: '100%' }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-start',
-                      }}
-                    >
-                      <div style={{ flex: 1, marginRight: '8px' }}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            marginBottom: '4px',
-                          }}
-                        >
-                          {getPriorityIcon(deadline.priority)}
-                          <Text strong style={{ fontSize: '13px' }}>
-                            {deadline.title}
-                          </Text>
-                          <Tag
-                            color={deadline.type === 'task' ? 'blue' : 'green'}
-                          >
-                            {deadline.type}
-                          </Tag>
-                        </div>
-                        {deadline.projectName && (
-                          <Text type="secondary" style={{ fontSize: '11px' }}>
-                            {deadline.projectName}
-                          </Text>
-                        )}
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <Tooltip title={dueDate.format('MMM DD, YYYY')}>
-                          <Text
-                            style={{
-                              fontSize: '11px',
-                              color: overdue ? '#ff4d4f' : '#666',
-                              fontWeight: overdue ? 'bold' : 'normal',
-                            }}
-                          >
-                            {overdue ? 'Overdue' : relativeTimeStr}
-                          </Text>
-                        </Tooltip>
-                        <div>
-                          <Tag
-                            color={getPriorityColor(deadline.priority)}
-                            style={{ fontSize: '10px', marginTop: '2px' }}
-                          >
-                            {deadline.priority.toUpperCase()}
-                          </Tag>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </List.Item>
-              );
-            }}
+            renderItem={(deadline) => <DeadlineItem deadline={deadline} />}
           />
         </div>
       </div>

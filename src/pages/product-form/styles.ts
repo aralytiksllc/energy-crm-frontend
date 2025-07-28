@@ -27,4 +27,11 @@ export const useStyles = createStyles(({ token }) => ({
   inputNumber: {
     width: '100%',
   },
+  divider: {
+    margin: 0,
+  },
+  addButton: {
+    width: '100%',
+    marginTop: 8,
+  },
 }));

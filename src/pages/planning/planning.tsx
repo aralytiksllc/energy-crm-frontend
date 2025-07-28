@@ -130,6 +130,9 @@ export const Planning: React.FC = () => {
         <PlanningForm
           onSuccess={handleFormSuccess}
           onCancel={() => setFormDrawerVisible(false)}
+          filteredProjects={filteredProjects}
+          users={planningHook.users}
+          usersLoading={planningHook.usersLoading}
         />
       </Drawer>
 

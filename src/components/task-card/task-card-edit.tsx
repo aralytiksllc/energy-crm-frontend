@@ -9,10 +9,10 @@ import {
   Tag,
   Select,
 } from 'antd';
+import { cx } from 'antd-style';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import type { TaskCardEditProps, Task, TaskAssignee } from './task-card.types';
+import type { TaskCardEditProps, Task } from './task-card.types';
 import { TaskType } from '@interfaces/task-type.enum';
-import { IUser } from '@interfaces/users';
 import { UserSelector } from './user-selector';
 import dayjs from 'dayjs';
 import { useTaskCardEditStyles } from './task-card-edit.styles';
@@ -79,6 +79,23 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
     }
   };
 
+  const handleAssigneeChange = (selectedUserIds: number[]) => {
+    const newAssignees = selectedUserIds.map((userId) => {
+      const existingAssignee = editedTask.assignees?.find(
+        (a) => a.userId === userId,
+      );
+      return (
+        existingAssignee || {
+          userId,
+          taskId: editedTask.id,
+          estimatedHours: 0,
+          actualHours: 0,
+        }
+      );
+    });
+    handleFieldChange('assignees', newAssignees);
+  };
+
   const handleFieldEdit = (field: keyof Task) => {
     setIsEditing(field);
   };
@@ -118,7 +135,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
   };
 
   return (
-    <Card className={className} style={style} bodyStyle={{ padding: 16 }}>
+    <Card className={cx(styles.card, className)} style={style}>
       <div className={styles.header}>
         {isEditing === 'type' ? (
           renderEditableField(
@@ -127,7 +144,7 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
               value={editedTask.type}
               onChange={(value) => handleFieldChange('type', value)}
               options={taskTypeOptions}
-              style={{ width: 120 }}
+              className={styles.typeSelect}
               disabled={disabled}
             />,
           )
@@ -248,30 +265,27 @@ export const TaskCardEdit: React.FC<TaskCardEditProps> = ({
 
         {isEditing === 'assignees' ? (
           <div className={styles.assigneeContainer}>
-            {renderEditableField(
-              'assignees',
-              <UserSelector
-                value={
-                  editedTask.assignees?.map(
-                    (assignee: TaskAssignee) =>
-                      assignee.user?.id || assignee.userId,
-                  ) || []
-                }
-                onChange={(userIds: number[]) => {
-                  const selectedUsers = users.filter((user: IUser) =>
-                    userIds.includes(user.id),
-                  );
-                  const assignees = selectedUsers.map((user: IUser) => ({
-                    userId: user.id,
-                    estimatedHours: 0,
-                  }));
-                  handleFieldChange('assignees', assignees);
-                }}
-                users={users}
-                disabled={disabled}
-                placeholder="Select users"
-              />,
-              false,
+            {isEditing === 'assignees' ? (
+              renderEditableField(
+                'assignees',
+                <UserSelector
+                  users={users}
+                  value={editedTask.assignees?.map((a) => a.userId) || []}
+                  onChange={handleAssigneeChange}
+                  disabled={disabled}
+                />,
+                false,
+              )
+            ) : (
+              <Space
+                className={styles.assigneeDisplay}
+                onClick={() => handleFieldEdit('assignees')}
+              >
+                <span className={styles.assigneeIcon}>👥</span>
+                <span className={styles.assigneeText}>
+                  {editedTask.assignees?.length || 0} assigned
+                </span>
+              </Space>
             )}
           </div>
         ) : (

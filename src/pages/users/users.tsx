@@ -1,101 +1,72 @@
-// External imports
-import React, { useCallback, useState, useMemo } from 'react';
-import type { FormProps } from 'antd';
-import { LogicalFilter } from '@refinedev/core';
-
-// Internal imports
-import { IUser } from '@interfaces/users';
-import { Team } from '@interfaces/team.enum';
-import { UsersForm } from './components/user-form';
-import { columns } from './constants/table';
-import { CrudTable } from '@components/crud-table/crud-table';
-import { DropdownFilter } from '@components/dropdown-filter/dropdown-filter';
+import React, { useCallback, useMemo } from 'react';
+import { FormProps } from 'antd';
 import { useGetIdentity } from '@refinedev/core';
 
-const TEAM_OPTIONS = [
-  { label: 'All Teams', value: 'all' },
-  ...Object.values(Team).map((team) => ({
-    label: team,
-    value: team,
-  })),
-];
+import type { IUser } from '@interfaces/users';
+import { CrudTable } from '@components/crud-table/crud-table';
+import { UsersForm } from './components/user-form';
+import { createColumns } from './constants/table';
+import { ActionButtons } from '@components/action-buttons';
+import { usePermissions } from '@hooks/use-permissions';
+import { useUserRelationships } from '@hooks/use-user-relationships';
 
 export const Users: React.FC = () => {
-  const [teamFilter, setTeamFilter] = useState<LogicalFilter | undefined>(
-    undefined,
-  );
-
-  const handleTeamChange = (value: string) => {
-    if (value === 'all') {
-      setTeamFilter(undefined);
-    } else {
-      setTeamFilter({
-        field: 'team',
-        operator: 'eq',
-        value,
-      });
-    }
-  };
-
   const { data: identity } = useGetIdentity<IUser>();
+  const permissions = usePermissions({ resource: 'users' });
+  const userRelationships = useUserRelationships();
+
+  const tableColumns = useMemo(() => {
+    const allColumns = createColumns();
+
+    if (!permissions.hasActionsPermission) {
+      return allColumns.filter((column) => column.key !== 'actions');
+    }
+
+    return allColumns.map((col) => {
+      if (col.key === 'actions') {
+        return {
+          ...col,
+          render: (_: any, record: IUser) => (
+            <ActionButtons
+              resource="users"
+              recordId={record.id as number}
+              recordTitle={`${record.firstName} ${record.lastName}`}
+              relationshipInfo={userRelationships[record.id as number]}
+            />
+          ),
+        };
+      }
+      return col;
+    });
+  }, [permissions.hasActionsPermission, userRelationships]);
 
   const renderForm = useCallback((formProps: FormProps) => {
-    const { onFinish, ...restFormProps } = formProps;
     const isEdit = !!formProps?.initialValues?.id;
-
-    const handleFinish = async (values: any) => {
-      const transformedValues = { ...values };
-      if (!transformedValues.team || transformedValues.team === '') {
-        delete transformedValues.team;
-      }
-      if (
-        isEdit &&
-        (!transformedValues.password || transformedValues.password === '')
-      ) {
-        delete transformedValues.password;
-      }
-      if (onFinish) {
-        await onFinish(transformedValues);
-      }
-    };
-
     return (
-      <UsersForm
-        formProps={{ ...restFormProps, onFinish: handleFinish }}
-        mode={isEdit ? 'edit' : 'create'}
-      />
+      <UsersForm formProps={formProps} mode={isEdit ? 'edit' : 'create'} />
     );
   }, []);
 
   const permanentFilters = useMemo(() => {
-    const filters: LogicalFilter[] = [];
-    if (teamFilter) {
-      filters.push(teamFilter);
-    }
-    if (identity?.role === 'user') {
-      filters.push({
-        field: 'id',
-        operator: 'eq',
-        value: identity.id,
-      });
-    }
-    return filters;
-  }, [teamFilter, identity]);
+    const isAdminOrManager =
+      identity?.role?.name === 'superadmin' ||
+      identity?.role?.name === 'manager';
+
+    return isAdminOrManager ? [] : [];
+  }, [identity]);
 
   return (
-    <CrudTable<IUser>
+    <CrudTable<IUser & { id: number }>
       resource="users"
       renderForm={renderForm}
-      columns={columns}
-      headerActions={
-        <DropdownFilter options={TEAM_OPTIONS} onChange={handleTeamChange} />
-      }
-      permanentFilters={permanentFilters}
+      columns={tableColumns}
       drawerTitles={{
         create: 'Create User',
         edit: 'Edit User',
         view: 'User Details',
       }}
+      showCreateButton={permissions.canCreate}
+      permanentFilters={permanentFilters}
     />
   );
 };

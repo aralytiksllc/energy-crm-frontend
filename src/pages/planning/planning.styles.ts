@@ -165,7 +165,30 @@ export const createStyles = createAntdStyles(({ token }) => ({
   cardTitle: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
     gap: 8,
+  },
+
+  cardTitleContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  deleteIcon: {
+    color: 'var(--color-error)',
+    cursor: 'pointer',
+    fontSize: '14px',
+    marginLeft: 'auto',
+  },
+
+  cardSubtitleSpacing: {
+    marginTop: 8,
+  },
+
+  descriptionText: {
+    fontSize: '13px',
   },
 
   statusTag: {

@@ -2,8 +2,16 @@
 import type { AvatarProps } from 'antd';
 
 // Internal imports
-import type { IUser } from '@interfaces/users';
+
+export interface User {
+  id?: number | string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  avatar?: string;
+}
 
 export interface UserAvatarProps extends AvatarProps {
-  user: IUser;
+  user: User;
 }

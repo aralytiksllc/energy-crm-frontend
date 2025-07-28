@@ -1,24 +1,14 @@
-import React from 'react';
-import {
-  Drawer,
-  Typography,
-  Avatar,
-  Card,
-  Tag,
-  Empty,
-  List,
-  Popconfirm,
-  message,
-} from 'antd';
+import React, { useState } from 'react';
+import { Drawer, Typography, Tag, Empty, List, Popconfirm } from 'antd';
 import {
   ProjectOutlined,
   ClockCircleOutlined,
-  CheckCircleOutlined,
   UserOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
 import { EmailField, TextField } from '@refinedev/antd';
 import { Calendar } from '@components/calendar';
+import { ExpandableCard } from '@components/expandable-card';
 import { PlanningAssignment } from '../types';
 import { usePlanning } from '../usePlanning';
 import { createStyles } from '../planning.styles';
@@ -33,6 +23,12 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
   planningHook,
 }) => {
   const { styles } = createStyles();
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+
+  const toggleCardExpansion = (cardId: number) => {
+    setExpandedCard((prev) => (prev === cardId ? null : cardId));
+  };
+
   const {
     users,
     selectedDate,
@@ -42,7 +38,6 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
     projectsLoading,
     planningsLoading,
     filteredAssignments,
-    viewMode,
     setSelectedDate,
     setDrawerVisible,
     handleDayClick,
@@ -66,10 +61,14 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
       <div className={styles.calendarWrapper}>
         <Calendar
           assignments={filteredAssignments}
-          users={users.map((user) => ({
-            ...user,
-            avatar: user.avatar || undefined,
-          }))}
+          users={users
+            .filter((user) => user.id !== undefined)
+            .map((user) => ({
+              id: user.id as string | number,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              avatar: user.avatar || undefined,
+            }))}
           onDayClick={(date, assignments) =>
             handleDayClick(date, assignments as PlanningAssignment[])
           }
@@ -87,19 +86,24 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
         width={400}
         destroyOnHidden
       >
-        <div className={styles.drawerHeader}>
-          {selectedDayAssignments.length > 0 ? (
-            <List
-              itemLayout="vertical"
-              dataSource={selectedDayAssignments}
-              renderItem={(item: PlanningAssignment) => {
-                const project = getProjectInfo(item.projectId);
-                const user = getUserInfo(item.userId);
-                return (
-                  <List.Item
-                    key={item.id}
-                    extra={
-                      viewMode === 'manager' && (
+        {selectedDayAssignments.length > 0 ? (
+          <List
+            itemLayout="vertical"
+            dataSource={selectedDayAssignments}
+            split={false}
+            renderItem={(item: PlanningAssignment) => {
+              const project = getProjectInfo(item.projectId);
+              const user = getUserInfo(item.userId);
+              return (
+                <List.Item key={item.id}>
+                  <ExpandableCard<PlanningAssignment>
+                    data={item}
+                    title={
+                      <div className={styles.cardTitle}>
+                        <div className={styles.cardTitleContent}>
+                          <ProjectOutlined />
+                          <span>{project?.name || 'N/A'}</span>
+                        </div>
                         <Popconfirm
                           title="Are you sure to delete this planning?"
                           onConfirm={() =>
@@ -107,68 +111,71 @@ export const PlanningCalendarView: React.FC<PlanningCalendarViewProps> = ({
                           }
                           okText="Yes"
                           cancelText="No"
+                          placement="left"
                         >
-                          <DeleteOutlined
-                            style={{ color: 'red', cursor: 'pointer' }}
-                          />
+                          <DeleteOutlined className={styles.deleteIcon} />
                         </Popconfirm>
-                      )
-                    }
-                  >
-                    <Card
-                      style={{ marginBottom: 16 }}
-                      title={
-                        <div className={styles.cardTitle}>
-                          <ProjectOutlined /> {project?.name || 'N/A'}
-                        </div>
-                      }
-                    >
-                      <TextField value={item.title} />
-                      <div style={{ marginTop: 8 }}>
-                        <Tag
-                          color={getStatusColor(item.status || 'active')}
-                          className={styles.statusTag}
-                        >
-                          {item.status}
-                        </Tag>
-                        <Tag icon={<ClockCircleOutlined />} color="blue">
-                          {item.startDate &&
-                            new Date(item.startDate).toLocaleDateString()}{' '}
-                          -{' '}
-                          {item.endDate &&
-                            new Date(item.endDate).toLocaleDateString()}
-                        </Tag>
-                        {item.isCompleted && (
-                          <Tag icon={<CheckCircleOutlined />} color="green">
-                            Completed
-                          </Tag>
-                        )}
                       </div>
-                      <div className={styles.userInfo}>
-                        <Avatar
-                          size="small"
-                          src={user?.avatar}
-                          icon={<UserOutlined />}
-                        />
-                        <div className={styles.userDetails}>
+                    }
+                    subtitle={
+                      <div>
+                        <TextField value={item.title} />
+                        <div className={styles.cardSubtitleSpacing}>
+                          <Tag
+                            color={getStatusColor(item.status || 'active')}
+                            className={styles.statusTag}
+                          >
+                            {item.status}
+                          </Tag>
+                          <Tag icon={<ClockCircleOutlined />} color="blue">
+                            {item.startDate &&
+                              new Date(
+                                item.startDate,
+                              ).toLocaleDateString()}{' '}
+                            -{' '}
+                            {item.endDate &&
+                              new Date(item.endDate).toLocaleDateString()}
+                          </Tag>
+                        </div>
+                        <div className={styles.cardSubtitleSpacing}>
                           <Text strong>
                             {user?.firstName} {user?.lastName}
                           </Text>
+                          <br />
                           <EmailField value={user?.email} />
                         </div>
                       </div>
-                    </Card>
-                  </List.Item>
-                );
-              }}
-            />
-          ) : (
-            <Empty
-              description="No planning entries for this day."
-              className={styles.emptyState}
-            />
-          )}
-        </div>
+                    }
+                    avatar={{
+                      src: user?.avatar,
+                      icon: <UserOutlined />,
+                      size: 'small',
+                    }}
+                    expandableContent={
+                      item.description && (
+                        <Text
+                          type="secondary"
+                          className={styles.descriptionText}
+                        >
+                          {item.description}
+                        </Text>
+                      )
+                    }
+                    controlled={{
+                      expanded: expandedCard === (item.id as number),
+                      onToggle: () => toggleCardExpansion(item.id as number),
+                    }}
+                  />
+                </List.Item>
+              );
+            }}
+          />
+        ) : (
+          <Empty
+            description="No planning entries for this day."
+            className={styles.emptyState}
+          />
+        )}
       </Drawer>
     </>
   );

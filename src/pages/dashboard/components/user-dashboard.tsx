@@ -1,115 +1,133 @@
-import React, { useMemo, useState } from 'react';
-import {
-  Row,
-  Col,
-  Card,
-  Space,
-  Typography,
-  Spin,
-  DatePicker,
-  Select,
-} from 'antd';
-import { useList, useGetIdentity } from '@refinedev/core';
+import React, { useMemo } from 'react';
+
+import { Row, Col } from 'antd';
 import { IUser, IPlanning, IProject, ICustomer, Task } from '@interfaces/index';
-import dayjs, { Dayjs } from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 
 import {
-  getDateRangeFromFilter,
-  filterDataByDateRange,
-  calculateDashboardStats,
-  processClientHours,
-  processProjectHours,
-  calculateLegacyTicketStats,
   calculateTicketStats,
   getUpcomingDeadlines,
+  getOverdueDeadlines,
   calculateProductivityMetrics,
   type TicketStats,
   type DeadlineInfo,
   type ProductivityMetrics,
 } from '../utils';
-import { ManagerStatsCards } from './ManagerStatsCards';
-import { UserStatsCards } from './UserStatsCards';
-import { ClientHoursPieChart } from './ClientHoursPieChart';
-import { ProjectHoursBarChart } from './ProjectHoursBarChart';
-import { LegacyTicketStats } from './LegacyTicketStats';
+import { useDateFilter } from '../hooks/use-date-filter';
+import {
+  DashboardLayout,
+  StatsCards,
+  TaskProgressCard,
+  ProductivityCard,
+  ScrollableListCard,
+} from './common';
+import {
+  DASHBOARD_CONSTANTS,
+  PRIORITY_COLORS,
+  STAT_CARD_COLORS,
+} from '../constants/dashboard.constants';
 import { useUserDashboardStyles } from './user-dashboard.styles';
 
-dayjs.extend(isBetween);
+interface UserDashboardProps {
+  currentUser?: IUser;
+  plannings?: IPlanning[];
+  tasks?: Task[];
+  projects?: IProject[];
+  customers?: ICustomer[];
+}
 
-const { Title, Text } = Typography;
-const { RangePicker } = DatePicker;
+export const UserDashboard: React.FC<UserDashboardProps> = ({
+  currentUser,
+  tasks,
+  projects,
+}) => {
+  const { styles } = useUserDashboardStyles();
+  const allTasks = tasks || [];
+  const allProjects = projects || [];
 
-export const UserDashboard: React.FC = () => {
-  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
-  const [quickFilter, setQuickFilter] = useState<string>('month');
+  const {
+    quickFilter,
+    dateRange,
+    filteredData: filteredTasks,
+    handleQuickFilterChange,
+    handleDateRangeChange,
+  } = useDateFilter(allTasks);
 
-  const { data: currentUser, isLoading: userLoading } = useGetIdentity<IUser>();
+  const userFilteredTasks = useMemo(() => {
+    if (!currentUser?.id) return [];
+    return filteredTasks.filter((task: Task) =>
+      task.assignees?.some(
+        (assignee: any) => assignee.userId === currentUser.id,
+      ),
+    );
+  }, [filteredTasks, currentUser?.id]);
 
-  const { data: planningsData, isLoading: planningsLoading } =
-    useList<IPlanning>({ resource: 'plannings', pagination: { mode: 'off' } });
-  const { data: tasksData, isLoading: tasksLoading } = useList<Task>({
-    resource: 'tasks',
-    pagination: { mode: 'off' },
-  });
-  const { data: projectsData, isLoading: projectsLoading } = useList<IProject>({
-    resource: 'projects',
-    pagination: { mode: 'off' },
-  });
-  const { data: customersData, isLoading: customersLoading } =
-    useList<ICustomer>({
-      resource: 'customers',
-      pagination: { mode: 'off' },
-    });
+  const userHoursByProject = useMemo(() => {
+    if (!currentUser?.id) return [];
 
-  const allPlannings = planningsData?.data || [];
-  const allTasks = tasksData?.data || [];
-  const allProjects = projectsData?.data || [];
-  const allCustomers = customersData?.data || [];
+    const userProjects = allProjects.filter((project) =>
+      userFilteredTasks.some((task: Task) => task.projectId === project.id),
+    );
 
-  const currentDateRange = useMemo(
-    () => getDateRangeFromFilter(quickFilter, dateRange),
-    [quickFilter, dateRange],
-  );
+    return userProjects
+      .map((project) => {
+        const projectTasks = userFilteredTasks.filter(
+          (task: Task) => task.projectId === project.id,
+        );
 
-  const filteredTasks = useMemo(
-    () => filterDataByDateRange(allTasks, currentDateRange),
-    [allTasks, currentDateRange],
-  );
+        const plannedHours = projectTasks.reduce(
+          (total: number, task: Task) => {
+            const userAssignee = task.assignees?.find(
+              (assignee: any) => assignee.userId === Number(currentUser.id),
+            );
+            return total + (userAssignee?.estimatedHours || 0);
+          },
+          0,
+        );
 
-  const stats = useMemo(
-    () => calculateDashboardStats(allCustomers, allProjects, filteredTasks),
-    [allCustomers, allProjects, filteredTasks],
-  );
+        const actualHours = projectTasks.reduce((total: number, task: Task) => {
+          const userAssignee = task.assignees?.find(
+            (assignee: any) => assignee.userId === Number(currentUser.id),
+          );
+          return total + (userAssignee?.actualHours || 0);
+        }, 0);
 
-  const hoursByClient = useMemo(
-    () => processClientHours(allProjects, allCustomers, filteredTasks),
-    [allProjects, allCustomers, filteredTasks],
-  );
-
-  const hoursByProject = useMemo(
-    () => processProjectHours(allProjects, filteredTasks),
-    [allProjects, filteredTasks],
-  );
+        return {
+          name: project.name,
+          plannedHours,
+          actualHours,
+          totalHours: plannedHours + actualHours,
+        };
+      })
+      .filter((item) => item.totalHours > 0)
+      .sort((a, b) => b.totalHours - a.totalHours)
+      .slice(0, DASHBOARD_CONSTANTS.MAX_PROJECT_HOURS_DISPLAY);
+  }, [allProjects, userFilteredTasks, currentUser?.id]);
 
   const ticketStats: TicketStats = useMemo(
-    () =>
-      calculateTicketStats(
-        filteredTasks,
-        Number(currentUser?.id),
-        currentUser?.role?.name === 'manager',
-      ),
-    [filteredTasks, currentUser],
-  );
-
-  const legacyStats = useMemo(
-    () => calculateLegacyTicketStats(filteredTasks),
-    [filteredTasks],
+    () => calculateTicketStats(userFilteredTasks, Number(currentUser?.id)),
+    [userFilteredTasks, currentUser],
   );
 
   const upcomingDeadlines: DeadlineInfo[] = useMemo(
-    () => getUpcomingDeadlines(filteredTasks, allProjects),
-    [filteredTasks, allProjects],
+    () =>
+      getUpcomingDeadlines(
+        userFilteredTasks,
+        allProjects,
+        Number(currentUser?.id),
+        DASHBOARD_CONSTANTS.UPCOMING_DEADLINES_DAYS,
+      ),
+    [userFilteredTasks, allProjects, currentUser?.id],
+  );
+
+  const overdueDeadlines: DeadlineInfo[] = useMemo(
+    () =>
+      getOverdueDeadlines(
+        userFilteredTasks,
+        allProjects,
+        Number(currentUser?.id),
+      ),
+    [userFilteredTasks, allProjects, currentUser?.id],
   );
 
   const productivityMetrics: ProductivityMetrics = useMemo(() => {
@@ -124,218 +142,131 @@ export const UserDashboard: React.FC = () => {
         mostActiveProject: { name: 'N/A', hours: 0 },
       };
     return calculateProductivityMetrics(
-      filteredTasks,
+      userFilteredTasks,
       allProjects,
       Number(currentUser.id),
     );
-  }, [filteredTasks, allProjects, currentUser?.id]);
+  }, [userFilteredTasks, allProjects, currentUser?.id]);
 
-  const handleQuickFilterChange = (value: string) => {
-    setQuickFilter(value);
-    if (value !== 'custom') {
-      setDateRange(null);
-    }
-  };
-
-  const handleDateRangeChange = (dates: any) => {
-    setDateRange(dates ? [dates[0], dates[1]] : null);
-    setQuickFilter('custom');
-  };
-
-  const isLoading =
-    userLoading ||
-    planningsLoading ||
-    tasksLoading ||
-    projectsLoading ||
-    customersLoading;
-
-  const { styles } = useUserDashboardStyles();
-
-  if (isLoading) {
+  const getPriorityColor = (priority: string) => {
     return (
-      <div className={styles.loadingContainer}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  const renderProductivityReport = () => {
-    if (currentUser?.role?.name === 'manager') {
-      const { plannedHours, workedHours } = stats;
-      const percent =
-        plannedHours > 0 ? Math.round((workedHours / plannedHours) * 100) : 0;
-      const overworkedProject = hoursByProject.find(
-        (p) => p.actualHours > p.plannedHours,
-      );
-      return (
-        <Card title="Kohë reale: Raporti i produktivitetit">
-          <Typography.Paragraph>
-            Në këtë periudhë janë kryer <strong>{percent}%</strong> e orëve të
-            planifikuara.
-            {percent >= 100 ? ' Ekipi ka tejkaluar pritshmëritë!' : null}
-            <br />
-            <br />
-            {overworkedProject ? (
-              <>
-                <strong>Rekomandim:</strong> Rishiko prioritetet për projektin{' '}
-                <strong>{overworkedProject.name}</strong>, ku janë alokuar më
-                shumë orë ({overworkedProject.actualHours}) se sa është
-                planifikuar ({overworkedProject.plannedHours}).
-              </>
-            ) : (
-              <>
-                <strong>Rekomandim:</strong> Ekipi po performon mirë në të
-                gjitha projektet.
-              </>
-            )}
-          </Typography.Paragraph>
-        </Card>
-      );
-    }
-    return (
-      <Card title="Kohë reale: Raporti i produktivitetit personal">
-        <Typography.Paragraph>
-          {productivityMetrics.totalUserTasks > 0 ? (
-            <>
-              You have completed{' '}
-              <strong>{productivityMetrics.completedTasks}</strong> out of{' '}
-              <strong>{productivityMetrics.totalUserTasks}</strong> tasks.
-              {productivityMetrics.taskCompletionRate > 80
-                ? " Excellent work! You're exceeding expectations."
-                : productivityMetrics.taskCompletionRate > 60
-                  ? ' Good progress! Keep up the momentum.'
-                  : ' Consider prioritizing task completion to improve your efficiency.'}
-              <br />
-              <br />
-              <strong>Your Performance:</strong>
-              <ul>
-                <li>
-                  Most active project:{' '}
-                  <strong>
-                    {productivityMetrics.mostActiveProject?.name || 'N/A'}
-                  </strong>{' '}
-                  ({productivityMetrics.mostActiveProject?.hours || 0})
-                </li>
-                <li>
-                  Tasks due this week:{' '}
-                  <strong>{productivityMetrics.thisWeekTasks}</strong>
-                </li>
-                <li>
-                  Overdue tasks:{' '}
-                  <strong>{productivityMetrics.overdueTasks}</strong>
-                </li>
-              </ul>
-            </>
-          ) : (
-            <Text>No tasks assigned in the selected period.</Text>
-          )}
-        </Typography.Paragraph>
-      </Card>
+      PRIORITY_COLORS[
+        priority?.toLowerCase() as keyof typeof PRIORITY_COLORS
+      ] || PRIORITY_COLORS.default
     );
   };
+
+  const statsCards = [
+    {
+      title: 'My Tasks',
+      value: productivityMetrics.totalUserTasks,
+      color: STAT_CARD_COLORS.primary,
+    },
+    {
+      title: 'Completed',
+      value: productivityMetrics.completedTasks,
+      color: STAT_CARD_COLORS.success,
+    },
+    {
+      title: 'This Week',
+      value: productivityMetrics.thisWeekTasks,
+      color: STAT_CARD_COLORS.warning,
+    },
+    {
+      title: 'Overdue',
+      value: productivityMetrics.overdueTasks,
+      color: STAT_CARD_COLORS.danger,
+    },
+  ];
+
+  const deadlineListData = upcomingDeadlines.map((deadline) => ({
+    id: deadline.title,
+    title: deadline.title,
+    subtitle: `${deadline.projectName ? `${deadline.projectName} • ` : ''}${dayjs(deadline.dueDate).format('MMM DD, YYYY')}`,
+    tag: {
+      text: deadline.isOverdue ? 'OVERDUE' : deadline.priority.toUpperCase(),
+      color: deadline.isOverdue
+        ? '#ff4d4f'
+        : getPriorityColor(deadline.priority),
+    },
+    isOverdue: deadline.isOverdue,
+  }));
+
+  const overdueListData = overdueDeadlines.map((deadline) => ({
+    id: deadline.title,
+    title: deadline.title,
+    subtitle: `${deadline.projectName ? `${deadline.projectName} • ` : ''}${dayjs(deadline.dueDate).format('MMM DD, YYYY')}`,
+    tag: {
+      text: 'OVERDUE',
+      color: '#ff4d4f',
+    },
+    isOverdue: true,
+  }));
+
+  const projectHoursListData = userHoursByProject.map((project) => ({
+    id: project.name,
+    title: project.name,
+    subtitle: `Planned: ${project.plannedHours}h • Actual: ${project.actualHours}h`,
+    rightContent: (
+      <span className={styles.projectHoursValue}>{project.totalHours}h</span>
+    ),
+  }));
 
   return (
-    <Space direction="vertical" size="large" className={styles.verticalSpace}>
-      <Card>
-        <div className={styles.headerRow}>
-          <div>
-            <Title level={3}>
-              Welcome back, {currentUser?.firstName} {currentUser?.lastName}!
-            </Title>
-            <Text type="secondary">
-              {currentUser?.role?.name === 'manager' ? 'Manager' : 'User'}{' '}
-              Account
-            </Text>
-          </div>
-          <Space>
-            <Text strong>Time Period:</Text>
-            <Select
-              value={quickFilter}
-              onChange={handleQuickFilterChange}
-              style={{ width: 120 }}
-            >
-              <Select.Option value="week">This Week</Select.Option>
-              <Select.Option value="month">This Month</Select.Option>
-              <Select.Option value="year">This Year</Select.Option>
-              <Select.Option value="custom">Custom Range</Select.Option>
-            </Select>
-            {quickFilter === 'custom' && (
-              <RangePicker
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                format="MMM DD, YYYY"
-              />
-            )}
-          </Space>
-        </div>
-      </Card>
+    <DashboardLayout
+      currentUser={currentUser}
+      dashboardType="user"
+      quickFilter={quickFilter}
+      dateRange={dateRange}
+      onQuickFilterChange={handleQuickFilterChange}
+      onDateRangeChange={handleDateRangeChange}
+    >
+      <StatsCards stats={statsCards} />
 
-      {currentUser?.role?.name === 'manager' ? (
-        <ManagerStatsCards
-          activePlannings={allPlannings.filter((p) => !p.isCompleted).length}
-          totalProjects={stats.totalProjects}
-          plannedHours={stats.plannedHours}
-          workedHours={stats.workedHours}
-        />
-      ) : (
-        <UserStatsCards
-          activeTasks={
-            allTasks.filter(
-              (t) =>
-                !t.isCompleted &&
-                t.assignees?.some((a) => a.userId === Number(currentUser?.id)),
-            ).length
-          }
-          projectCount={
-            [
-              ...new Set(
-                allTasks
-                  .filter((t) =>
-                    t.assignees?.some(
-                      (a) => a.userId === Number(currentUser?.id),
-                    ),
-                  )
-                  .map((t) => t.projectId),
-              ),
-            ].length
-          }
-          completionRate={productivityMetrics.taskCompletionRate}
-          plannedHours={allTasks
-            .filter((task) =>
-              task.assignees?.some(
-                (assignee) => assignee.userId === Number(currentUser?.id),
-              ),
-            )
-            .reduce((total, task) => {
-              const userAssignee = task.assignees?.find(
-                (assignee) => assignee.userId === Number(currentUser?.id),
-              );
-              return total + (userAssignee?.estimatedHours || 0);
-            }, 0)}
-        />
-      )}
-
-      <Row gutter={24}>
-        <Col span={24}>
-          <Row gutter={16}>
-            <Col span={10}>
-              <ClientHoursPieChart
-                data={hoursByClient}
-                title="Shpërndarja e orëve për klient"
-              />
-            </Col>
-            <Col span={14}>
-              <ProjectHoursBarChart
-                data={hoursByProject}
-                title="Top 5 projektet sipas orëve të shpenzuara"
-              />
-            </Col>
-          </Row>
-          <LegacyTicketStats stats={legacyStats} />
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <TaskProgressCard
+            ticketStats={ticketStats}
+            title="My Task Progress"
+          />
+        </Col>
+        <Col xs={24} lg={12}>
+          <ProductivityCard
+            productivityMetrics={productivityMetrics}
+            title="My Productivity"
+          />
         </Col>
       </Row>
-      {renderProductivityReport()}
-    </Space>
+
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <ScrollableListCard
+            title="My Upcoming Deadlines"
+            data={deadlineListData}
+            emptyMessage="No upcoming deadlines"
+          />
+        </Col>
+        <Col xs={24} lg={12}>
+          <ScrollableListCard
+            title="My Project Hours"
+            data={projectHoursListData}
+            emptyMessage="No project hours available"
+          />
+        </Col>
+      </Row>
+
+      {overdueDeadlines.length > 0 && (
+        <Row gutter={[16, 16]}>
+          <Col xs={24}>
+            <ScrollableListCard
+              title="Overdue Deadlines"
+              data={overdueListData}
+              emptyMessage="No overdue deadlines"
+            />
+          </Col>
+        </Row>
+      )}
+    </DashboardLayout>
   );
 };
 

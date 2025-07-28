@@ -4,6 +4,7 @@ import { useDrawerForm, DeleteButton, List } from '@refinedev/antd';
 import { useDelete, useShow as useShowCore, HttpError } from '@refinedev/core';
 import { KanbanBoard } from '@components/kanban/kanban-board';
 import type { KanbanSection } from '@components/kanban/kanban-board.types';
+import { useCrudKanbanStyles } from './crud-kanban.styles';
 
 export interface CrudKanbanProps<TData extends { id: number; status: string }> {
   resource: string;
@@ -33,6 +34,7 @@ export function CrudKanban<TData extends { id: number; status: string }>({
   drawerTitles = {},
 }: CrudKanbanProps<TData>) {
   const { mutate: deleteItem } = useDelete();
+  const { styles } = useCrudKanbanStyles();
 
   const createForm = useDrawerForm<TData, HttpError, TData>({
     action: 'create',
@@ -54,7 +56,7 @@ export function CrudKanban<TData extends { id: number; status: string }>({
   const renderItemWithActions = (item: TData) => (
     <div>
       {renderItem(item)}
-      <Space style={{ marginTop: 8 }}>
+      <Space className={styles.actions}>
         <Button size="small" onClick={() => editForm.show(item.id)}>
           Edit
         </Button>
@@ -106,10 +108,12 @@ export function CrudKanban<TData extends { id: number; status: string }>({
         title={drawerTitles.view || 'Details'}
         width={drawerWidth}
         extra={
-          <DeleteButton
-            recordItemId={showId}
-            onSuccess={() => setShowId(undefined)}
-          />
+          showId && item ? (
+            <DeleteButton
+              recordItemId={showId}
+              onSuccess={() => setShowId(undefined)}
+            />
+          ) : null
         }
       >
         <DetailsComponent record={item as TData} />

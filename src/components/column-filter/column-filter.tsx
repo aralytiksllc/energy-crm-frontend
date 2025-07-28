@@ -9,7 +9,7 @@ export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
   column,
   setFilters,
 }) => {
-  const { styles } = useColumnFilterStyles();
+  const { styles, cx } = useColumnFilterStyles();
   const { dataIndex, filterType = 'text' } = column;
 
   const [filterValues, setFilterValues] = useState({
@@ -19,22 +19,36 @@ export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (
+      const isEmptyValue =
         filterValues.value === '' ||
         filterValues.value === null ||
-        filterValues.value === undefined
-      ) {
+        filterValues.value === undefined;
+
+      if (isEmptyValue) {
         setFilters([], 'replace');
-      } else if (dataIndex && filterValues.operator) {
-        const filter: LogicalFilter = {
-          field: dataIndex.toString(),
-          operator: filterValues.operator as any,
-          value: ['ilike', 'like'].includes(filterValues.operator)
-            ? `%${filterValues.value}%`
-            : filterValues.value,
-        };
-        setFilters([filter], 'replace');
+        return;
       }
+
+      if (!dataIndex || !filterValues.operator) {
+        return;
+      }
+
+      const field = Array.isArray(dataIndex)
+        ? dataIndex.join('.')
+        : dataIndex.toString();
+
+      const isLikeOperator = ['ilike', 'like'].includes(filterValues.operator);
+      const value = isLikeOperator
+        ? `%${filterValues.value}%`
+        : filterValues.value;
+
+      const filter: LogicalFilter = {
+        field,
+        operator: filterValues.operator as any,
+        value,
+      };
+
+      setFilters([filter], 'replace');
     }, 300);
 
     return () => clearTimeout(timeoutId);
@@ -78,33 +92,30 @@ export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
       case 'number':
         return (
           <InputNumber
-            className={styles.input}
+            className={cx(styles.input, styles.fullWidth)}
             placeholder="Enter value"
             value={filterValues.value as any}
             onChange={handleValueChange}
-            style={{ width: '100%' }}
           />
         );
       case 'date':
         return (
           <DatePicker
-            className={styles.input}
+            className={cx(styles.input, styles.fullWidth)}
             placeholder="Select date"
             value={filterValues.value as any}
             onChange={handleValueChange}
-            style={{ width: '100%' }}
           />
         );
       case 'text':
       default:
         return (
           <Input
-            className={styles.input}
+            className={cx(styles.input, styles.fullWidth)}
             placeholder="Type to filter..."
             value={filterValues.value}
             onChange={(e) => handleValueChange(e.target.value)}
             allowClear
-            style={{ width: '100%' }}
           />
         );
     }
@@ -114,11 +125,10 @@ export const ColumnFilter: FC<ColumnFilterProps<any>> = ({
     <div className={styles.container}>
       <Space direction="horizontal" size="small">
         <Select
-          className={styles.input}
+          className={cx(styles.input, styles.operatorSelect)}
           placeholder="Select operator"
           value={filterValues.operator}
           onChange={handleOperatorChange}
-          style={{ width: 120 }}
         >
           {operatorOptions.map((operator: { value: string; label: string }) => (
             <Select.Option key={operator.value} value={operator.value}>

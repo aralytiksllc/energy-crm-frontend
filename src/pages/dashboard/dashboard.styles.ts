@@ -35,8 +35,8 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   `,
 
   statCard: css`
-    background: #ffffff;
-    border: 1px solid #f0f0f0;
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     height: 160px;
@@ -58,7 +58,7 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
     .ant-statistic-title {
       font-size: 14px;
       margin-bottom: 8px;
-      color: #8c8c8c;
+      color: var(--color-text-secondary);
       font-weight: 500;
     }
 
@@ -66,13 +66,13 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
       margin-bottom: 8px;
 
       .ant-statistic-content-value {
-        color: #262626;
+        color: var(--color-text-primary);
         font-size: 28px;
         font-weight: bold;
       }
 
       .ant-statistic-content-suffix {
-        color: #262626;
+        color: var(--color-text-primary);
         font-size: 28px;
         font-weight: bold;
       }
@@ -80,7 +80,7 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   `,
 
   statCardText: css`
-    color: #8c8c8c;
+    color: var(--color-text-secondary);
     font-size: 12px;
     margin-top: 4px;
   `,
@@ -88,7 +88,7 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   chartCard: css`
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--color-border);
     height: 100%;
 
     .ant-card-head {
@@ -107,13 +107,13 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
 
   chartTitle: css`
     margin: 0;
-    color: #262626;
+    color: var(--color-text-primary);
     font-size: 16px;
     font-weight: 600;
   `,
 
   chartSubtitle: css`
-    color: #8c8c8c;
+    color: var(--color-text-secondary);
     font-size: 14px;
     margin-top: 4px;
     word-wrap: break-word;
@@ -125,7 +125,7 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   contentCard: css`
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--color-border);
     height: 100%;
 
     .ant-card-head {
@@ -145,12 +145,12 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   projectNameCell: css`
     .project-name {
       font-weight: 600;
-      color: #262626;
+      color: var(--color-text-primary);
       font-size: 14px;
     }
 
     .customer-name {
-      color: #8c8c8c;
+      color: var(--color-text-secondary);
       font-size: 12px;
       margin-top: 2px;
     }
@@ -159,7 +159,7 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   progressCell: css`
     .task-count {
       font-size: 12px;
-      color: #595959;
+      color: var(--color-text-light);
       margin-bottom: 4px;
     }
 
@@ -174,12 +174,12 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
       margin-bottom: 2px;
 
       .hours-label {
-        color: #8c8c8c;
+        color: var(--color-text-secondary);
       }
 
       .hours-value {
         font-weight: 600;
-        color: #262626;
+        color: var(--color-text-primary);
       }
     }
   `,
@@ -227,19 +227,19 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
 
   // Icon colors
   iconBlue: css`
-    color: #1890ff;
+    color: var(--color-primary);
   `,
 
   iconGreen: css`
-    color: #52c41a;
+    color: var(--color-success);
   `,
 
   iconYellow: css`
-    color: #faad14;
+    color: var(--color-warning);
   `,
 
   iconCyan: css`
-    color: #13c2c2;
+    color: var(--color-info);
   `,
 
   // Dark mode adjustments
@@ -287,19 +287,19 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   `,
 
   statIconPrimary: css`
-    color: #1890ff;
+    color: var(--color-primary);
   `,
 
   statIconSuccess: css`
-    color: #52c41a;
+    color: var(--color-success);
   `,
 
   statIconWarning: css`
-    color: #faad14;
+    color: var(--color-warning);
   `,
 
   statIconInfo: css`
-    color: #13c2c2;
+    color: var(--color-info);
   `,
 
   legendWrapper: css`
@@ -326,9 +326,118 @@ export const useDashboardStyles = createStyles(({ token, css }) => ({
   `,
 
   barChartLabel: css`
-    color: #262626;
+    color: var(--color-text-primary);
     font-weight: 600;
     font-size: 11px;
     text-align: left;
+  `,
+
+  spinnerContainer: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+  `,
+  statValueTrendUp: css`
+    color: var(--color-trend-up) !important;
+  `,
+
+  statValueTrendDown: css`
+    color: var(--color-trend-down) !important;
+  `,
+
+  statValuePrimary: css`
+    color: var(--color-primary) !important;
+  `,
+
+  statValueSuccess: css`
+    color: var(--color-success) !important;
+  `,
+
+  statValueTesting: css`
+    color: var(--color-task-testing) !important;
+  `,
+
+  legendColorBoxEnhanced: css`
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  `,
+
+  chartContainer: css`
+    height: 300px;
+    width: 100%;
+  `,
+
+  scrollableContainer: css`
+    overflow-y: auto;
+    overflow-x: hidden;
+  `,
+
+  scrollableContent: css`
+    padding-right: 8px;
+  `,
+
+  tagWithColor: css`
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 500;
+  `,
+
+  smallText: css`
+    font-size: 12px;
+  `,
+
+  pipelineStage: css`
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  `,
+
+  pipelineStageName: css`
+    font-weight: 500;
+    font-size: 14px;
+  `,
+
+  taskProgressCard: css`
+    padding: 16px;
+    border-radius: 8px;
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
+  `,
+
+  taskProgressGrid: css`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  `,
+
+  taskProgressItem: css`
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 6px;
+    background: var(--color-bg-layout);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--color-bg-spotlight);
+    }
+  `,
+
+  taskProgressNumber: css`
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  `,
+
+  taskProgressLabel: css`
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.2;
   `,
 }));

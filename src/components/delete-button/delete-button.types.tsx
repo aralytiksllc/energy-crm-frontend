@@ -5,10 +5,10 @@ import type { ButtonProps } from 'antd';
 
 export interface DeleteButtonProps extends ButtonProps {
   resource: string;
-
   resourceId: number;
-
   confirmTitle?: string;
-
   confirmMessage?: string;
+  onSuccess?: (value: any) => void;
+  hasRelatedData?: boolean;
+  relatedInfoMessage?: React.ReactNode;
 }

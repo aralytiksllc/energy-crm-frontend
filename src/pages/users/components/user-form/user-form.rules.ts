@@ -3,7 +3,7 @@ import type { IUser } from '@interfaces/users';
 
 type UserFormRules = Partial<Record<keyof IUser, Rule[]>>;
 
-export const rules: UserFormRules = {
+export const createRules = (canManageRoles = false): UserFormRules => ({
   firstName: [
     {
       required: true,
@@ -26,12 +26,14 @@ export const rules: UserFormRules = {
       message: 'Please enter a valid email',
     },
   ],
-  role: [
-    {
-      required: true,
-      message: 'Role is required',
-    },
-  ],
+  roleId: canManageRoles
+    ? [
+        {
+          required: true,
+          message: 'Role is required',
+        },
+      ]
+    : [],
   password: [
     {
       required: true,
@@ -42,4 +44,12 @@ export const rules: UserFormRules = {
       message: 'Password must be at least 8 characters',
     },
   ],
-};
+  passwordOptional: [
+    {
+      min: 8,
+      message: 'Password must be at least 8 characters',
+    },
+  ],
+});
+
+export const rules = createRules();

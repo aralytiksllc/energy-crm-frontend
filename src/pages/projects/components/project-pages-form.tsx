@@ -104,7 +104,10 @@ export const ProjectPagesForm: React.FC<ProjectPagesFormProps> = ({
                 <Card.Meta
                   avatar={
                     <FileTextOutlined
-                      style={{ fontSize: '20px', color: '#1890ff' }}
+                      style={{
+                        fontSize: '20px',
+                        color: 'var(--color-primary)',
+                      }}
                     />
                   }
                   title={page.name}

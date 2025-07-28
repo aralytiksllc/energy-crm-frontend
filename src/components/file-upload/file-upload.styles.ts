@@ -1,4 +1,4 @@
-import { createStyles } from 'antd-style';
+import { createStyles, cx } from 'antd-style';
 
 export const useFileUploadStyles = createStyles(({ token, css }) => ({
   container: css`
@@ -109,4 +109,18 @@ export const useFileUploadStyles = createStyles(({ token, css }) => ({
       background: ${token.colorFillSecondary};
     }
   `,
+
+  fullWidth: css`
+    width: 100%;
+  `,
+
+  popconfirmIcon: css`
+    color: red;
+  `,
+
+  errorMessage: css`
+    font-size: 12px;
+  `,
 }));
+
+export { cx };

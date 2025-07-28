@@ -16,7 +16,6 @@ const sensorOptions = { activationConstraint: { distance: 5 } };
 
 export function KanbanBoard<T>({
   sections,
-  keyExtractor,
   renderItem,
   renderColumnHeader,
   onDragEnd,

@@ -1,10 +1,15 @@
+// External imports
 import React from 'react';
-import { Form, Row, Col, Button, Select, Switch, Typography } from 'antd';
+import { Form, Row, Col, Button, Select, Typography } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { UserSelect } from '@components/user-select/user-select';
+import { UserAvatar } from '@components/user-avatar';
 import { FormListFieldData } from 'antd/es/form';
+import { ActiveSwitch } from '@components/active-switch';
 import { useProjectMemberManagerStyles } from './styles';
-import { projectMemberValidationRules, roleOptions } from './constants';
+import { roleOptions } from './constants';
+import { projectMemberValidationRules } from './project-member-manager.rules';
+import { IUser } from '@interfaces/users';
 
 const { Text } = Typography;
 
@@ -12,14 +17,35 @@ interface ProjectMemberManagerProps {
   fields: FormListFieldData[];
   add: () => void;
   remove: (index: number) => void;
+  users?: IUser[];
+  usersLoading?: boolean;
 }
 
 export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
   fields,
   add,
   remove,
+  users,
+  usersLoading,
 }) => {
   const { styles } = useProjectMemberManagerStyles();
+
+  const renderUserOption = (user: IUser) => {
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <UserAvatar user={user} size="small" />
+        {fullName}
+      </div>
+    );
+  };
+
+  const getUserLabel = (user: IUser) => {
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  };
+
+  const getUserValue = (user: IUser) => user.id || 0;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -50,9 +76,17 @@ export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
               rules={projectMemberValidationRules.user}
               noStyle
             >
-              <UserSelect
+              <UserSelect<IUser>
+                entities={users || []}
+                optionValue={getUserValue}
+                optionLabel={getUserLabel}
+                renderOption={renderUserOption}
+                renderLabel={renderUserOption}
+                searchText={getUserLabel}
+                loading={usersLoading}
                 placeholder="Select User"
                 className={styles.fullWidth}
+                showSearch
               />
             </Form.Item>
           </Col>
@@ -77,7 +111,7 @@ export const ProjectMemberManager: React.FC<ProjectMemberManagerProps> = ({
               valuePropName="checked"
               noStyle
             >
-              <Switch defaultChecked />
+              <ActiveSwitch defaultChecked />
             </Form.Item>
           </Col>
           <Col span={4} className={styles.removeButtonCol}>

@@ -126,7 +126,12 @@ export const ProjectCommentsForm: React.FC<ProjectCommentsFormProps> = ({
       {comments.length === 0 ? (
         <Empty
           image={
-            <CommentOutlined style={{ fontSize: '48px', color: '#d9d9d9' }} />
+            <CommentOutlined
+              style={{
+                fontSize: '48px',
+                color: 'var(--color-icon-disabled-light)',
+              }}
+            />
           }
           description="No comments yet. Be the first to comment!"
         />
@@ -136,7 +141,10 @@ export const ProjectCommentsForm: React.FC<ProjectCommentsFormProps> = ({
           dataSource={comments}
           renderItem={(comment) => (
             <List.Item key={comment.id}>
-              <Card size="small" style={{ backgroundColor: '#fafafa' }}>
+              <Card
+                size="small"
+                style={{ backgroundColor: 'var(--color-bg-light)' }}
+              >
                 <List.Item.Meta
                   avatar={
                     <Avatar
