@@ -19,7 +19,7 @@ export const authProvider: AuthProvider = {
 
       authStorage.set(data.accessToken);
 
-      const redirectTo = '/dashboard';
+      const redirectTo = '/users';
 
       return {
         success: true,

@@ -3,12 +3,9 @@ import { useNotificationProvider } from '@refinedev/antd';
 import routerBindings from '@refinedev/react-router';
 import {
   UserOutlined,
-  BarChartOutlined,
   GlobalOutlined,
-  ProfileOutlined,
-  CalendarOutlined,
-  CheckSquareOutlined,
-  SettingOutlined,
+  FileTextOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 
 import { authProvider, dataProvider, accessControlProvider } from '@providers';
@@ -21,14 +18,7 @@ export const refineProps: RefineProps = {
   routerProvider: routerBindings,
   notificationProvider: useNotificationProvider,
   resources: [
-    {
-      name: 'dashboard',
-      list: '/dashboard',
-      meta: {
-        label: 'Dashboard',
-        icon: <BarChartOutlined />,
-      },
-    },
+    
     {
       name: 'users',
       list: '/users',
@@ -47,39 +37,22 @@ export const refineProps: RefineProps = {
       },
     },
     {
-      name: 'projects',
-      list: '/projects',
-      edit: '/projects/edit/:id',
+      name: 'contracts',
+      list: '/contracts',
+      create: '/contracts/create',
+      edit: '/contracts/edit/:id',
+      show: '/contracts/show/:id',
       meta: {
         canDelete: true,
-        icon: <ProfileOutlined />,
+        icon: <FileTextOutlined />,
       },
     },
     {
-      name: 'tasks',
-      list: '/tasks',
-      create: '/tasks/create',
-      edit: '/tasks/edit/:id',
-      show: '/tasks/show/:id',
+      name: 'manage-customers',
+      list: '/manage-customers',
       meta: {
-        canDelete: true,
-        icon: <CheckSquareOutlined />,
-      },
-    },
-    {
-      name: 'plannings',
-      list: '/planning',
-      meta: {
-        label: 'Planning',
-        icon: <CalendarOutlined />,
-      },
-    },
-    {
-      name: 'permissions',
-      list: '/permissions',
-      meta: {
-        label: 'Permissions',
-        icon: <SettingOutlined />,
+        label: 'Manage Customers',
+        icon: <TeamOutlined />,
       },
     },
     {
@@ -94,12 +67,6 @@ export const refineProps: RefineProps = {
         hide: true,
       },
     },
-    {
-      name: 'project-members',
-      meta: {
-        hide: true,
-      },
-    },
   ],
   options: {
     syncWithLocation: false,
@@ -108,7 +75,7 @@ export const refineProps: RefineProps = {
     projectId: 'DLUNzF-hNHv7s-rovOa5',
     title: {
       icon: <LogoSvg width={24} height={24} fill="#000" />,
-      text: 'Aralytiks',
+      text: 'MDA Energy',
     },
   },
 };

@@ -7,68 +7,70 @@ export interface UserRelationshipInfo {
 }
 
 export const useUserRelationships = () => {
-  const { data: tasksData } = useList({
-    resource: 'tasks',
+  const { data: contractsData } = useList({
+    resource: 'contracts',
     pagination: { mode: 'off' },
   });
 
-  const { data: planningsData } = useList({
-    resource: 'plannings',
+  const { data: customersData } = useList({
+    resource: 'customers',
     pagination: { mode: 'off' },
   });
 
   const userRelationships = useMemo(() => {
-    const tasks = tasksData?.data || [];
-    const plannings = planningsData?.data || [];
+    const contracts = contractsData?.data || [];
+    const customers = customersData?.data || [];
     const map: Record<number, UserRelationshipInfo> = {};
 
-    tasks.forEach((task: any) => {
-      (task.assignees || []).forEach((assignee: any) => {
-        if (!map[assignee.userId]) {
-          map[assignee.userId] = { hasRelated: false, message: '' };
+    // Check for contracts assigned to users
+    contracts.forEach((contract: any) => {
+      if (contract.assignedUserId) {
+        if (!map[contract.assignedUserId]) {
+          map[contract.assignedUserId] = { hasRelated: false, message: '' };
         }
-        map[assignee.userId].hasRelated = true;
-      });
+        map[contract.assignedUserId].hasRelated = true;
+      }
     });
 
-    plannings.forEach((planning: any) => {
-      if (!map[planning.assignedUserId]) {
-        map[planning.assignedUserId] = { hasRelated: false, message: '' };
+    // Check for customers assigned to users
+    customers.forEach((customer: any) => {
+      if (customer.assignedUserId) {
+        if (!map[customer.assignedUserId]) {
+          map[customer.assignedUserId] = { hasRelated: false, message: '' };
+        }
+        map[customer.assignedUserId].hasRelated = true;
       }
-      map[planning.assignedUserId].hasRelated = true;
     });
 
     Object.keys(map).forEach((userId) => {
-      const relatedTasks = tasks.filter((task: any) =>
-        (task.assignees || []).some(
-          (assignee: any) => assignee.userId === Number(userId),
-        ),
+      const relatedContracts = contracts.filter(
+        (contract: any) => contract.assignedUserId === Number(userId),
       );
-      const relatedPlannings = plannings.filter(
-        (planning: any) => planning.assignedUserId === Number(userId),
+      const relatedCustomers = customers.filter(
+        (customer: any) => customer.assignedUserId === Number(userId),
       );
 
-      if (relatedTasks.length > 0 || relatedPlannings.length > 0) {
-        const taskNames = relatedTasks
+      if (relatedContracts.length > 0 || relatedCustomers.length > 0) {
+        const contractNames = relatedContracts
           .slice(0, 3)
-          .map((t: any) => t.title)
+          .map((c: any) => c.title)
           .join(', ');
-        const planningNames = relatedPlannings
+        const customerNames = relatedCustomers
           .slice(0, 3)
-          .map((p: any) => p.title)
+          .map((c: any) => c.name)
           .join(', ');
 
         let message =
           'This user cannot be deleted because they have active assignments:';
-        if (relatedTasks.length > 0) {
-          message += `\n• Tasks: ${taskNames}`;
-          if (relatedTasks.length > 3)
-            message += ` (and ${relatedTasks.length - 3} more)`;
+        if (relatedContracts.length > 0) {
+          message += `\n• Contracts: ${contractNames}`;
+          if (relatedContracts.length > 3)
+            message += ` (and ${relatedContracts.length - 3} more)`;
         }
-        if (relatedPlannings.length > 0) {
-          message += `\n• Planning: ${planningNames}`;
-          if (relatedPlannings.length > 3)
-            message += ` (and ${relatedPlannings.length - 3} more)`;
+        if (relatedCustomers.length > 0) {
+          message += `\n• Customers: ${customerNames}`;
+          if (relatedCustomers.length > 3)
+            message += ` (and ${relatedCustomers.length - 3} more)`;
         }
         message +=
           '\n\nPlease reassign or delete these items first before deleting the user.';
@@ -78,7 +80,7 @@ export const useUserRelationships = () => {
     });
 
     return map;
-  }, [tasksData, planningsData]);
+  }, [contractsData, customersData]);
 
   return userRelationships;
 };

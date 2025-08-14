@@ -3,10 +3,7 @@ import { ConfigProvider, theme } from 'antd';
 import {
   type PropsWithChildren,
   createContext,
-  useEffect,
-  useState,
 } from 'react';
-import { useColorModeStyles } from './styles';
 
 type ColorModeContextType = {
   mode: string;
@@ -17,61 +14,26 @@ export const ColorModeContext = createContext<ColorModeContextType>(
   {} as ColorModeContextType,
 );
 
-const lightGrayDarkTheme = {
-  token: {
-    colorBgBase: '#23232b',
-    colorBgContainer: '#292933',
-    colorBorder: '#44444a',
-    colorText: '#f4f4f4',
-  },
-};
-
 export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { styles } = useColorModeStyles();
-  const colorModeFromLocalStorage = localStorage.getItem('colorMode');
-  const isSystemPreferenceDark = window?.matchMedia(
-    '(prefers-color-scheme: dark)',
-  ).matches;
-
-  const systemPreference = isSystemPreferenceDark ? 'dark' : 'light';
-  const [mode, setMode] = useState(
-    colorModeFromLocalStorage || systemPreference,
-  );
-
-  useEffect(() => {
-    window.localStorage.setItem('colorMode', mode);
-  }, [mode]);
-
-  const setColorMode = () => {
-    if (mode === 'light') {
-      setMode('dark');
-    } else {
-      setMode('light');
-    }
-  };
-
-  const { darkAlgorithm, defaultAlgorithm } = theme;
+  const { defaultAlgorithm } = theme;
 
   return (
     <ColorModeContext.Provider
       value={{
-        setMode: setColorMode,
-        mode,
+        setMode: () => {}, // No-op since we're forcing light mode
+        mode: 'light',
       }}
     >
-      <div className={mode === 'light' ? styles.light : styles.dark}>
-        <ConfigProvider
-          theme={{
-            ...RefineThemes.Blue,
-            algorithm: mode === 'light' ? defaultAlgorithm : darkAlgorithm,
-            ...(mode === 'dark' ? lightGrayDarkTheme : {}),
-          }}
-        >
-          {children}
-        </ConfigProvider>
-      </div>
+      <ConfigProvider
+        theme={{
+          ...RefineThemes.Blue,
+          algorithm: defaultAlgorithm,
+        }}
+      >
+        {children}
+      </ConfigProvider>
     </ColorModeContext.Provider>
   );
 };

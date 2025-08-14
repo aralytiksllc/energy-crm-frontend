@@ -1,18 +1,17 @@
-import { BaseRecord } from '@refinedev/core';
-
-export interface IRolePermission extends BaseRecord {
+export interface IRole {
+  id: number;
   name: string;
-  description: string;
+  rolePermissions?: IRolePermissionMapping[];
 }
 
 export interface IRolePermissionMapping {
   id: number;
   roleId: number;
   permissionId: number;
-  permission: IRolePermission;
+  permission: IPermission;
 }
 
-export interface IRole extends BaseRecord {
+export interface IPermission {
+  id: number;
   name: string;
-  rolePermissions?: IRolePermissionMapping[];
 }

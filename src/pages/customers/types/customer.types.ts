@@ -14,7 +14,7 @@ export interface Customer extends BaseEntity {
   settings?: Record<string, unknown> | null; // JSONB field
   notes?: string | null;
   isActive: boolean;
-  projects?: Project[]; // One-to-many relationship
+  contracts?: Contract[]; // One-to-many relationship
 }
 
 // Create Customer DTO
@@ -34,11 +34,10 @@ export interface UpdateCustomerDto {
   isActive?: boolean;
 }
 
-// Basic Project interface for customer relations
-export interface Project {
+// Basic Contract interface for customer relations
+export interface Contract {
   id: number;
-  name: string;
-  description?: string;
+  title: string;
   customerId: number;
 }
 

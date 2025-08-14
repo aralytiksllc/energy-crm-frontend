@@ -6,15 +6,11 @@ import type { IUser } from '@interfaces/users';
 import { DayjsTransformer } from '@helpers/dayjs-transformer';
 import { useStyles } from './user-form.styles';
 import { createRules } from './user-form.rules';
-import { Team } from '@interfaces/team.enum';
 import { useMemo } from 'react';
 import { RemoteSelect } from '@components/remote-select';
 import { ActiveSwitch } from '@components/active-switch';
 
-const teamOptions = Object.values(Team).map((team) => ({
-  label: team,
-  value: team,
-}));
+
 
 interface UserFormProps {
   formProps: FormProps<IUser>;
@@ -81,7 +77,7 @@ export const UsersForm: React.FC<UserFormProps> = ({
       )}
 
       <Form.Item label="Team" name="team" className={styles.formItem}>
-        <Select placeholder="Select a team" options={teamOptions} allowClear />
+        <Select placeholder="Select a team" allowClear />
       </Form.Item>
 
       {mode === 'create' ? (

@@ -16,12 +16,9 @@ import {
   UpdatePassword,
 } from '@modules/authentication';
 import { Users } from '@modules/users';
-import { TasksKanban } from '@modules/tasks';
-import { Dashboard } from '@modules/dashboard';
-import { Planning } from '@modules/planning';
-import { Projects } from '@modules/projects';
 import { Customers } from '@modules/customers';
-import { PermissionsMatrix } from '@modules/permissions';
+import { Contracts } from '@modules/contracts';
+import { ManageCustomers } from '@modules/manage-customers';
 import { IUser } from '@interfaces/users';
 
 // Role-based redirect component
@@ -30,10 +27,10 @@ const RoleBasedRedirect: React.FC = () => {
 
   // Show loading state while fetching identity
   if (isLoading || !identity) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/manage-customers" replace />;
   }
 
-  return <Navigate to="/dashboard" replace />;
+  return <Navigate to="/manage-customers" replace />;
 };
 
 export const Routes: React.FC = () => (
@@ -41,10 +38,11 @@ export const Routes: React.FC = () => (
     <Route
       element={
         <ColorModeContextProvider>
-          <Authenticated
+          {/* Temporarily disabled authentication protection */}
+          {/* <Authenticated
             key="authenticated-inner"
             fallback={<CatchAllNavigate to="/login" />}
-          >
+          > */}
             <ThemedLayoutV2
               Header={Header}
               Sider={(props) => (
@@ -62,18 +60,14 @@ export const Routes: React.FC = () => (
             >
               <Outlet />
             </ThemedLayoutV2>
-          </Authenticated>
+          {/* </Authenticated> */}
         </ColorModeContextProvider>
       }
     >
       <Route index element={<RoleBasedRedirect />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/users" element={<Users />} />
-      <Route path="/tasks" element={<TasksKanban />} />
-      <Route path="/planning" element={<Planning />} />
-      <Route path="/projects" element={<Projects />} />
-      <Route path="/customers" element={<Customers />} />
-      <Route path="/permissions" element={<PermissionsMatrix />} />
+      <Route path="/customers" element={<ManageCustomers />} />
+      <Route path="/contracts" element={<Contracts />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route

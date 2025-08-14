@@ -1,5 +1,12 @@
 export interface Assignee {
+  id: number;
   userId: number;
+  taskId: number;
+  assignedAt: string;
   estimatedHours?: number;
-  name?: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }

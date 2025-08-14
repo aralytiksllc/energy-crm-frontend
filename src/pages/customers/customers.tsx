@@ -7,21 +7,9 @@ import { CustomerForm } from './components/customer-form';
 import { createColumns } from './constants/table';
 import { ActionButtons } from '@components/action-buttons';
 import { usePermissions } from '@hooks/use-permissions';
-import { useRelationshipCheck } from '@hooks/use-relationship-check';
 
 export const Customers: React.FC = () => {
   const permissions = usePermissions({ resource: 'customers' });
-
-  const customerRelationships = useRelationshipCheck({
-    resource: 'customer',
-    relatedResource: 'projects',
-    foreignKey: 'customerId',
-    titleField: 'name',
-    maxDisplayItems: 5,
-  }) as unknown as Record<
-    number,
-    import('@hooks/use-relationship-check').RelationshipInfo
-  >;
 
   // Create columns based on permissions
   const tableColumns = useMemo(() => {
@@ -40,14 +28,13 @@ export const Customers: React.FC = () => {
               resource="customers"
               recordId={record.id}
               recordTitle={record.name}
-              relationshipInfo={customerRelationships?.[record.id]}
             />
           ),
         };
       }
       return col;
     });
-  }, [permissions.hasActionsPermission, customerRelationships]);
+  }, [permissions.hasActionsPermission]);
 
   const renderForm = React.useCallback(
     (formProps: FormProps) => <CustomerForm formProps={formProps} />,
