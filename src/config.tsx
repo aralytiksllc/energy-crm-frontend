@@ -6,6 +6,7 @@ import {
   GlobalOutlined,
   FileTextOutlined,
   TeamOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 
 import { authProvider, dataProvider, accessControlProvider } from '@providers';
@@ -53,6 +54,14 @@ export const refineProps: RefineProps = {
       meta: {
         label: 'Manage Customers',
         icon: <TeamOutlined />,
+      },
+    },
+    {
+      name: 'new-customer',
+      list: '/new-customer',
+      meta: {
+        label: 'New Customer',
+        icon: <PlusOutlined />,
       },
     },
     {

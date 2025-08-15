@@ -1,9 +1,9 @@
 // External imports
 import '@refinedev/antd/dist/reset.css';
 import { ErrorComponent, ThemedLayoutV2, ThemedSiderV2 } from '@refinedev/antd';
-import { Authenticated, useGetIdentity, CanAccess } from '@refinedev/core';
-import { CatchAllNavigate, NavigateToResource } from '@refinedev/react-router';
-import { Outlet, Route, Routes as ReactRoutes } from 'react-router';
+import { Authenticated, useGetIdentity } from '@refinedev/core';
+import {  NavigateToResource } from '@refinedev/react-router';
+import { Route, Routes as ReactRoutes, Outlet } from 'react-router';
 import { Navigate } from 'react-router';
 
 // Internal imports
@@ -16,9 +16,9 @@ import {
   UpdatePassword,
 } from '@modules/authentication';
 import { Users } from '@modules/users';
-import { Customers } from '@modules/customers';
 import { Contracts } from '@modules/contracts';
 import { ManageCustomers } from '@modules/manage-customers';
+import { NewCustomer } from '@modules/new-customer';
 import { IUser } from '@interfaces/users';
 
 // Role-based redirect component
@@ -68,6 +68,7 @@ export const Routes: React.FC = () => (
       <Route path="/users" element={<Users />} />
       <Route path="/customers" element={<ManageCustomers />} />
       <Route path="/contracts" element={<Contracts />} />
+      <Route path="/new-customer" element={<NewCustomer />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
     <Route

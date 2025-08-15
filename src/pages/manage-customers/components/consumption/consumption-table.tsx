@@ -1,7 +1,6 @@
 import React from 'react';
-import { Table, Checkbox } from 'antd';
+import { GenericTable } from '../../../../components/generic-table';
 import type { ColumnsType } from 'antd/es/table';
-import { COLORS, BORDER_RADIUS } from '../../../../styles/theme';
 
 interface DataType {
   key: string;
@@ -55,62 +54,51 @@ export const ConsumptionTable: React.FC = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: (
-        <Checkbox />
-      ),
-      dataIndex: 'checkbox',
-      key: 'checkbox',
-      width: 50,
-      render: () => <Checkbox />,
-    },
-    {
       title: 'Header',
       dataIndex: 'info1',
       key: 'info1',
-      render: (text) => <span style={{ color: COLORS.text.secondary }}>{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: 'Header',
       dataIndex: 'info2',
       key: 'info2',
-      render: (text) => <span style={{ color: COLORS.text.secondary }}>{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: 'Header',
       dataIndex: 'info3',
       key: 'info3',
-      render: (text) => <span style={{ color: COLORS.text.secondary }}>{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: 'Header',
       dataIndex: 'info4',
       key: 'info4',
-      render: (text) => <span style={{ color: COLORS.text.secondary }}>{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: 'Header',
       dataIndex: 'info5',
       key: 'info5',
-      render: (text) => <span style={{ color: COLORS.text.secondary }}>{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: 'Header',
       dataIndex: 'info6',
       key: 'info6',
-      render: (text) => <span style={{ color: COLORS.text.secondary }}>{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
   ];
 
   return (
-    <Table
+    <GenericTable<DataType>
+      resource="consumption"
       columns={columns}
       dataSource={data}
-      pagination={false}
+      showCheckbox={true}
+      showPagination={false}
       size="middle"
-      style={{
-        border: `1px solid ${COLORS.border.light}`,
-        borderRadius: BORDER_RADIUS.lg,
-      }}
     />
   );
 };
