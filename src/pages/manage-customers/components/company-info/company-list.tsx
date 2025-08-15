@@ -1,6 +1,7 @@
 import React from 'react';
 import { List, Avatar, Tag, Typography, Space, Button, Input, Divider, Row, Col } from 'antd';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { useNavigation } from '@refinedev/core';
 import { COLORS, BORDER_RADIUS } from '../../../../styles/theme';
 
 const { Text } = Typography;
@@ -27,14 +28,20 @@ export const CompanyList: React.FC<CompanyListProps> = ({
   onCompanySelect,
   onFilterChange,
 }) => {
+  const { push } = useNavigation();
+
   const filteredCompanies = companies.filter(company => {
     if (activeFilter === 'all') return true;
     return company.type === activeFilter;
   });
 
+  const handleNewCustomer = () => {
+    push('/new-customer');
+  };
+
   return (
     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      <Button type="primary" icon={<PlusOutlined />} block>
+      <Button type="primary" icon={<PlusOutlined />} block onClick={handleNewCustomer}>
         New Customer
       </Button>
       
@@ -45,7 +52,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({
       
       <div>
         <Text strong style={{ marginBottom: 8, display: 'block' }}>Filter</Text>
-        <Row gutter={[8, 8]}>
+        <Row gutter={[4, 8]}>
           <Col>
             <Button 
               type={activeFilter === 'all' ? 'primary' : 'default'}

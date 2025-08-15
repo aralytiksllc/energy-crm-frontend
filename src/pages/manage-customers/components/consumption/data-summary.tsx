@@ -13,11 +13,10 @@ const SummaryBox: React.FC<SummaryBoxProps> = ({ title, description }) => (
   <Card 
     style={{ 
       textAlign: 'center',
-      border: `1px solid ${COLORS.border.light}`,
+      border: `0px`,
       borderRadius: BORDER_RADIUS.lg,
-      backgroundColor: COLORS.background.light
     }}
-    bodyStyle={{ padding: '20px 16px' }}
+    styles={{ body: { padding: '20px 16px' } }}
   >
     <Title level={5} style={{ margin: '0 0 8px 0', color: COLORS.text.primary }}>
       {title}

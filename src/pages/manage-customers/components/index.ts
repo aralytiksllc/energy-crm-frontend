@@ -7,3 +7,6 @@ export { DataSummary } from './consumption/data-summary';
 export { ConsumptionTable } from './consumption/consumption-table';
 export { DocumentsTab } from './documents/documents-tab';
 export { DocumentsList } from './documents/documents-list';
+export { ContactsTab } from './contacts/contacts-tab';
+export { MeteringPointsTab } from './metering-points/metering-points-tab';
+export { BranchesTab } from './branches/branches-tab';
