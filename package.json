@@ -49,12 +49,12 @@
     "vite": "^6.3.5"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
+    "dev": "refine dev",
+    "build": "tsc && refine build",
+    "refine": "refine",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "start": "serve -s dist",
-    "format": "prettier --write \"src/**/*.ts\""
+    "heroku-postbuild": "npm run build"
   },
   "browserslist": {
     "production": [
