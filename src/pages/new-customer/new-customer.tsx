@@ -42,28 +42,9 @@ export const NewCustomer: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: 'calc(100vh - 64px)', 
-      overflowX: 'hidden',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <Card 
-        style={{ 
-          borderRadius: 8, 
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          margin: 16,
-          overflowX: 'hidden'
-        }}
-        bodyStyle={{ 
-          flex: 1, 
-          overflowX: 'hidden',
-          padding: 0
-        }}
-      >
-        <div style={{ padding: '24px 24px 0 24px' }}>
+    <div style={{ padding: 16 }}>
+      <Card>
+        <div style={{ marginBottom: 24 }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -90,96 +71,37 @@ export const NewCustomer: React.FC = () => {
         <Tabs 
           activeKey={activeTab}
           onChange={handleTabChange}
-          style={{ 
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '0 24px',
-            overflowX: 'hidden'
-          }}
-          tabBarStyle={{ 
-            margin: '24px 0 0 0',
-            flexShrink: 0
-          }}
         >
           <TabPane tab="Company Info" key="company-info">
-            <div style={{ 
-              height: '100%', 
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '24px 0',
-              maxWidth: '100%'
-            }}>
-              <CompanyInfoTab />
-            </div>
+            <CompanyInfoTab />
           </TabPane>
           
           <TabPane tab="Contacts" key="contacts">
-            <div style={{ 
-              height: '100%', 
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '24px 0',
-              maxWidth: '100%'
-            }}>
-              <ContactsTab />
-            </div>
+            <ContactsTab />
           </TabPane>
           
           <TabPane tab="Metering Points" key="metering-points">
-            <div style={{ 
-              height: '100%', 
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '24px 0',
-              maxWidth: '100%'
-            }}>
-              <MeteringPointsTab />
-            </div>
+            <MeteringPointsTab />
           </TabPane>
           
           <TabPane tab="Consumption" key="consumption">
-            <div style={{ 
-              height: '100%', 
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '24px 0',
-              maxWidth: '100%'
-            }}>
-              <ConsumptionTab />
-            </div>
+            <ConsumptionTab />
           </TabPane>
           
           <TabPane tab="Documents" key="documents">
-            <div style={{ 
-              height: '100%', 
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '24px 0',
-              maxWidth: '100%'
-            }}>
-              <DocumentsTab />
-            </div>
+            <DocumentsTab />
           </TabPane>
           
           <TabPane tab="Branches" key="branches">
-            <div style={{ 
-              height: '100%', 
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '24px 0',
-              maxWidth: '100%'
-            }}>
-              <BranchesTab />
-            </div>
+            <BranchesTab />
           </TabPane>
         </Tabs>
 
         <div style={{ 
-          padding: '24px',
+          marginTop: 24,
+          paddingTop: 24,
           borderTop: '1px solid #f0f0f0',
-          textAlign: 'right',
-          flexShrink: 0
+          textAlign: 'right'
         }}>
           <Space>
             {!isLastTab && (

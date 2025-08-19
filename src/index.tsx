@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 
 // Internal imports
-import { App } from './app';
+import App from './app';
 
 const container = document.getElementById('root') as HTMLElement;
 

@@ -1,10 +1,8 @@
 import React from 'react';
-import { List, Avatar, Tag, Typography, Space, Button, Input, Divider, Row, Col } from 'antd';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import { useNavigation } from '@refinedev/core';
-import { COLORS, BORDER_RADIUS } from '../../../../styles/theme';
+import { Card, Avatar, Tag, Typography, Space, Button, Input, Row, Col } from 'antd';
+import { SearchOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 interface Company {
   id: number;
@@ -19,6 +17,7 @@ interface CompanyListProps {
   activeFilter: string;
   onCompanySelect: (company: Company) => void;
   onFilterChange: (filter: string) => void;
+  onNewCustomer: () => void;
 }
 
 export const CompanyList: React.FC<CompanyListProps> = ({
@@ -27,32 +26,40 @@ export const CompanyList: React.FC<CompanyListProps> = ({
   activeFilter,
   onCompanySelect,
   onFilterChange,
+  onNewCustomer,
 }) => {
-  const { push } = useNavigation();
-
   const filteredCompanies = companies.filter(company => {
     if (activeFilter === 'all') return true;
     return company.type === activeFilter;
   });
 
-  const handleNewCustomer = () => {
-    push('/new-customer');
-  };
-
   return (
-    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      <Button type="primary" icon={<PlusOutlined />} block onClick={handleNewCustomer}>
-        New Customer
-      </Button>
-      
-      <Input
-        placeholder="Search business ID or MPID..."
-        prefix={<SearchOutlined />}
-      />
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <Title level={3} style={{ margin: 0, marginBottom: 16 }}>Search Business</Title>
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />} 
+          onClick={onNewCustomer}
+          size="large"
+          block
+        >
+          New Customer
+        </Button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <Text strong style={{ marginBottom: 8, display: 'block' }}>Search</Text>
+        <Input
+          placeholder="Search business ID or MPID..."
+          prefix={<SearchOutlined />}
+          size="large"
+        />
+      </div>
       
       <div>
         <Text strong style={{ marginBottom: 8, display: 'block' }}>Filter</Text>
-        <Row gutter={[4, 8]}>
+        <Row gutter={[8, 8]}>
           <Col>
             <Button 
               type={activeFilter === 'all' ? 'primary' : 'default'}
@@ -92,41 +99,57 @@ export const CompanyList: React.FC<CompanyListProps> = ({
         </Row>
       </div>
       
-      <Divider />
-      
-      <List
-        dataSource={filteredCompanies}
-        renderItem={(company) => (
-          <List.Item
-            style={{
-              padding: 12,
-              borderRadius: BORDER_RADIUS.md,
-              cursor: 'pointer',
+      <div style={{ marginTop: 16 }}>
+        {filteredCompanies.map((company) => (
+          <Card
+            key={company.id}
+            type="inner"
+            style={{ 
               marginBottom: 8,
-              border: `1px solid ${COLORS.border.light}`,
-              transition: 'all 0.2s',
-              backgroundColor: selectedCompany.id === company.id ? COLORS.primaryBg : 'transparent',
-              borderColor: selectedCompany.id === company.id ? COLORS.primary : COLORS.border.light,
+              cursor: 'pointer',
+              borderColor: selectedCompany.id === company.id ? '#1890ff' : '#d9d9d9',
+              backgroundColor: selectedCompany.id === company.id ? '#e6f7ff' : 'transparent',
             }}
             onClick={() => onCompanySelect(company)}
           >
-            <List.Item.Meta
-              avatar={<Avatar style={{ backgroundColor: COLORS.primary }}>{company.name.charAt(0)}</Avatar>}
-              title={<Text strong>{company.name}</Text>}
-              description={
-                <Tag style={{ 
-                  marginTop: 4, 
-                  backgroundColor: COLORS.primaryBg, 
-                  color: COLORS.primary, 
-                  borderColor: COLORS.primaryBorder 
-                }}>
-                  {company.status}
-                </Tag>
-              }
-            />
-          </List.Item>
-        )}
-      />
-    </Space>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              width: '100%'
+            }}>
+              <Space>
+                <Avatar style={{ backgroundColor: '#1890ff' }}>{company.name.charAt(0)}</Avatar>
+                <div>
+                  <Text strong>{company.name}</Text>
+                  <br />
+                  <Tag style={{ 
+                    marginTop: 4, 
+                    backgroundColor: '#e6f7ff', 
+                    color: '#1890ff', 
+                    borderColor: '#91d5ff' 
+                  }}>
+                    {company.status}
+                  </Tag>
+                </div>
+              </Space>
+              <Button
+                type="text"
+                icon={<RightOutlined />}
+                size="small"
+                style={{ 
+                  color: '#1890ff',
+                  marginLeft: 8
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Arrow clicked for:', company.name);
+                }}
+              />
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };

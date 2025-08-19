@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Tabs, Row, Col, Layout } from 'antd';
+import { useNavigation } from '@refinedev/core';
 import { CompanyList, CompanyForm, ConsumptionTab, DocumentsTab, ContactsTab, MeteringPointsTab, BranchesTab } from './components';
 
 const { Content } = Layout;
@@ -17,129 +18,57 @@ const companies = [
 export const ManageCustomers: React.FC = () => {
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
   const [activeFilter, setActiveFilter] = useState('all');
+  const { push } = useNavigation();
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
   };
 
+  const handleNewCustomer = () => {
+    push('/new-customer');
+  };
+
   return (
-    <Content style={{ 
-      minHeight: '87vh', 
-      padding: '16px',
-      overflowX: 'hidden',
-      flexDirection: 'column'
-    }}>
-      <Row gutter={[16, 16]} style={{ height: '100%', margin: 0 }}>
-        <Col xs={24} lg={8} xl={6} style={{ minHeight: '87vh' }}>
-          <Card 
-            title="Search Business"
-            style={{ 
-              height: '100%',
-              borderRadius: 8
-            }}
-            styles={{ 
-              body: { 
-                height: '87vh', 
-                overflow: 'auto',
-                padding: '16px'
-              }
-            }}
-          >
+    <Content style={{ padding: 16 }}>
+      <Row gutter={16}>
+        <Col xs={24} lg={8} xl={6}>
+          <Card>
             <CompanyList
               companies={companies}
               selectedCompany={selectedCompany}
               activeFilter={activeFilter}
               onCompanySelect={setSelectedCompany}
               onFilterChange={handleFilterChange}
+              onNewCustomer={handleNewCustomer}
             />
           </Card>
         </Col>
         
-        <Col xs={24} lg={16} xl={18} style={{ height: '100%' }}>
-          <Card 
-            title={selectedCompany.name}
-            style={{ 
-              height: '100%',
-              borderRadius: 8
-            }}
-            styles={{ 
-              body: { 
-                minHeight: '87vh', 
-                overflow: 'hidden',
-                padding: 0
-              }
-            }}
-          >
-            <Tabs 
-              defaultActiveKey="company-info"
-              style={{ 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-              tabBarStyle={{ 
-                margin: '0 24px',
-                flexShrink: 0
-              }}
-            >
+        <Col xs={24} lg={16} xl={18}>
+          <Card title={selectedCompany.name}>
+            <Tabs defaultActiveKey="company-info">
               <TabPane tab="Company Info" key="company-info">
-                <div style={{ 
-                  height: '100%', 
-                  overflow: 'auto',
-                  padding: '24px'
-                }}>
-                  <CompanyForm />
-                </div>
+                <CompanyForm />
               </TabPane>
               
               <TabPane tab="Consumption" key="consumption">
-                <div style={{ 
-                  height: '100%', 
-                  overflow: 'auto',
-                  padding: '24px'
-                }}>
-                  <ConsumptionTab />
-                </div>
+                <ConsumptionTab />
               </TabPane>
               
               <TabPane tab="Documents" key="documents">
-                <div style={{ 
-                  height: '100%', 
-                  overflow: 'auto',
-                  padding: '24px'
-                }}>
-                  <DocumentsTab />
-                </div>
+                <DocumentsTab />
               </TabPane>
               
               <TabPane tab="Contacts" key="contacts">
-                <div style={{ 
-                  height: '100%', 
-                  overflow: 'auto',
-                  padding: '24px'
-                }}>
-                  <ContactsTab />
-                </div>
+                <ContactsTab />
               </TabPane>
               
               <TabPane tab="Metering Points" key="metering-points">
-                <div style={{ 
-                  height: '100%', 
-                  overflow: 'auto',
-                  padding: '24px'
-                }}>
-                  <MeteringPointsTab />
-                </div>
+                <MeteringPointsTab />
               </TabPane>
               
               <TabPane tab="Branches" key="branches">
-                <div style={{ 
-                  height: '100%', 
-                  overflow: 'auto',
-                  padding: '24px'
-                }}>
-                  <BranchesTab />
-                </div>
+                <BranchesTab />
               </TabPane>
             </Tabs>
           </Card>

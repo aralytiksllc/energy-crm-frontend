@@ -1,14 +1,12 @@
 // External imports
 import '@refinedev/antd/dist/reset.css';
-import { ErrorComponent, ThemedLayoutV2, ThemedSiderV2 } from '@refinedev/antd';
+import { ErrorComponent } from '@refinedev/antd';
 import { Authenticated, useGetIdentity } from '@refinedev/core';
-import {  NavigateToResource } from '@refinedev/react-router';
+import { NavigateToResource } from '@refinedev/react-router';
 import { Route, Routes as ReactRoutes, Outlet } from 'react-router';
 import { Navigate } from 'react-router';
 
 // Internal imports
-import { Header } from '@components/header';
-import { ColorModeContextProvider } from '@contexts/color-mode';
 import {
   Register,
   Login,
@@ -33,55 +31,41 @@ const RoleBasedRedirect: React.FC = () => {
   return <Navigate to="/manage-customers" replace />;
 };
 
-export const Routes: React.FC = () => (
-  <ReactRoutes>
-    <Route
-      element={
-        <ColorModeContextProvider>
-          {/* Temporarily disabled authentication protection */}
-          {/* <Authenticated
-            key="authenticated-inner"
-            fallback={<CatchAllNavigate to="/login" />}
-          > */}
-            <ThemedLayoutV2
-              Header={Header}
-              Sider={(props) => (
-                <ThemedSiderV2
-                  {...props}
-                  fixed
-                  render={({ items, logout }) => (
-                    <>
-                      {items}
-                      {logout}
-                    </>
-                  )}
-                />
-              )}
-            >
+export const Routes: React.FC = () => {
+  return (
+    <ReactRoutes>
+      <Route
+        element={
+          <>
+            {/* Temporarily disabled authentication protection */}
+            {/* <Authenticated
+              key="authenticated-inner"
+              fallback={<CatchAllNavigate to="/login" />}
+            > */}
               <Outlet />
-            </ThemedLayoutV2>
-          {/* </Authenticated> */}
-        </ColorModeContextProvider>
-      }
-    >
-      <Route index element={<RoleBasedRedirect />} />
-      <Route path="/users" element={<Users />} />
-      <Route path="/customers" element={<ManageCustomers />} />
-      <Route path="/contracts" element={<Contracts />} />
-      <Route path="/new-customer" element={<NewCustomer />} />
-      <Route path="*" element={<ErrorComponent />} />
-    </Route>
-    <Route
-      element={
-        <Authenticated key="authenticated-outer" fallback={<Outlet />}>
-          <NavigateToResource />
-        </Authenticated>
-      }
-    >
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/update-password/:token" element={<UpdatePassword />} />
-    </Route>
-  </ReactRoutes>
-);
+            {/* </Authenticated> */}
+          </>
+        }
+      >
+        <Route index element={<RoleBasedRedirect />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/customers" element={<ManageCustomers />} />
+        <Route path="/contracts" element={<Contracts />} />
+        <Route path="/new-customer" element={<NewCustomer />} />
+        <Route path="*" element={<ErrorComponent />} />
+      </Route>
+      <Route
+        element={
+          <Authenticated key="authenticated-outer" fallback={<Outlet />}>
+            <NavigateToResource />
+          </Authenticated>
+        }
+      >
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/update-password/:token" element={<UpdatePassword />} />
+      </Route>
+    </ReactRoutes>
+  );
+};
