@@ -17,6 +17,7 @@ import { Users } from '@modules/users';
 import { Contracts } from '@modules/contracts';
 import { ManageCustomers } from '@modules/manage-customers';
 import { NewCustomer } from '@modules/new-customer';
+import { Forecast } from '@modules/forecast';
 import { IUser } from '@interfaces/users';
 
 // Role-based redirect component
