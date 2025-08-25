@@ -4,4 +4,5 @@ export interface IContact {
   peakLoadKw?: number;
   weatherDataLinkage?: string;
   customerId?: number;
+  contactName?: string;
 }
