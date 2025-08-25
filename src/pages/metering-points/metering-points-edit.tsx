@@ -4,17 +4,16 @@ import { useForm } from '@refinedev/antd';
 import { useParams } from 'react-router';
 
 // Internal
-import { ICustomer } from '@/interfaces/customers';
 import { Edit } from '@/components/edit';
-import { CustomerForm } from './components/customer-form';
+import { MeteringPointsForm } from './components/metering-points-form';
 
-export type CustomerEditProps = {};
+export type MeteringPointsEditProps = {};
 
-export const CustomerEdit: React.FC<CustomerEditProps> = () => {
+export const MeteringPointsEdit: React.FC<MeteringPointsEditProps> = () => {
   const { customerId } = useParams();
 
-  const { formLoading, formProps, saveButtonProps } = useForm<ICustomer>({
-    resource: 'customers',
+  const { formLoading, formProps, saveButtonProps } = useForm({
+    resource: 'metering-points',
     action: 'edit',
     id: customerId,
     redirect: false,
@@ -22,14 +21,14 @@ export const CustomerEdit: React.FC<CustomerEditProps> = () => {
 
   return (
     <Edit
-      resource="customers"
+      resource="metering-points"
       saveButtonProps={saveButtonProps}
       recordItemId={customerId}
       isLoading={formLoading}
       breadcrumb={false}
       goBack={false}
     >
-      <CustomerForm formProps={formProps} />
+      <MeteringPointsForm formProps={formProps} />
     </Edit>
   );
 };
