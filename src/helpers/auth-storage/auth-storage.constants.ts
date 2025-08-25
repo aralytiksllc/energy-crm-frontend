@@ -1,5 +1,5 @@
-// External dependencies
+// External
 
-// Internal dependencies
+// Internal
 
 export const TOKEN_KEY = 'core-flow-token';

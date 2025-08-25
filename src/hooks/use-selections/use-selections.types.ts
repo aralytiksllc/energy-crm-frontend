@@ -1,7 +1,7 @@
-// External dependencies
+// External
 import type { Key } from 'react';
 
-// Internal dependencies
+// Internal
 
 export interface Options<T> {
   defaultSelected?: T[];

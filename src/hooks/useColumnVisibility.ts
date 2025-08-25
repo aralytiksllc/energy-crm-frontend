@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { ColumnOption } from '@components/column-visibility-selector';
+import { ColumnOption } from '@/components/column-visibility-selector';
 
 export function useColumnVisibility<T = any>(
   allColumns: ColumnsType<T>,

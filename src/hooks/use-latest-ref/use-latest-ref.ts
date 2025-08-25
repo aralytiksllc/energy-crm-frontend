@@ -1,7 +1,7 @@
-// External imports
+// External
 import * as React from 'react';
 
-// Internal imports
+// Internal
 
 export function useLatestRef<T>(value: T) {
   const ref = React.useRef(value);

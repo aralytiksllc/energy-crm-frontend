@@ -1,9 +1,6 @@
 import { RefineThemes } from '@refinedev/antd';
 import { ConfigProvider, theme } from 'antd';
-import {
-  type PropsWithChildren,
-  createContext,
-} from 'react';
+import { type PropsWithChildren, createContext } from 'react';
 
 type ColorModeContextType = {
   mode: string;
@@ -22,7 +19,7 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
   return (
     <ColorModeContext.Provider
       value={{
-        setMode: () => {}, // No-op since we're forcing light mode
+        setMode: () => {},
         mode: 'light',
       }}
     >
@@ -30,6 +27,23 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
         theme={{
           ...RefineThemes.Blue,
           algorithm: defaultAlgorithm,
+          token: {
+            // colorPrimary: '#111111',
+            motionDurationMid: '0.24s',
+            motionEaseInOut: 'cubic-bezier(0.2, 0, 0, 1)',
+          },
+          components: {
+            Menu: {
+              itemHeight: 40,
+              itemBorderRadius: 12,
+              itemSelectedBg: RefineThemes.Blue.token?.colorPrimary,
+              itemSelectedColor: '#ffffff',
+              colorSplit: 'transparent',
+            },
+            Card: { borderRadiusLG: 12, paddingSM: 12 },
+            Button: { controlHeight: 40, borderRadius: 999 },
+            Dropdown: { borderRadiusLG: 12 },
+          },
         }}
       >
         {children}

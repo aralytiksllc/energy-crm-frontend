@@ -18,17 +18,6 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@modules/*": ["src/pages/*"],
-      "@components/*": ["src/components/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@providers": ["src/providers"],
-      "@providers/*": ["src/providers/*"],
-      "@contexts/*": ["src/contexts/*"],
-      "@interfaces/*": ["src/interfaces/*"],
-      "@helpers/*": ["src/helpers/*"],
-      "@config": ["src/config.tsx"],
-      "@routes": ["src/routes.tsx"],
-      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"],

@@ -1,12 +1,12 @@
-// External imports
+// External
 import type { AuthProvider } from '@refinedev/core';
 
-// Internal imports
-import type { IAuthResponse } from '@interfaces/authentication';
-import type { IUser } from '@interfaces/users';
-import type { IRolePermissionMapping } from '@interfaces/role';
-import { httpClient } from '@helpers/http-client';
-import { authStorage } from '@helpers/auth-storage';
+// Internal
+import type { IAuthResponse } from '@/interfaces/authentication';
+import type { IUser } from '@/interfaces/users';
+import type { IRolePermissionMapping } from '@/interfaces/role';
+import { httpClient } from '@/helpers/http-client';
+import { authStorage } from '@/helpers/auth-storage';
 
 export const authProvider: AuthProvider = {
   async login(params) {
@@ -39,8 +39,6 @@ export const authProvider: AuthProvider = {
 
   async logout() {
     authStorage.clear();
-    // Clear any URL state by redirecting to login explicitly
-    window.history.replaceState(null, '', '/login');
     return {
       success: true,
       redirectTo: '/login',

@@ -1,21 +1,21 @@
-import React from 'react';
-
-// External imports
+// External
 import '@refinedev/antd/dist/reset.css';
+
+import * as React from 'react';
 import { App as AntdApp } from 'antd';
 import { BrowserRouter } from 'react-router';
 import { Refine } from '@refinedev/core';
 import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
-import {
-  DocumentTitleHandler,
-  UnsavedChangesNotifier,
-} from '@refinedev/react-router';
+import { DocumentTitleHandler } from '@refinedev/react-router';
+import { UnsavedChangesNotifier } from '@refinedev/react-router';
 
-// Internal imports
-import { ColorModeContextProvider } from '@contexts/color-mode';
-import { refineProps } from '@config';
-import { Routes } from '@routes';
+// Internal
+import { ColorModeContextProvider } from './contexts/color-mode';
+import { appConfig } from './app.config';
+import { AppRoutes } from './app.routes';
+
+import './app.styles.css';
 
 type AppProps = Record<string, never>;
 
@@ -25,8 +25,8 @@ export const App: React.FC<AppProps> = () => (
       <ColorModeContextProvider>
         <AntdApp>
           <DevtoolsProvider>
-            <Refine {...refineProps}>
-              <Routes />
+            <Refine {...appConfig}>
+              <AppRoutes />
               <RefineKbar />
               <UnsavedChangesNotifier />
               <DocumentTitleHandler />

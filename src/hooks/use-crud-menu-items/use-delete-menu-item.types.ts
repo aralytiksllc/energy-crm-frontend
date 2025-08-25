@@ -1,8 +1,8 @@
-// External imports
+// External
 import type { MenuProps } from 'antd';
 import type { ReactElement } from 'react';
 
-// Internal imports
+// Internal
 
 export type UseDeleteMenuItem = Required<MenuProps>['items'][number] & {
   modal?: ReactElement;

@@ -1,0 +1,12 @@
+// External
+
+// Internal
+
+export enum Stage {
+  LEAD = 'LEAD',
+  QUALIFIED = 'QUALIFIED',
+  PROPOSAL = 'PROPOSAL',
+  NEGOTIATION = 'NEGOTIATION',
+  CLOSED_WON = 'CLOSED_WON',
+  CLOSED_LOST = 'CLOSED_LOST',
+}

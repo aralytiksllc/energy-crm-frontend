@@ -1,91 +1,54 @@
-// External imports
-import React, { useState } from 'react';
-import { Modal, Button, message } from 'antd';
+// External
+import * as React from 'react';
+import { Button, Modal } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDeleteButton } from '@refinedev/core';
 
-// Internal dependencies
+// Internal
 import type { DeleteButtonProps } from './delete-button.types';
 
 export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
   const {
     resource,
-    resourceId,
+    recordItemId,
     confirmTitle = 'Are you sure you want to delete this item?',
     confirmMessage = 'This action cannot be undone.',
-    onSuccess,
-    hasRelatedData = false,
-    relatedInfoMessage,
     ...restProps
   } = props;
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const { canAccess, onConfirm } = useDeleteButton({
+  const { canAccess, disabled, onConfirm } = useDeleteButton({
     resource,
-    id: resourceId,
+    id: recordItemId,
   });
 
   const handleClick = React.useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation();
-
-      if (hasRelatedData && relatedInfoMessage) {
-        Modal.warning({
-          title: 'Cannot Delete',
-          content: relatedInfoMessage,
-          okText: 'Understood',
-          centered: true,
-        });
-        return;
-      }
-
-      setIsModalVisible(true);
+    (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      Modal.confirm({
+        title: confirmTitle,
+        content: confirmMessage,
+        okText: 'Delete',
+        okType: 'danger',
+        cancelText: 'Cancel',
+        centered: true,
+        transitionName: '',
+        onOk: onConfirm,
+      });
     },
-    [hasRelatedData, relatedInfoMessage],
+    [confirmTitle, confirmMessage],
   );
 
-  const handleOk = async () => {
-    setIsDeleting(true);
-    try {
-      await onConfirm();
-      onSuccess?.(resourceId);
-      message.success(`${resource.slice(0, -1)} deleted successfully`);
-    } catch (error: any) {
-      message.error(`Failed to delete ${resource.slice(0, -1)}`);
-      console.error('Delete error:', error);
-    } finally {
-      setIsDeleting(false);
-      setIsModalVisible(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  return (
-    <>
+  if (canAccess) {
+    return (
       <Button
-        icon={<DeleteOutlined />}
-        danger
         onClick={handleClick}
+        icon={<DeleteOutlined />}
+        danger={true}
+        disabled={disabled}
         {...restProps}
       />
-      <Modal
-        title={confirmTitle}
-        open={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        confirmLoading={isDeleting}
-        okText="Delete"
-        cancelText="Cancel"
-        okType="danger"
-        centered
-      >
-        <p>{confirmMessage}</p>
-      </Modal>
-    </>
-  );
+    );
+  }
+
+  return null;
 };

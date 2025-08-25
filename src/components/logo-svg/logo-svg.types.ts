@@ -1,6 +1,6 @@
-// External dependencies
+// External
 import * as React from 'react';
 
-// Internal dependencies
+// Internal
 
 export interface LogoSvgProps extends React.SVGProps<SVGSVGElement> {}
