@@ -44,6 +44,26 @@ export const AppNav = () => {
       disabled: !customerId,
     },
     {
+      key: `/customers/${customerId}/contacts`,
+      label: 'Contacts',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/metering-points`,
+      label: 'Metering Points',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/consumption`,
+      label: 'Consumption',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/documents`,
+      label: 'Documents',
+      disabled: !customerId,
+    },
+    {
       key: `/customers/${customerId}/branches`,
       label: 'Branches',
       disabled: !customerId,
