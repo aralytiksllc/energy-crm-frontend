@@ -1,11 +1,11 @@
-// External imports
+// External
 import React from 'react';
 import { EditOutlined } from '@ant-design/icons';
 import { useGo, useEditButton } from '@refinedev/core';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
-// Internal imports
-import { useLatestRef } from '@hooks/use-latest-ref';
+// Internal
+import { useLatestRef } from '@/hooks/use-latest-ref';
 import type {
   UseEditMenuItemProps,
   UseEditMenuItem,

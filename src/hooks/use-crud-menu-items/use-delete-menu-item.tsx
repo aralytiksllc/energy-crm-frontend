@@ -1,12 +1,12 @@
-// External imports
+// External
 import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDeleteButton } from '@refinedev/core';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
-// Internal imports
-import { useLatestRef } from '@hooks/use-latest-ref';
+// Internal
+import { useLatestRef } from '@/hooks/use-latest-ref';
 import type {
   UseDeleteMenuItem,
   UseDeleteMenuItemProps,

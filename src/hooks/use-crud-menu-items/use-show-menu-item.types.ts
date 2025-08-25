@@ -1,7 +1,7 @@
-// External imports
+// External
 import type { MenuProps } from 'antd';
 
-// Internal imports
+// Internal
 
 export type UseShowMenuItem = Required<MenuProps>['items'][number];
 

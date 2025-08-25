@@ -1,7 +1,7 @@
-// External imports
+// External
 import dayjs from 'dayjs';
 
-// Internal dependencies
+// Internal
 import type {
   DateInputValue,
   DayjsInputValue,
@@ -23,5 +23,15 @@ export class DayjsTransformer {
 
   static toNativeDate(input: DayjsInputValue): NativeDate {
     return input ? input.toDate() : undefined;
+  }
+
+  static formatToShortDate(date: string | Date | null | undefined): string {
+    if (!date) return '';
+    return dayjs(date).format('MMM DD, YYYY');
+  }
+
+  static formatToLongDate(date: string | Date | null | undefined): string {
+    if (!date) return '';
+    return dayjs(date).format('dddd, MMMM DD, YYYY');
   }
 }

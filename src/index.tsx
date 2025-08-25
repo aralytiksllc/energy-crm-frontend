@@ -1,11 +1,11 @@
-// External imports
+// External
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import './index.css';
+import '@refinedev/antd/dist/reset.css';
 
-// Internal imports
-import App from './app';
+// Internal
+import { App } from './app';
 
 const container = document.getElementById('root') as HTMLElement;
 

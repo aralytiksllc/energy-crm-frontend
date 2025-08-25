@@ -1,7 +1,7 @@
-// External imports
+// External
 import * as React from 'react';
 
-// Internal imports
+// Internal
 import { useShowMenuItem } from './use-show-menu-item';
 import { useEditMenuItem } from './use-edit-menu-item';
 import { useDeleteMenuItem } from './use-delete-menu-item';

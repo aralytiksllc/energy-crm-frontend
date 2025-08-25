@@ -1,7 +1,9 @@
-// External imports
+// External
 import { AuthPage } from '@refinedev/antd';
 
-type RegisterProps = Record<string, never>;
+// Internal
+
+export type RegisterProps = {};
 
 export const Register: React.FC<RegisterProps> = () => {
   return <AuthPage type="register" />;

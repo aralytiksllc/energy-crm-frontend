@@ -1,8 +1,8 @@
-// External dependencies
+// External
 import ky from 'ky';
 
-// Internal dependencies
-import { authStorage } from '@helpers/auth-storage';
+// Internal
+import { authStorage } from '@/helpers/auth-storage';
 import { API_URL } from './http-constants';
 
 export const httpClient = ky.create({
@@ -29,6 +29,7 @@ export const httpClient = ky.create({
           try {
             // Clone the response to preserve the body
             const clonedResponse = response.clone();
+            
             const body = (await clonedResponse.json()) as { message?: string };
 
             if (typeof body.message === 'string') {

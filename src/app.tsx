@@ -1,75 +1,40 @@
-import React, { useState } from 'react';
+// External
+import '@refinedev/antd/dist/reset.css';
+
+import * as React from 'react';
+import { App as AntdApp } from 'antd';
+import { BrowserRouter } from 'react-router';
 import { Refine } from '@refinedev/core';
+import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
-import {
-  ThemedLayoutV2,
-  useNotificationProvider,
-} from '@refinedev/antd';
-import routerBindings, {
-  DocumentTitleHandler,
-  UnsavedChangesNotifier,
-} from '@refinedev/react-router';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router';
-import { ColorModeContextProvider } from '@contexts/color-mode';
-import { Header } from '@components/header';
-import { CustomSider } from '@components/sider';
-import { refineProps } from './config';
-import { Routes as AppRoutes } from './routes';
+import { DocumentTitleHandler } from '@refinedev/react-router';
+import { UnsavedChangesNotifier } from '@refinedev/react-router';
 
-const App: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+// Internal
+import { ColorModeContextProvider } from './contexts/color-mode';
+import { appConfig } from './app.config';
+import { AppRoutes } from './app.routes';
 
-  const handleCollapse = (collapsed: boolean) => {
-    setCollapsed(collapsed);
-  };
+import './app.styles.css';
 
-  return (
-    <BrowserRouter>
-      <RefineKbarProvider>
-        <ColorModeContextProvider>
-          <Refine
-            {...refineProps}
-            routerProvider={routerBindings}
-            notificationProvider={useNotificationProvider}
-            resources={refineProps.resources}
-            options={{
-              ...refineProps.options,
-              syncWithLocation: true,
-              warnWhenUnsavedChanges: true,
-            }}
-          >
-            <Routes>
-              <Route
-                element={
-                  <ThemedLayoutV2
-                    Header={() => (
-                      <Header 
-                        collapsed={collapsed} 
-                        onCollapse={handleCollapse} 
-                      />
-                    )}
-                    Sider={() => (
-                      <CustomSider 
-                        collapsed={collapsed} 
-                        onCollapse={handleCollapse} 
-                      />
-                    )}
-                  >
-                    <Outlet />
-                  </ThemedLayoutV2>
-                }
-              >
-                <Route path="*" element={<AppRoutes />} />
-              </Route>
-            </Routes>
-            <RefineKbar />
-            <UnsavedChangesNotifier />
-            <DocumentTitleHandler />
-          </Refine>
-        </ColorModeContextProvider>
-      </RefineKbarProvider>
-    </BrowserRouter>
-  );
-};
+type AppProps = Record<string, never>;
 
-export default App;
+export const App: React.FC<AppProps> = () => (
+  <BrowserRouter>
+    <RefineKbarProvider>
+      <ColorModeContextProvider>
+        <AntdApp>
+          <DevtoolsProvider>
+            <Refine {...appConfig}>
+              <AppRoutes />
+              <RefineKbar />
+              <UnsavedChangesNotifier />
+              <DocumentTitleHandler />
+            </Refine>
+            <DevtoolsPanel />
+          </DevtoolsProvider>
+        </AntdApp>
+      </ColorModeContextProvider>
+    </RefineKbarProvider>
+  </BrowserRouter>
+);

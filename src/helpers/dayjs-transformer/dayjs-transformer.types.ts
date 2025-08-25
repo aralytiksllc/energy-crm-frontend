@@ -1,7 +1,7 @@
-// External dependencies
+// External
 import type { Dayjs } from 'dayjs';
 
-// Internal dependencies
+// Internal
 
 export type DateInputValue = string | Date | undefined | null;
 export type DayjsInputValue = Dayjs | undefined | null;

@@ -1,11 +1,11 @@
-// External imports
+// External
 import React from 'react';
 import { EyeOutlined } from '@ant-design/icons';
 import { useGo, useShowButton } from '@refinedev/core';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
-// Internal imports
-import { useLatestRef } from '@hooks/use-latest-ref';
+// Internal
+import { useLatestRef } from '@/hooks/use-latest-ref';
 import type {
   UseShowMenuItemProps,
   UseShowMenuItem,

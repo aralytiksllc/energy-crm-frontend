@@ -1,5 +1,5 @@
-// External dependencies
+// External
 
-// Internal dependencies
+// Internal
 
 export const API_URL = import.meta.env.VITE_API_URL;

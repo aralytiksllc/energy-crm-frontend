@@ -1,8 +1,8 @@
-// External dependencies
+// External
 import { useState, useMemo, useCallback } from 'react';
 import type { Key } from 'react';
 
-// Internal dependencies
+// Internal
 import type { Options } from './use-selections.types';
 
 export function useSelections<T>(items: T[], options: Options<T> = {}) {
