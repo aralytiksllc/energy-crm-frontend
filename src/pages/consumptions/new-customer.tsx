@@ -42,7 +42,6 @@ export const NewCustomer: React.FC = () => {
   };
 
   return (
-<<<<<<< HEAD:src/pages/consumptions/new-customer.tsx
     <div style={{ 
       padding: 16
     }}>
@@ -60,11 +59,6 @@ export const NewCustomer: React.FC = () => {
         }}
       >
         <div style={{ padding: '24px 24px 0 24px' }}>
-=======
-    <div style={{ padding: 16 }}>
-      <Card>
-        <div style={{ marginBottom: 24 }}>
->>>>>>> 432e22b (changes header and sidebar style, also made the customers list on the customers page as cards):src/pages/new-customer/new-customer.tsx
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -91,52 +85,90 @@ export const NewCustomer: React.FC = () => {
         <Tabs 
           activeKey={activeTab}
           onChange={handleTabChange}
+          style={{ 
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '0 24px',
+            overflowX: 'hidden'
+          }}
+          tabBarStyle={{ 
+            margin: '24px 0 0 0',
+            flexShrink: 0
+          }}
         >
           <TabPane tab="Company Info" key="company-info">
-            <CompanyInfoTab />
+            <div style={{ 
+              height: '100%', 
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '24px 0',
+              maxWidth: '100%'
+            }}>
+              <CompanyInfoTab />
+            </div>
           </TabPane>
           
           <TabPane tab="Contacts" key="contacts">
-            <ContactsTab />
+            <div style={{ 
+              height: '100%', 
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '24px 0',
+              maxWidth: '100%'
+            }}>
+              <ContactsTab />
+            </div>
           </TabPane>
           
           <TabPane tab="Metering Points" key="metering-points">
-            <MeteringPointsTab />
+            <div style={{ 
+              height: '100%', 
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '24px 0',
+              maxWidth: '100%'
+            }}>
+              <MeteringPointsTab />
+            </div>
           </TabPane>
           
           <TabPane tab="Consumption" key="consumption">
-            <ConsumptionTab />
+            <div style={{ 
+              height: '100%', 
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '24px 0',
+              maxWidth: '100%'
+            }}>
+              <ConsumptionTab />
+            </div>
           </TabPane>
           
           <TabPane tab="Documents" key="documents">
-            <DocumentsTab />
+            <div style={{ 
+              height: '100%', 
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '24px 0',
+              maxWidth: '100%'
+            }}>
+              <DocumentsTab />
+            </div>
           </TabPane>
           
           <TabPane tab="Branches" key="branches">
-            <BranchesTab />
+            <div style={{ 
+              height: '100%', 
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '24px 0',
+              maxWidth: '100%'
+            }}>
+              <BranchesTab />
+            </div>
           </TabPane>
         </Tabs>
-<<<<<<< HEAD:src/pages/consumptions/new-customer.tsx
-=======
-
-        <div style={{ 
-          marginTop: 24,
-          paddingTop: 24,
-          borderTop: '1px solid #f0f0f0',
-          textAlign: 'right'
-        }}>
-          <Space>
-            {!isLastTab && (
-              <Button size="large" onClick={handleNextStep}>
-                Next Step
-              </Button>
-            )}
-            <Button type="primary" size="large" onClick={handleCreate}>
-              Create
-            </Button>
-          </Space>
-        </div>
->>>>>>> 432e22b (changes header and sidebar style, also made the customers list on the customers page as cards):src/pages/new-customer/new-customer.tsx
       </Card>
     </div>
   );
