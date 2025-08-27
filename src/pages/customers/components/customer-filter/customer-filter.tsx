@@ -1,17 +1,17 @@
 // External
 import * as React from 'react';
-import { Space, Button, Typography } from 'antd';
+import { Space, Button, Typography, Select } from 'antd';
 import { Link } from '@refinedev/core';
 import { PlusOutlined } from '@ant-design/icons';
 
 // Internal
 import { stageOptions } from '@/constants/stage-options';
 import { Search } from '@/components/search';
-import { CheckableTagGroup } from '@/components/checkable-tag';
 import { useStyles } from './customer-filter.styles';
 import type { CustomerFilterProps } from './customer-filter.types';
 
 const { Text } = Typography;
+const { Option } = Select;
 
 const newCustomerLinkProps = {
   to: { resource: 'customers', action: 'create' },
@@ -19,10 +19,18 @@ const newCustomerLinkProps = {
 } as const;
 
 export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
-  const { searchTerm, onSearchTermChange, selectedStages, onStageChange } =
+  const { searchTerm, onSearchTermChange, onStageChange } =
     props;
 
   const { styles } = useStyles();
+
+  const handleFilterChange = (value: string) => {
+    if (value === 'all') {
+      onStageChange('', false);
+    } else {
+      onStageChange(value, true);
+    }
+  };
 
   return (
     <Space
@@ -44,12 +52,24 @@ export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
         delaySearch={true}
         allowClear={true}
       />
-      <CheckableTagGroup
-        prefix={<Text strong>Filters:</Text>}
-        onChange={onStageChange}
-        options={stageOptions}
-        value={selectedStages}
-      />
+      <div>
+        <Text strong style={{ display: 'block', marginBottom: '8px' }}>
+          Filter by Stage:
+        </Text>
+        <Select
+          defaultValue="all"
+          style={{ width: '50%' }}
+          onChange={handleFilterChange}
+          placeholder="Select a stage"
+        >
+          <Option value="all">All</Option>
+          {stageOptions.map((option) => (
+            <Option key={option.value} value={option.value}>
+              {option.label}
+            </Option>
+          ))}
+        </Select>
+      </div>
     </Space>
   );
 };

@@ -8,12 +8,17 @@ import {
   Input,
   Select,
   Button,
+  Card,
+  Table,
+  Space,
+  Avatar,
 } from 'antd';
 import { useParams } from 'react-router';
+import { EditOutlined, DeleteOutlined, UserOutlined } from '@ant-design/icons';
 
 // Internal
 
-const { Title, } = Typography;
+const { Title } = Typography;
 const { Option } = Select;
 
 export type ContactListProps = Record<string, never>;
@@ -21,10 +26,121 @@ export type ContactListProps = Record<string, never>;
 export const ContactList: React.FC<ContactListProps> = () => {
   const { customerId } = useParams();
 
+  // Mock data for contacts list
+  const mockContacts = [
+    {
+      id: '1',
+      name: 'Arben Gashi',
+      type: 'Primary',
+      company: 'HIB Petrol',
+      role: 'Manager',
+      phone: '+383 44 123 456',
+      email: 'arben.gashi@hibpetrol.com',
+      language: 'Albanian',
+      status: 'Active',
+    },
+    {
+      id: '2',
+      name: 'Liridon Kastrati',
+      type: 'Secondary',
+      company: 'Blue Energy',
+      role: 'Supervisor',
+      phone: '+383 49 234 567',
+      email: 'liridon.kastrati@blueenergy.com',
+      language: 'Albanian',
+      status: 'Active',
+    },
+    {
+      id: '3',
+      name: 'Albulena Hoxha',
+      type: 'Emergency',
+      company: 'QuickGas',
+      role: 'Operator',
+      phone: '+383 45 345 678',
+      email: 'albulena.hoxha@quickgas.com',
+      language: 'English',
+      status: 'Active',
+    },
+  ];
+
+  const columns = [
+    {
+      title: 'Contact Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string) => (
+        <Space>
+          <Avatar icon={<UserOutlined />} size="small" />
+          {text}
+        </Space>
+      ),
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+    },
+    {
+      title: 'Company',
+      dataIndex: 'company',
+      key: 'company',
+    },
+    {
+      title: 'Role',
+      dataIndex: 'role',
+      key: 'role',
+    },
+    {
+      title: 'Phone',
+      dataIndex: 'phone',
+      key: 'phone',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => (
+        <span style={{ 
+          color: status === 'Active' ? '#52c41a' : '#faad14',
+          fontWeight: 'bold'
+        }}>
+          {status}
+        </span>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: any) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => console.log('Edit contact:', record.id)}
+          />
+          <Button
+            type="text"
+            icon={<DeleteOutlined />}
+            size="small"
+            danger
+            onClick={() => console.log('Delete contact:', record.id)}
+          />
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <div style={{ padding: '24px' }}>
-
-      <Title level={4}>Contacts</Title>
+        <Title level={4} style={{ marginBottom: '24px' }}>
+          Add New Contact
+        </Title>
         <Form layout="vertical">
           <Row gutter={[24, 16]}>
             {/* Left Column */}
@@ -120,6 +236,12 @@ export const ContactList: React.FC<ContactListProps> = () => {
             </Col>
           </Row>
         </Form>
+        <Table
+          dataSource={mockContacts}
+          columns={columns}
+          pagination={false}
+          rowKey="id"
+        />
 
       {/* Action Buttons */}
       <div style={{

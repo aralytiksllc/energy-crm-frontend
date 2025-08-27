@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Layout, Tabs } from 'antd';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMenu } from '@refinedev/core';
 
 // Internal
 import { useStyles } from './pane-layout.styles';
@@ -71,20 +70,28 @@ export const AppNav = () => {
   ];
 
   return (
-    <Tabs
-      activeKey={pathname}
-      defaultActiveKey={pathname}
-      items={items}
-      onChange={(key) => navigate(key)}
-      tabBarStyle={{
-        paddingLeft: 32,
-        paddingRight: 32,
-        paddingTop: 0,
-        paddingBottom: 0,
-        marginBottom: 0,
-      }}
-      centered={false}
-      type="line"
-    />
+    <div style={{ 
+      position: 'sticky', 
+      top: 0, 
+      zIndex: 1000, 
+      backgroundColor: 'white',
+      borderBottom: '1px solid #f0f0f0'
+    }}>
+      <Tabs
+        activeKey={pathname}
+        defaultActiveKey={pathname}
+        items={items}
+        onChange={(key) => navigate(key)}
+        tabBarStyle={{
+          paddingLeft: 32,
+          paddingRight: 32,
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginBottom: 0,
+        }}
+        centered={false}
+        type="line"
+      />
+    </div>
   );
 };
