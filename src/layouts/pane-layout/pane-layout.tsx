@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Layout, Tabs } from 'antd';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMenu } from '@refinedev/core';
 
 // Internal
 import { useStyles } from './pane-layout.styles';
@@ -41,6 +40,26 @@ export const AppNav = () => {
     {
       key: `/customers/${customerId}`,
       label: 'Company Info',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/contacts`,
+      label: 'Contacts',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/metering-points`,
+      label: 'Metering Points',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/consumption`,
+      label: 'Consumption',
+      disabled: !customerId,
+    },
+    {
+      key: `/customers/${customerId}/documents`,
+      label: 'Documents',
       disabled: !customerId,
     },
     {

@@ -20,8 +20,14 @@ import { BranchList } from './pages/branches/branch-list';
 import { ContactCreate } from './pages/contacts/contact-create';
 import { ContactEdit } from './pages/contacts/contact-edit';
 import { ContactList } from './pages/contacts/contact-list';
+import { MeteringPointList } from './pages/metering-points/metering-point-list';
+import { MeteringPointCreate } from './pages/metering-points/metering-point-create';
+import { MeteringPointEdit } from './pages/metering-points/metering-point-edit';
+import { ConsumptionList } from './pages/consumption/consumption-list';
+import { DocumentsList } from './pages/documents/documents-list';
+import { UsersList } from './pages/users/users-list';
+import { Forecast } from './pages/forecast/forecast';
 import { CommingSoon } from './pages/comming-soon';
-
 
 export type AppRoutesProps = {};
 
@@ -49,23 +55,35 @@ export const AppRoutes: React.FC<AppRoutesProps> = () => (
           <Route path="create" element={<BranchCreate />} />
           <Route path=":id" element={<BranchEdit />} />
         </Route>
-        <Route path=":customerId/branches">
-          <Route index element={<BranchList />} />
-          <Route path="create" element={<BranchCreate />} />
-          <Route path=":id" element={<BranchEdit />} />
-        </Route>
         <Route path=":customerId/contacts">
           <Route index element={<ContactList />} />
           <Route path="create" element={<ContactCreate />} />
           <Route path=":id" element={<ContactEdit />} />
         </Route>
+        <Route path=":customerId/metering-points">
+          <Route index element={<MeteringPointList />} />
+          <Route path="create" element={<MeteringPointCreate />} />
+          <Route path=":meteringPointId" element={<MeteringPointEdit />} />
+        </Route>
+        <Route path=":customerId/consumption">
+          <Route index element={<ConsumptionList />} />
+          <Route path="create" element={<CommingSoon />} />
+          <Route path=":consumptionId" element={<CommingSoon />} />
+        </Route>
+        <Route path=":customerId/documents">
+          <Route index element={<DocumentsList />} />
+          <Route path="create" element={<CommingSoon />} />
+          <Route path=":documentId" element={<CommingSoon />} />
+        </Route>
       </Route>
+      <Route path="/contracts" element={<CommingSoon />} />
+      <Route path="/users" element={<UsersList />} />
+      <Route path="/forecasting" element={<Forecast />} />
       <Route path="/consumptions" element={<CommingSoon />} />
       <Route path="/invoices" element={<CommingSoon />} />
       <Route path="/payments" element={<CommingSoon />} />
       <Route path="/reports" element={<CommingSoon />} />
       <Route path="/settings" element={<CommingSoon />} />
-      <Route path="/users" element={<CommingSoon />} />
       <Route path="/roles" element={<CommingSoon />} />
       <Route path="/permissions" element={<CommingSoon />} />
     </Route>

@@ -5,17 +5,17 @@ import { useTable } from '@refinedev/antd';
 import { useParams } from 'react-router';
 
 // Internal
-import { IContact } from '@/interfaces/contacts';
+import { IMeteringPoint } from '@/interfaces/metering-points';
 import { List } from '@/components/list';
 import { defaultTableProps } from './constants/table';
 
-export type ContactListProps = {};
+export type MeteringPointListProps = {};
 
-export const ContactList: React.FC<ContactListProps> = () => {
+export const MeteringPointList: React.FC<MeteringPointListProps> = () => {
   const { customerId } = useParams();
 
-  const { tableProps } = useTable<IContact>({
-    resource: 'contacts',
+  const { tableProps } = useTable<IMeteringPoint>({
+    resource: 'metering-points',
     filters: {
       initial: [
         {
@@ -28,7 +28,7 @@ export const ContactList: React.FC<ContactListProps> = () => {
   });
 
   return (
-    <List title="Contacts">
+    <List title="MeteringPoint">
       <Table
         {...defaultTableProps}
         {...tableProps}

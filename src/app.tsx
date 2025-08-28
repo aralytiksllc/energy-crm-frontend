@@ -17,7 +17,7 @@ import { AppRoutes } from './app.routes';
 
 import './app.styles.css';
 
-type AppProps = Record<string, never>;
+type AppProps = {};
 
 export const App: React.FC<AppProps> = () => (
   <BrowserRouter>

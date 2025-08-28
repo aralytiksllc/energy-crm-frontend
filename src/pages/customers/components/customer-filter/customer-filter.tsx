@@ -1,17 +1,14 @@
 // External
 import * as React from 'react';
-import { Space, Button, Typography } from 'antd';
+import { Space, Button, Typography, Select, Form } from 'antd';
 import { Link } from '@refinedev/core';
 import { PlusOutlined } from '@ant-design/icons';
 
 // Internal
 import { stageOptions } from '@/constants/stage-options';
 import { Search } from '@/components/search';
-import { CheckableTagGroup } from '@/components/checkable-tag';
 import { useStyles } from './customer-filter.styles';
 import type { CustomerFilterProps } from './customer-filter.types';
-
-const { Text } = Typography;
 
 const newCustomerLinkProps = {
   to: { resource: 'customers', action: 'create' },
@@ -19,8 +16,7 @@ const newCustomerLinkProps = {
 } as const;
 
 export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
-  const { searchTerm, onSearchTermChange, selectedStages, onStageChange } =
-    props;
+  const { searchTerm, onSearchTermChange, onStageChange } = props;
 
   const { styles } = useStyles();
 
@@ -44,12 +40,17 @@ export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
         delaySearch={true}
         allowClear={true}
       />
-      <CheckableTagGroup
-        prefix={<Text strong>Filters:</Text>}
-        onChange={onStageChange}
-        options={stageOptions}
-        value={selectedStages}
-      />
+      <Form layout="vertical">
+        <Form.Item label="Filter by Stage:" name="stage">
+          <Select
+            options={stageOptions}
+            onChange={(value) => {
+              console.log('Stage changed:', value);
+              // këtu dërgo change-in ku të duash
+            }}
+          />
+        </Form.Item>
+      </Form>
     </Space>
   );
 };
