@@ -1,16 +1,16 @@
 // External
-import { EditButton } from '@refinedev/antd';
-import { TableProps } from 'antd/es/table';
 import { Empty, Space } from 'antd';
+import { TableProps } from 'antd/es/table';
+import { EditButton } from '@refinedev/antd';
 
 // Internal
-import { IBranch } from '@/interfaces/branches';
+import { IMeteringPoint } from '@/interfaces/metering-points';
 import { DeleteButton } from '@/components/delete-button';
 
-export const defaultTableProps: TableProps<IBranch> = {
+export const defaultTableProps: TableProps<IMeteringPoint> = {
   scroll: { x: 'max-content' },
 
-  locale: { emptyText: <Empty description="No branches found" /> },
+  locale: { emptyText: <Empty description="No metering point found" /> },
 
   columns: [
     { title: 'ID', dataIndex: 'id', key: 'id' },
@@ -20,22 +20,29 @@ export const defaultTableProps: TableProps<IBranch> = {
       key: 'branchName',
     },
     {
-      title: 'Peak Load (kW)',
-      dataIndex: 'peakLoadKw',
-      key: 'peakLoadKw',
-      render: (value) => value ?? '-',
+      title: 'Branch ID',
+      dataIndex: 'branchId',
+      key: 'branchId',
     },
     {
-      title: 'Weather Data Linkage',
-      dataIndex: 'weatherDataLinkage',
-      key: 'weatherDataLinkage',
-      render: (value) => value ?? '-',
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
-      title: 'Customer ID',
-      dataIndex: 'customerId',
-      key: 'customerId',
-      render: (value) => value ?? '-',
+      title: 'City / Region',
+      dataIndex: 'cityRegion',
+      key: 'cityRegion',
+    },
+    {
+      title: 'Contact',
+      dataIndex: 'contact',
+      key: 'contact',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: 'Actions',
@@ -51,9 +58,9 @@ export const defaultTableProps: TableProps<IBranch> = {
           />
           <DeleteButton
             recordItemId={record.id}
-            confirmTitle={`Are you sure you want to delete "${record.branchName}"?`}
+            confirmTitle={`Are you sure you want to delete "${record.id}"?`}
             confirmMessage="This action cannot be undone."
-            resource="branches"
+            resource="metering-points"
             size="small"
           />
         </Space>

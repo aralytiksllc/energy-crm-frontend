@@ -1,5 +1,8 @@
+// External
 import type { FormProps } from 'antd';
 
-export type MeteringPointsFormProps = {
+// Internal
+
+export type MeteringPointFormProps = {
   formProps: FormProps;
 };

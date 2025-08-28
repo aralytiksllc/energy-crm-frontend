@@ -70,28 +70,20 @@ export const AppNav = () => {
   ];
 
   return (
-    <div style={{ 
-      position: 'sticky', 
-      top: 0, 
-      zIndex: 1000, 
-      backgroundColor: 'white',
-      borderBottom: '1px solid #f0f0f0'
-    }}>
-      <Tabs
-        activeKey={pathname}
-        defaultActiveKey={pathname}
-        items={items}
-        onChange={(key) => navigate(key)}
-        tabBarStyle={{
-          paddingLeft: 32,
-          paddingRight: 32,
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginBottom: 0,
-        }}
-        centered={false}
-        type="line"
-      />
-    </div>
+    <Tabs
+      activeKey={pathname}
+      defaultActiveKey={pathname}
+      items={items}
+      onChange={(key) => navigate(key)}
+      tabBarStyle={{
+        paddingLeft: 32,
+        paddingRight: 32,
+        paddingTop: 0,
+        paddingBottom: 0,
+        marginBottom: 0,
+      }}
+      centered={false}
+      type="line"
+    />
   );
 };

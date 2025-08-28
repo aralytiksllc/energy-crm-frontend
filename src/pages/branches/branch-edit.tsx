@@ -12,8 +12,6 @@ import { BranchForm } from './components/branch-form';
 export type BranchEditProps = {};
 
 export const BranchEdit: React.FC<BranchEditProps> = () => {
-  const { branchId } = useParams();
-
   const { formLoading, formProps, saveButtonProps } = useForm<
     IBranch,
     HttpError,
@@ -21,7 +19,6 @@ export const BranchEdit: React.FC<BranchEditProps> = () => {
   >({
     resource: 'branches',
     action: 'edit',
-    id: branchId,
     redirect: 'list',
   });
 
@@ -30,7 +27,6 @@ export const BranchEdit: React.FC<BranchEditProps> = () => {
       title="Edit Branch"
       resource="branches"
       saveButtonProps={saveButtonProps}
-      recordItemId={branchId}
       isLoading={formLoading}
     >
       <BranchForm formProps={formProps} />

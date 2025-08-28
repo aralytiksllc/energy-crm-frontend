@@ -1,6 +1,6 @@
 // External
 import * as React from 'react';
-import { Space, Button, Typography, Select } from 'antd';
+import { Space, Button, Typography, Select, Form } from 'antd';
 import { Link } from '@refinedev/core';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -10,27 +10,15 @@ import { Search } from '@/components/search';
 import { useStyles } from './customer-filter.styles';
 import type { CustomerFilterProps } from './customer-filter.types';
 
-const { Text } = Typography;
-const { Option } = Select;
-
 const newCustomerLinkProps = {
   to: { resource: 'customers', action: 'create' },
   options: { keepQuery: true },
 } as const;
 
 export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
-  const { searchTerm, onSearchTermChange, onStageChange } =
-    props;
+  const { searchTerm, onSearchTermChange, onStageChange } = props;
 
   const { styles } = useStyles();
-
-  const handleFilterChange = (value: string) => {
-    if (value === 'all') {
-      onStageChange('', false);
-    } else {
-      onStageChange(value, true);
-    }
-  };
 
   return (
     <Space
@@ -52,24 +40,17 @@ export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
         delaySearch={true}
         allowClear={true}
       />
-      <div>
-        <Text strong style={{ display: 'block', marginBottom: '8px' }}>
-          Filter by Stage:
-        </Text>
-        <Select
-          defaultValue="all"
-          style={{ width: '50%' }}
-          onChange={handleFilterChange}
-          placeholder="Select a stage"
-        >
-          <Option value="all">All</Option>
-          {stageOptions.map((option) => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))}
-        </Select>
-      </div>
+      <Form layout="vertical">
+        <Form.Item label="Filter by Stage:" name="stage">
+          <Select
+            options={stageOptions}
+            onChange={(value) => {
+              console.log('Stage changed:', value);
+              // këtu dërgo change-in ku të duash
+            }}
+          />
+        </Form.Item>
+      </Form>
     </Space>
   );
 };

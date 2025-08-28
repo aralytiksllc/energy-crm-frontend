@@ -21,7 +21,7 @@ import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 const { Title } = Typography;
 const { Option } = Select;
 
-export type UsersListProps = Record<string, never>;
+export type UsersListProps = {};
 
 export const UsersList: React.FC<UsersListProps> = () => {
   // Mock data for users

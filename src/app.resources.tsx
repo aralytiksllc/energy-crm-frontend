@@ -7,9 +7,16 @@ export const resources: ResourceProps[] = [
   {
     name: 'customers',
     identifier: 'customers',
-    list: '/customers',
     create: '/customers',
     edit: '/customers/:id',
+    meta: { canDelete: true },
+  },
+  {
+    name: 'contacts',
+    identifier: 'contacts',
+    list: '/customers/:customerId/contacts',
+    create: '/customers/:customerId/contacts/create',
+    edit: '/customers/:customerId/contacts/:id',
     meta: { canDelete: true },
   },
   {

@@ -4,11 +4,11 @@ import { useForm } from '@refinedev/antd';
 
 // Internal
 import { Create } from '@/components/create';
-import { MeteringPointsForm } from './components/metering-points-form';
+import { MeteringPointForm } from './components/metering-point-form';
 
-export type MeteringPointsCreateProps = {};
+export type MeteringPointCreateProps = {};
 
-export const MeteringPointsCreate: React.FC<MeteringPointsCreateProps> = () => {
+export const MeteringPointCreate: React.FC<MeteringPointCreateProps> = () => {
   const { formLoading, formProps, saveButtonProps } =
     useForm({
       resource: 'metering-points',
@@ -23,7 +23,7 @@ export const MeteringPointsCreate: React.FC<MeteringPointsCreateProps> = () => {
       breadcrumb={false}
       goBack={false}
     >
-      <MeteringPointsForm formProps={formProps} />
+      <MeteringPointForm formProps={formProps} />
     </Create>
   );
 };

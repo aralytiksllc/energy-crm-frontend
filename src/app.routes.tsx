@@ -20,17 +20,16 @@ import { BranchList } from './pages/branches/branch-list';
 import { ContactCreate } from './pages/contacts/contact-create';
 import { ContactEdit } from './pages/contacts/contact-edit';
 import { ContactList } from './pages/contacts/contact-list';
-import { MeteringPointsList } from './pages/metering-points/metering-points-list';
-import { MeteringPointsCreate } from './pages/metering-points/metering-points-create';
-import { MeteringPointsEdit } from './pages/metering-points/metering-points-edit';
+import { MeteringPointList } from './pages/metering-points/metering-point-list';
+import { MeteringPointCreate } from './pages/metering-points/metering-point-create';
+import { MeteringPointEdit } from './pages/metering-points/metering-point-edit';
 import { ConsumptionList } from './pages/consumption/consumption-list';
 import { DocumentsList } from './pages/documents/documents-list';
 import { UsersList } from './pages/users/users-list';
 import { Forecast } from './pages/forecast/forecast';
 import { CommingSoon } from './pages/comming-soon';
 
-
-export type AppRoutesProps = Record<string, never>;
+export type AppRoutesProps = {};
 
 export const AppRoutes: React.FC<AppRoutesProps> = () => (
   <Routes>
@@ -50,21 +49,21 @@ export const AppRoutes: React.FC<AppRoutesProps> = () => (
         }
       >
         <Route index element={<CustomerCreate />} />
-        <Route path=":customerId" element={<CustomerEdit />} />
+        <Route path=":id" element={<CustomerEdit />} />
         <Route path=":customerId/branches">
           <Route index element={<BranchList />} />
           <Route path="create" element={<BranchCreate />} />
-          <Route path=":branchId" element={<BranchEdit />} />
+          <Route path=":id" element={<BranchEdit />} />
         </Route>
         <Route path=":customerId/contacts">
           <Route index element={<ContactList />} />
           <Route path="create" element={<ContactCreate />} />
-          <Route path=":contactId" element={<ContactEdit />} />
+          <Route path=":id" element={<ContactEdit />} />
         </Route>
         <Route path=":customerId/metering-points">
-          <Route index element={<MeteringPointsList />} />
-          <Route path="create" element={<MeteringPointsCreate />} />
-          <Route path=":meteringPointId" element={<MeteringPointsEdit />} />
+          <Route index element={<MeteringPointList />} />
+          <Route path="create" element={<MeteringPointCreate />} />
+          <Route path=":meteringPointId" element={<MeteringPointEdit />} />
         </Route>
         <Route path=":customerId/consumption">
           <Route index element={<ConsumptionList />} />

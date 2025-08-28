@@ -9,7 +9,7 @@ import { useParams } from 'react-router';
 const { Title } = Typography;
 const { Dragger } = Upload;
 
-export type DocumentsListProps = Record<string, never>;
+export type DocumentsListProps = {};
 
 export const DocumentsList: React.FC<DocumentsListProps> = () => {
   const { customerId } = useParams();

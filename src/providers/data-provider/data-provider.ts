@@ -34,9 +34,7 @@ export const createDataProvider = (
     ): Promise<GetListResponse<TData>> {
       const queryString = dataHelper.buildQueryString(params);
 
-      const endpoint = urls[params.resource as keyof typeof urls].list;
-
-      const url = `${resolveUrl(endpoint, params)}?${queryString}`;
+      const url = `${params.resource}?${queryString}`;
 
       try {
         const response = await httpClient.get(url).json<any>();
@@ -86,9 +84,7 @@ export const createDataProvider = (
     async getOne<TData extends BaseRecord>(
       params: GetOneParams,
     ): Promise<GetOneResponse<TData>> {
-      const endpoint = urls[params.resource as keyof typeof urls].show;
-
-      const url = resolveUrl(endpoint, params);
+      const url = `${params.resource}/${params.id}`;
 
       const data = await httpClient.get(url).json<TData>();
 
@@ -98,9 +94,7 @@ export const createDataProvider = (
     async create<TData extends BaseRecord, TVariables>(
       params: CreateParams<TVariables>,
     ): Promise<CreateResponse<TData>> {
-      const endpoint = urls[params.resource as keyof typeof urls].create;
-
-      const url = resolveUrl(endpoint, params);
+      const url = `${params.resource}`;
 
       const response = await httpClient
         .post(url, {
@@ -116,9 +110,7 @@ export const createDataProvider = (
     async update<TData extends BaseRecord, TVariables>(
       params: UpdateParams<TVariables>,
     ): Promise<UpdateResponse<TData>> {
-      const endpoint = urls[params.resource as keyof typeof urls].edit;
-
-      const url = resolveUrl(endpoint, params);
+      const url = `${params.resource}/${params.id}`;
 
       const response = await httpClient
         .put(url, { json: params.variables })
@@ -132,9 +124,7 @@ export const createDataProvider = (
     async deleteOne<TData extends BaseRecord, TVariables>(
       params: DeleteOneParams<TVariables>,
     ): Promise<DeleteOneResponse<TData>> {
-      const endpoint = urls[params.resource as keyof typeof urls].delete;
-
-      const url = resolveUrl(endpoint, params);
+      const url = `${params.resource}/${params.id}`;
 
       const response = await httpClient.delete(url).json<TData>();
 

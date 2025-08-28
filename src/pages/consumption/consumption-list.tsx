@@ -10,7 +10,7 @@ import { Area } from '@ant-design/plots';
 const { Title } = Typography;
 const { Dragger } = Upload;
 
-export type ConsumptionListProps = Record<string, never>;
+export type ConsumptionListProps = {};
 
 export const ConsumptionList: React.FC<ConsumptionListProps> = () => {
   const { customerId } = useParams();
