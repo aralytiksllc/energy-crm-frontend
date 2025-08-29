@@ -9,7 +9,7 @@ export const Create: React.FC<CreateProps> = (props) => {
   const { children, ...restProps } = props;
 
   return (
-    <AntdCreate {...restProps} breadcrumb={false} >
+    <AntdCreate {...restProps} goBack={false}   >
       {children}
     </AntdCreate>
   );

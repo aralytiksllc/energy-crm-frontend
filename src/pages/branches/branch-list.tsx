@@ -1,15 +1,17 @@
 // External
 import * as React from 'react';
-import { Table } from 'antd';
+import { Table, Empty } from 'antd';
 import { useTable } from '@refinedev/antd';
 import { useParams } from 'react-router';
 
 // Internal
 import { IBranch } from '@/interfaces/branches';
 import { List } from '@/components/list';
-import { defaultTableProps } from './constants/table';
+import { columns } from './constants/branch-columns';
 
 export type BranchListProps = {};
+
+const emptyText = <Empty description="No branches found." />;
 
 export const BranchList: React.FC<BranchListProps> = () => {
   const { customerId } = useParams();
@@ -30,8 +32,10 @@ export const BranchList: React.FC<BranchListProps> = () => {
   return (
     <List title="Branches">
       <Table
-        {...defaultTableProps}
         {...tableProps}
+        columns={columns}
+        scroll={{ x: 'max-content' }}
+        locale={{ emptyText }}
         pagination={false}
         rowKey="id"
       />

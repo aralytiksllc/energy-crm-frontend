@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { useForm } from '@refinedev/antd';
 import type { HttpError } from '@refinedev/core';
-import { useParams } from 'react-router';
 
 // Internal
 import type { IBranch } from '@/interfaces/branches';

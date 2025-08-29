@@ -7,6 +7,7 @@ import { Routes, Route, Outlet } from 'react-router';
 // Internal
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { PaneLayout } from './layouts/pane-layout/pane-layout';
+import { ListLayout } from './layouts/list-layout/list-layout';
 import { Register } from './pages/authentication/register';
 import { Login } from './pages/authentication/login';
 import { ForgotPassword } from './pages/authentication/forgot-password';
@@ -25,9 +26,15 @@ import { MeteringPointCreate } from './pages/metering-points/metering-point-crea
 import { MeteringPointEdit } from './pages/metering-points/metering-point-edit';
 import { ConsumptionList } from './pages/consumption/consumption-list';
 import { DocumentsList } from './pages/documents/documents-list';
+
+import { ContractList } from './pages/contracts/contract-list';
+import { ContractCreate } from './pages/contracts/contract-create';
+import { ContractEdit } from './pages/contracts/contract-edit';
+
 import { UsersList } from './pages/users/users-list';
 import { Forecast } from './pages/forecast/forecast';
 import { CommingSoon } from './pages/comming-soon';
+import { GenerateContractPdf } from './pages/GenerateContractPdf';
 
 export type AppRoutesProps = {};
 
@@ -63,7 +70,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = () => (
         <Route path=":customerId/metering-points">
           <Route index element={<MeteringPointList />} />
           <Route path="create" element={<MeteringPointCreate />} />
-          <Route path=":meteringPointId" element={<MeteringPointEdit />} />
+          <Route path=":id" element={<MeteringPointEdit />} />
         </Route>
         <Route path=":customerId/consumption">
           <Route index element={<ConsumptionList />} />
@@ -76,7 +83,22 @@ export const AppRoutes: React.FC<AppRoutesProps> = () => (
           <Route path=":documentId" element={<CommingSoon />} />
         </Route>
       </Route>
-      <Route path="/contracts" element={<CommingSoon />} />
+
+      <Route
+        element={
+          <ListLayout>
+            <Outlet />
+          </ListLayout>
+        }
+      >
+        <Route path="/contracts">
+          <Route index element={<ContractList />} />
+          <Route path="create" element={<ContractCreate />} />
+          <Route path=":id" element={<ContractEdit />} />
+          <Route path="/contracts/:id/generate-pdf" element={<GenerateContractPdf />} />
+        </Route>
+      </Route>
+
       <Route path="/users" element={<UsersList />} />
       <Route path="/forecasting" element={<Forecast />} />
       <Route path="/consumptions" element={<CommingSoon />} />

@@ -19,7 +19,7 @@ export const MeteringPointList: React.FC<MeteringPointListProps> = () => {
     filters: {
       initial: [
         {
-          field: 'customerId',
+          field: 'branch.customerId',
           operator: '=' as any,
           value: customerId,
         },
@@ -28,7 +28,7 @@ export const MeteringPointList: React.FC<MeteringPointListProps> = () => {
   });
 
   return (
-    <List title="MeteringPoint">
+    <List title="Metering Points">
       <Table
         {...defaultTableProps}
         {...tableProps}

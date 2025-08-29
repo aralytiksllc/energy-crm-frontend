@@ -8,13 +8,13 @@ export const ContactsTab: React.FC = () => {
     <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
       <Form layout="vertical">
         <Row gutter={[16, 16]} style={{ margin: 0 }}>
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Contact Name">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Contact type">
               <Select placeholder="Select">
                 <Option value="primary">Primary</Option>
@@ -24,13 +24,13 @@ export const ContactsTab: React.FC = () => {
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Company / Department">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Role">
               <Select placeholder="Select">
                 <Option value="manager">Manager</Option>
@@ -41,19 +41,19 @@ export const ContactsTab: React.FC = () => {
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Phone Number">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Email Address">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Language Preference">
               <Select placeholder="Select language">
                 <Option value="en">English</Option>
@@ -64,7 +64,7 @@ export const ContactsTab: React.FC = () => {
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Status">
               <Select placeholder="Select status">
                 <Option value="active">Active</Option>
@@ -74,7 +74,7 @@ export const ContactsTab: React.FC = () => {
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Branch Name">
               <Input placeholder="Type here" />
             </Form.Item>

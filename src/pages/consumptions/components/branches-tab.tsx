@@ -8,25 +8,25 @@ export const BranchesTab: React.FC = () => {
     <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
       <Form layout="vertical">
         <Row gutter={[16, 16]} style={{ margin: 0 }}>
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Branch Name">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Branch Code / ID">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Address">
               <Input placeholder="Type here" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="City / Region">
               <Select placeholder="Select">
                 <Option value="pristina">Pristina</Option>
@@ -37,7 +37,7 @@ export const BranchesTab: React.FC = () => {
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Contact Person">
               <Select placeholder="Select">
                 <Option value="arben">Arben Gashi</Option>
@@ -47,7 +47,7 @@ export const BranchesTab: React.FC = () => {
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Operational Status">
               <Select placeholder="Select(Active / Inactive)">
                 <Option value="active">Active</Option>

@@ -3,7 +3,7 @@ import type { Rule } from 'antd/es/form';
 
 // Internal
 
-export const branchFormRules: Record<string, Rule[]> = {
+export const rules: Record<string, Rule[]> = {
   branchName: [
     { required: true, whitespace: true, message: 'Branch name is required' },
     { max: 512, message: 'Max 512 characters' },

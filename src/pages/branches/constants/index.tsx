@@ -2,4 +2,4 @@
 
 // Internal
 
-export * from './table';
+export * from './branch-columns';

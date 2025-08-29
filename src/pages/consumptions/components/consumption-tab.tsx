@@ -19,25 +19,25 @@ export const ConsumptionTab: React.FC = () => {
 
         {/* Summary Data Fields */}
         <Row gutter={[16, 16]} style={{ margin: 0 }}>
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Data Range Covered">
               <Input placeholder="Auto after upload" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Average Daily kWh">
               <Input placeholder="Auto after upload" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Peak Load (kW)">
               <Input placeholder="Auto after upload" />
             </Form.Item>
           </Col>
           
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12}>
             <Form.Item label="Weather Data Linkage">
               <Input placeholder="Auto after upload" />
             </Form.Item>

@@ -9,7 +9,7 @@ export const Edit: React.FC<EditProps> = (props) => {
   const { children, ...restProps } = props;
 
   return (
-    <AntdEdit {...restProps} breadcrumb={false}>
+    <AntdEdit {...restProps} goBack={false}>
       {children}
     </AntdEdit>
   );
