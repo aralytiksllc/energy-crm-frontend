@@ -23,7 +23,7 @@ export const ContractEdit: React.FC<ContractEditProps> = () => {
 
   return (
     <Edit
-      title="Edit Contract"
+      title="Edit contract"
       resource="contracts"
       saveButtonProps={saveButtonProps}
       isLoading={formLoading}

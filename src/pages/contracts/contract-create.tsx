@@ -23,7 +23,7 @@ export const ContractCreate: React.FC<ContractCreateProps> = () => {
 
   return (
     <Create
-      title="Create Contract"
+      title="Create contract"
       resource="contracts"
       saveButtonProps={saveButtonProps}
       isLoading={formLoading}
