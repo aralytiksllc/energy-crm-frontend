@@ -18,7 +18,7 @@ export const ContractList: React.FC<ContractListProps> = () => {
   });
 
   return (
-    <List title="Contractes">
+    <List title="contracts">
       <Table
         {...tableProps}
         columns={columns}
