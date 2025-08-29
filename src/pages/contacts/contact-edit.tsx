@@ -7,10 +7,13 @@ import type { HttpError } from '@refinedev/core';
 import type { IContact } from '@/interfaces/contacts';
 import { Edit } from '@/components/edit';
 import { ContactForm } from './components/contact-form';
+import { useParams } from 'react-router';
 
 export type ContactEditProps = {};
 
 export const ContactEdit: React.FC<ContactEditProps> = () => {
+  const { customerId } = useParams();
+
   const { formLoading, formProps, saveButtonProps } = useForm<
     IContact,
     HttpError,

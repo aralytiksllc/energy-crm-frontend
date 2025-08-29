@@ -1,30 +1,47 @@
 // External
 import * as React from 'react';
-import type { FormProps } from 'antd'; // v5
 import { Form, Row, Col, Input, InputNumber } from 'antd';
+import { useParams } from 'react-router';
 
 // Internal
 import type { IBranch } from '@/interfaces/branches';
-import { branchFormRules } from './branch-form.rules';
+import { useLatest } from '@/hooks/use-latest';
+import { rules } from './branch-form.rules';
 import { useStyles } from './branch-form.styles';
-
-export type BranchFormProps = {
-  formProps: FormProps<IBranch>;
-};
+import type { BranchFormProps } from './branch-form.types';
 
 export const BranchForm: React.FC<BranchFormProps> = (props) => {
   const { formProps } = props;
 
   const { styles } = useStyles();
 
+  const { customerId } = useParams();
+
+  const onFinishRef = useLatest(formProps.onFinish);
+
+  const customerIdRef = useLatest(customerId);
+
+  const handleFinish = React.useCallback(
+    (values: IBranch) => {
+      const customerId = Number(customerIdRef.current);
+      return onFinishRef.current?.({ ...values, customerId });
+    },
+    [onFinishRef, customerIdRef],
+  );
+
   return (
-    <Form {...formProps} layout="vertical" scrollToFirstError>
+    <Form
+      {...formProps}
+      onFinish={handleFinish}
+      scrollToFirstError={true}
+      layout="vertical"
+    >
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="branchName"
             label="Branch Name"
-            rules={branchFormRules.branchName}
+            rules={rules.branchName}
           >
             <Input
               placeholder="Type here"
@@ -34,11 +51,11 @@ export const BranchForm: React.FC<BranchFormProps> = (props) => {
           </Form.Item>
         </Col>
 
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="peakLoadKw"
             label="Peak Load Kw"
-            rules={branchFormRules.peakLoadKw}
+            rules={rules.peakLoadKw}
           >
             <InputNumber
               placeholder="Type here"
@@ -50,11 +67,11 @@ export const BranchForm: React.FC<BranchFormProps> = (props) => {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="weatherDataLinkage"
             label="Weather Data Linkage"
-            rules={branchFormRules.weatherDataLinkage}
+            rules={rules.weatherDataLinkage}
           >
             <Input
               placeholder="Type here"
@@ -64,7 +81,7 @@ export const BranchForm: React.FC<BranchFormProps> = (props) => {
           </Form.Item>
         </Col>
 
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           {/* Placehold */}
         </Col>
       </Row>

@@ -43,6 +43,11 @@ export const AppNav = () => {
       disabled: !customerId,
     },
     {
+      key: `/customers/${customerId}/branches`,
+      label: 'Branches',
+      disabled: !customerId,
+    },
+    {
       key: `/customers/${customerId}/contacts`,
       label: 'Contacts',
       disabled: !customerId,
@@ -60,11 +65,6 @@ export const AppNav = () => {
     {
       key: `/customers/${customerId}/documents`,
       label: 'Documents',
-      disabled: !customerId,
-    },
-    {
-      key: `/customers/${customerId}/branches`,
-      label: 'Branches',
       disabled: !customerId,
     },
   ];

@@ -17,7 +17,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
   return (
     <Form {...formProps} layout="vertical" scrollToFirstError>
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="companyName"
             label="Company Name"
@@ -26,7 +26,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             <Input placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="registrationNumber"
             label="Business Registration Number"
@@ -38,7 +38,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="legalId"
             label="Legal ID"
@@ -47,7 +47,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             <Input placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="legalStatus"
             label="Legal Status"
@@ -97,7 +97,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="companyStatus"
             label="Status"
@@ -109,7 +109,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             </Select>
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="registrationDate"
             label="Founding Date"
@@ -130,7 +130,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="registeredAddress"
             label="Registered Address"
@@ -139,7 +139,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             <Input.TextArea rows={1} placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="cityRegion"
             label="City / Region"
@@ -158,7 +158,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="authorizedRepresentative"
             label="Authorized Representative"
@@ -167,7 +167,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             <Input placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="companyRole"
             label="Role"
@@ -179,7 +179,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="sectorPrimary"
             label="Sector Primary"
@@ -192,7 +192,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             </Select>
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="sectorSecondary"
             label="Sector Secondary"
@@ -208,7 +208,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="clientStatus"
             label="Client Status"
@@ -223,7 +223,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = (props) => {
             </Select>
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="preferredCommunicationLanguage"
             label="Preferred Communication Language"

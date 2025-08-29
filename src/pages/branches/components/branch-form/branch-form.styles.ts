@@ -3,9 +3,7 @@ import { createStyles } from 'antd-style';
 
 // Internal
 
-export const useStyles = createStyles((theme) => {
-  const { token } = theme;
-
+export const useStyles = createStyles(() => {
   return {
     input: {
       width: '100%',

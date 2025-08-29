@@ -1,17 +1,13 @@
 // External
 import * as React from 'react';
-import type { FormProps } from 'antd'; // v5
 import { Form, Row, Col, Input, Select } from 'antd';
+import { useParams } from 'react-router';
 
 // Internal
 import type { IContact } from '@/interfaces/contacts';
-import { contactFormRules } from './contact-form.rules';
-import { useStyles } from './contact-form.styles';
-import { useParams } from 'react-router';
-
-export type ContactFormProps = {
-  formProps: FormProps<IContact>;
-};
+import { useLatest } from '@/hooks/use-latest';
+import { rules } from './contact-form.rules';
+import type { ContactFormProps } from './contact-form.types';
 
 const { Option } = Select;
 
@@ -20,99 +16,64 @@ export const ContactForm: React.FC<ContactFormProps> = (props) => {
 
   const { customerId } = useParams();
 
-  const { styles } = useStyles();
+  const onFinishRef = useLatest(formProps.onFinish);
 
-  const initialValues = {
-    ...formProps.initialValues,
-    customerId: Number(customerId),
-  };
+  const customerIdRef = useLatest(customerId);
+
+  const handleFinish = React.useCallback(
+    (values: IContact) => {
+      const customerId = Number(customerIdRef.current);
+      return onFinishRef.current?.({ ...values, customerId });
+    },
+    [onFinishRef, customerIdRef],
+  );
 
   return (
     <Form
       {...formProps}
-      initialValues={initialValues}
+      onFinish={handleFinish}
+      scrollToFirstError={true}
       layout="vertical"
-      scrollToFirstError
     >
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="contactName" label="Contact Name">
+        <Col xs={24} sm={12}>
+          <Form.Item name="name" label="Full Name" rules={rules.name}>
             <Input placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="contactType" label="Contact type">
-            <Select placeholder="Select">
-              <Option value="primary">Primary</Option>
-              <Option value="secondary">Secondary</Option>
-              <Option value="emergency">Emergency</Option>
-            </Select>
+        <Col xs={24} sm={12}>
+          <Form.Item name="email" label="Email" rules={rules.email}>
+            <Input placeholder="Type here" type="email" />
           </Form.Item>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="companyDepartment" label="Company / Department">
+        <Col xs={24} sm={12}>
+          <Form.Item name="phone" label="Phone" rules={rules.phone}>
             <Input placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="role" label="Role">
-            <Select placeholder="Select">
-              <Option value="manager">Manager</Option>
-              <Option value="supervisor">Supervisor</Option>
-              <Option value="operator">Operator</Option>
-              <Option value="analyst">Analyst</Option>
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="phoneNumber" label="Phone Number">
-            <Input placeholder="Type here" />
-          </Form.Item>
-        </Col>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="emailAddress" label="Email Address">
+        <Col xs={24} sm={12}>
+          <Form.Item name="type" label="Type" rules={rules.type}>
             <Input placeholder="Type here" />
           </Form.Item>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="languagePreference" label="Language Preference">
-            <Select placeholder="Select language">
-              <Option value="en">English</Option>
-              <Option value="sq">Albanian</Option>
-              <Option value="sr">Serbian</Option>
-              <Option value="tr">Turkish</Option>
-            </Select>
+        <Col xs={24} sm={12}>
+          <Form.Item name="role" label="Role" rules={rules.role}>
+            <Input placeholder="Type here" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="status" label="Status">
+        <Col xs={24} sm={12}>
+          <Form.Item name="status" label="Status" rules={rules.status}>
             <Select placeholder="Select status">
-              <Option value="active">Active</Option>
-              <Option value="inactive">Inactive</Option>
-              <Option value="pending">Pending</Option>
+              <Option value="ACTIVE">Active</Option>
+              <Option value="INACTIVE">Inactive</Option>
             </Select>
           </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={12}>
-          <Form.Item name="branchName" label="Branch Name">
-            <Input placeholder="Type here" />
-          </Form.Item>
-        </Col>
-
-        <Col xs={24} sm={12} lg={12}>
-          {/* Placehold */}
         </Col>
       </Row>
     </Form>

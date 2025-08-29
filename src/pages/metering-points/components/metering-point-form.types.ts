@@ -2,7 +2,8 @@
 import type { FormProps } from 'antd';
 
 // Internal
+import type { IMeteringPoint } from '@/interfaces/metering-points';
 
-export type MeteringPointFormProps = {
-  formProps: FormProps;
-};
+export interface MeteringPointFormProps {
+  formProps: FormProps<IMeteringPoint>;
+}

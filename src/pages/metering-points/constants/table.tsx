@@ -15,34 +15,32 @@ export const defaultTableProps: TableProps<IMeteringPoint> = {
   columns: [
     { title: 'ID', dataIndex: 'id', key: 'id' },
     {
-      title: 'Branch Name',
-      dataIndex: 'branchName',
+      title: 'Branch',
+      dataIndex: ['branch', 'branchName'],
       key: 'branchName',
     },
     {
-      title: 'Branch ID',
-      dataIndex: 'branchId',
-      key: 'branchId',
+      title: 'Location Address',
+      dataIndex: 'locationAddress',
+      key: 'locationAddress',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'City/Locality',
+      dataIndex: 'cityOrLocality',
+      key: 'cityOrLocality',
+    },
+    { title: 'Country', dataIndex: 'country', key: 'country' },
+    { title: 'Voltage Level', dataIndex: 'voltageLevel', key: 'voltageLevel' },
+    { title: 'Meter Type', dataIndex: 'meterType', key: 'meterType' },
+    {
+      title: 'Metering Point Status',
+      dataIndex: 'meteringPointStatus',
+      key: 'meteringPointStatus',
     },
     {
-      title: 'City / Region',
-      dataIndex: 'cityRegion',
-      key: 'cityRegion',
-    },
-    {
-      title: 'Contact',
-      dataIndex: 'contact',
-      key: 'contact',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: 'Operational Status',
+      dataIndex: 'operationalStatus',
+      key: 'operationalStatus',
     },
     {
       title: 'Actions',
@@ -52,7 +50,7 @@ export const defaultTableProps: TableProps<IMeteringPoint> = {
         <Space size="small" key={`actions-${record.id}`}>
           <EditButton
             recordItemId={record.id}
-            resource="branches"
+            resource="metering-points"
             size="small"
             hideText
           />
