@@ -151,7 +151,7 @@ export const AppRoutes: React.FC = () => (
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/update-password/:token" element={<UpdatePassword />} />
+      <Route path="/update-password" element={<UpdatePassword />} />
       <Route path="*" element={<ErrorComponent />} />
     </Route>
   </Routes>

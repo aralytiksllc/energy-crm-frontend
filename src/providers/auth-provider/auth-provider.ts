@@ -6,6 +6,7 @@ import type { IAuthResponse } from '@/interfaces/authentication';
 import type { IUser } from '@/interfaces/users';
 import { httpClient } from '@/helpers/http-client';
 import { authStorage } from '@/helpers/auth-storage';
+import { json } from 'stream/consumers';
 
 export const authProvider: AuthProvider = {
   async login(params) {
@@ -56,15 +57,63 @@ export const authProvider: AuthProvider = {
     }
   },
 
-  async onError(error) {
-    if (error.statusCode === 401 || error.statusCode === 403) {
-      return {
-        logout: true,
-        redirectTo: '/login',
-        error,
-      };
-    }
+  async forgotPassword(params) {
+    await httpClient
+      .post('forgot-password', {
+        json: {
+          email: params.email,
+        },
+      })
+      .json();
 
-    return {};
+    return {
+      success: true,
+      redirectTo: 'login',
+      successNotification: {
+        message: 'Forgot Password',
+        description:
+          "We've sent you an email with instructions to reset your password.",
+      },
+    };
+  },
+
+  async updatePassword(params) {
+    console.log(
+      JSON.stringify({
+        password: params.password,
+        userId: params.userId,
+        token: params.token,
+      }),
+    );
+
+    await httpClient
+      .post('change-password', {
+        json: {
+          password: params.password,
+          userId: params.userId,
+          token: params.token,
+        },
+      })
+      .json();
+
+    return {
+      success: true,
+      redirectTo: '/login',
+      successNotification: {
+        message: 'Password Updated',
+        description:
+          'Your password has been successfully updated. You can now log in with your new credentials.',
+      },
+    };
+  },
+
+  async onError(error) {
+    return {
+      success: false,
+      error: {
+        name: 'Error',
+        message: error.message,
+      },
+    };
   },
 };

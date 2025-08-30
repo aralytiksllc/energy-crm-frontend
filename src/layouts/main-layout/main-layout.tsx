@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Button, Layout } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { useLogout } from '@refinedev/core';
 
 // Internal
 import AppSidebar from './main-sidebar';
@@ -17,6 +18,8 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   const { styles } = useStyles();
 
   const [collapsed, setCollapsed] = React.useState(false);
+
+  const { mutate, isLoading } = useLogout();
 
   const icon = collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />;
 
@@ -42,6 +45,10 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
               height: 64,
             }}
           />
+
+          <Button size="large" disabled={isLoading} onClick={() => mutate()}>
+            Logout
+          </Button>
         </Header>
         <Content className={styles.content}>{children}</Content>
       </Layout>
