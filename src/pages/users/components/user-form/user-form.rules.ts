@@ -43,10 +43,5 @@ export const rules: Partial<Record<keyof IUser, Rule[]>> = {
       message: 'Password must be at least 8 characters',
     },
   ],
-  passwordOptional: [
-    {
-      min: 8,
-      message: 'Password must be at least 8 characters',
-    },
-  ],
+
 };

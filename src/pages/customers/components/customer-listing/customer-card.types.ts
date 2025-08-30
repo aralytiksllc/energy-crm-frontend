@@ -1,7 +1,7 @@
 // External
 
 // Internal
-import type { ICustomer } from '@/interfaces';
+import type { ICustomer } from '@/interfaces/customers';
 
 export interface CustomerItemProps {
   customer: ICustomer;
