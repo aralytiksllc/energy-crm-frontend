@@ -1,17 +1,26 @@
-import { BaseRecord } from '@refinedev/core';
-import { IRole } from './role';
+// External
+import { IRole } from './roles';
 
-export interface IUser extends BaseRecord {
+export interface IUser {
+  id: number;
+
   firstName: string;
+
   lastName: string;
+
   email: string;
-  role: IRole;
-  roleId?: number;
+
   team: string;
+
   dateOfBirth?: Date;
+
   dateOfJoining?: Date;
+
   isActive?: boolean;
+
   password?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+
+  roleId?: number;
+
+  role: IRole;
 }

@@ -1,7 +1,7 @@
 // External
 
 // Internal
-import { Stage } from '@/interfaces/stage';
+import { Stage } from '@/interfaces/customers';
 
 export const StageLabels: Record<Stage, string> = {
   [Stage.LEAD]: 'Lead',

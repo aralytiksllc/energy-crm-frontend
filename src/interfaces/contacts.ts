@@ -1,7 +1,6 @@
 // External
 
 // Internal
-import { Nullable } from './common';
 import { ICustomer } from './customers';
 
 export enum ContactStatus {
@@ -14,11 +13,11 @@ export interface IContact {
 
   name: string;
 
-  type?: Nullable<string>;
+  type?: string;
 
-  role?: Nullable<string>;
+  role?: string;
 
-  phone?: Nullable<string>;
+  phone?: string;
 
   email: string;
 

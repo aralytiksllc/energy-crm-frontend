@@ -1,3 +1,6 @@
+// External
+
+// Internal
 import { IUser } from './users';
 
 export interface IAuthResponse {

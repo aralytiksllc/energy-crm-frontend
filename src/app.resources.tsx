@@ -43,4 +43,22 @@ export const resources: ResourceProps[] = [
     edit: '/contracts/:id',
     meta: { canDelete: true },
   },
+
+  {
+    name: 'roles',
+    identifier: 'roles',
+    list: '/roles',
+    create: '/roles/create',
+    edit: '/roles/:id/edit',
+    meta: { canDelete: true },
+  },
+
+  {
+    name: 'users',
+    identifier: 'users',
+    list: '/users',
+    create: '/users/create',
+    edit: '/users/:id/edit',
+    meta: { canDelete: true },
+  },
 ];

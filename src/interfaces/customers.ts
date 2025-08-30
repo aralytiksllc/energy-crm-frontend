@@ -1,42 +1,70 @@
-type Nullable<T> = T | null;
+// External
 
-export interface Branch {
-  // Primary & scalar fields
-  id: number;
-}
+// Internal
+import { IBranch } from './branches';
+import { IContract } from './contracts';
 
-export interface Contract {
-  // Primary & scalar fields
-  id: number;
+export enum Stage {
+  LEAD = 'LEAD',
+  QUALIFIED = 'QUALIFIED',
+  PROPOSAL = 'PROPOSAL',
+  NEGOTIATION = 'NEGOTIATION',
+  CLOSED_WON = 'CLOSED_WON',
+  CLOSED_LOST = 'CLOSED_LOST',
 }
 
 export interface ICustomer {
   id: number;
-  companyName: string;
-  registeredAddress: Nullable<string>;
-  legalNoticeEmail: Nullable<string>;
-  phone: Nullable<string>;
-  defaultOperationalEmail: Nullable<string>;
-  defaultEscalationEmail: Nullable<string>;
-  registrationNumber: Nullable<string>;
-  businessType: Nullable<string>;
-  registrationDate: Nullable<Date>;
-  registeredCapital: Nullable<number>;
-  companyStatus: Nullable<string>;
-  mainActivity: Nullable<string>;
-  legalId: Nullable<string>;
-  legalStatus: Nullable<string>;
-  companyCode: Nullable<string>;
-  companyType: Nullable<string>;
-  companyDescription: Nullable<string>;
-  cityRegion: Nullable<string>;
-  authorizedRepresentative: Nullable<string>;
-  companyRole: Nullable<string>;
-  sectorPrimary: Nullable<string>;
-  sectorSecondary: Nullable<string>;
-  clientStatus: Nullable<string>;
-  preferredCommunicationLanguage: Nullable<string>;
 
-  branches?: Branch[];
-  Contract?: Contract[];
+  companyName: string;
+
+  registeredAddress?: string;
+
+  legalNoticeEmail?: string;
+
+  phone?: string;
+
+  defaultOperationalEmail?: string;
+
+  defaultEscalationEmail?: string;
+
+  registrationNumber?: string;
+
+  businessType?: string;
+
+  registrationDate?: Date;
+
+  registeredCapital?: number;
+
+  companyStatus?: string;
+
+  mainActivity?: string;
+
+  legalId?: string;
+
+  legalStatus?: string;
+
+  companyCode?: string;
+
+  companyType?: string;
+
+  companyDescription?: string;
+
+  cityRegion?: string;
+
+  authorizedRepresentative?: string;
+
+  companyRole?: string;
+
+  sectorPrimary?: string;
+
+  sectorSecondary?: string;
+
+  clientStatus?: string;
+
+  preferredCommunicationLanguage?: string;
+
+  branches?: IBranch[];
+
+  Contract?: IContract[];
 }

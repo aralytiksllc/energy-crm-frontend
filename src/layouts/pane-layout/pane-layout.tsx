@@ -10,13 +10,13 @@ import { PaneLayoutProps } from './pane-layout.types';
 const { Sider, Content } = Layout;
 
 export const PaneLayout: React.FC<PaneLayoutProps> = (props) => {
-  const { sider, children } = props;
+  const { sider, children, siderWidth = 400 } = props;
 
   const { styles } = useStyles();
 
   return (
     <Layout className={styles.root}>
-      <Sider className={styles.sider} theme="light" width={400}>
+      <Sider className={styles.sider} theme="light" width={siderWidth}>
         {sider}
       </Sider>
       <Content className={styles.content}>

@@ -22,7 +22,7 @@ export const appConfig: RefineProps = {
     projectId: 'DLUNzF-hNHv7s-rovOa5',
     mutationMode: 'optimistic',
     title: {
-      icon: <LogoSvg width={24} height={24} fill="#000" />,
+      icon: null,
       text: 'MDA Energy',
     },
   },

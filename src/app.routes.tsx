@@ -1,7 +1,7 @@
 // External
 import * as React from 'react';
 import { Authenticated } from '@refinedev/core';
-import { NavigateToResource } from '@refinedev/react-router';
+import { CatchAllNavigate, NavigateToResource } from '@refinedev/react-router';
 import { Routes, Route, Outlet } from 'react-router';
 
 // Internal
@@ -31,20 +31,39 @@ import { ContractList } from './pages/contracts/contract-list';
 import { ContractCreate } from './pages/contracts/contract-create';
 import { ContractEdit } from './pages/contracts/contract-edit';
 
-import { UsersList } from './pages/users/users-list';
 import { Forecast } from './pages/forecast/forecast';
 import { CommingSoon } from './pages/comming-soon';
-import { GenerateContractPdf } from './pages/GenerateContractPdf';
+
+import UsersProfile from './pages/__users__/profile';
+
+import { PermissionsMatrix } from './pages/permissions';
+
+// Users
+import { UserList } from './pages/users/user-list';
+import { UserCreate } from './pages/users/user-create';
+import { UserEdit } from './pages/users/user-edit';
+
+// Roles
+import { RoleList } from './pages/roles/role-list';
+import { RoleCreate } from './pages/roles/role-create';
+import { RoleEdit } from './pages/roles/role-edit';
+import { ErrorComponent } from '@refinedev/antd';
 
 export type AppRoutesProps = {};
 
-export const AppRoutes: React.FC<AppRoutesProps> = () => (
+export const AppRoutes: React.FC = () => (
   <Routes>
+    {/* PROTECTED AREA */}
     <Route
       element={
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
+        <Authenticated
+          key="authenticated-inner"
+          fallback={<CatchAllNavigate to="/login" />}
+        >
+          <MainLayout>
+            <Outlet />
+          </MainLayout>
+        </Authenticated>
       }
     >
       <Route
@@ -95,20 +114,33 @@ export const AppRoutes: React.FC<AppRoutesProps> = () => (
           <Route index element={<ContractList />} />
           <Route path="create" element={<ContractCreate />} />
           <Route path=":id" element={<ContractEdit />} />
-          <Route path="/contracts/:id/generate-pdf" element={<GenerateContractPdf />} />
         </Route>
+
+        <Route path="/roles">
+          <Route index element={<RoleList />} />
+          <Route path="create" element={<RoleCreate />} />
+          <Route path=":id/edit" element={<RoleEdit />} />
+        </Route>
+
+        <Route path="/users">
+          <Route index element={<UserList />} />
+          <Route path="create" element={<UserCreate />} />
+          <Route path=":id/edit" element={<UserEdit />} />
+        </Route>
+
+        <Route path="/permissions" element={<PermissionsMatrix />} />
       </Route>
 
-      <Route path="/users" element={<UsersList />} />
       <Route path="/forecasting" element={<Forecast />} />
       <Route path="/consumptions" element={<CommingSoon />} />
       <Route path="/invoices" element={<CommingSoon />} />
       <Route path="/payments" element={<CommingSoon />} />
       <Route path="/reports" element={<CommingSoon />} />
       <Route path="/settings" element={<CommingSoon />} />
-      <Route path="/roles" element={<CommingSoon />} />
-      <Route path="/permissions" element={<CommingSoon />} />
+      <Route path="*" element={<ErrorComponent />} />
     </Route>
+
+    {/* PUBLIC AUTH PAGES */}
     <Route
       element={
         <Authenticated key="authenticated-outer" fallback={<Outlet />}>
@@ -120,6 +152,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = () => (
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/update-password/:token" element={<UpdatePassword />} />
+      <Route path="*" element={<ErrorComponent />} />
     </Route>
   </Routes>
 );
