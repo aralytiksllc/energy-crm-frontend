@@ -235,9 +235,7 @@ export const createDataProvider = (
       // Bëj kërkesën me fetch që të lexojmë headers + blob
       const res = await fetch(absUrl, {
         method: 'GET',
-        headers: (params as any).headers, // p.sh. { Authorization: `Bearer ${token}` }
-        // nëse përdor cookie-session, shto:
-        // credentials: 'include',
+        headers: { Authorization: `Bearer ${authStorage.get()}` },
       });
 
       if (!res.ok) {
