@@ -4,5 +4,5 @@
 
 export * from './consumption-form.types';
 export * from './consumption-form.rules';
-export * from './consumption-form.styles';
+export * from './document-form.styles';
 export * from './consumption-form';

@@ -11,7 +11,7 @@ import { useLatest } from '@/hooks/use-latest';
 import { rules } from './consumption-form.rules';
 import type { ConsumptionFormProps } from './consumption-form.types';
 import { RemoteSelect } from '@/components/remote-select';
-import { useStyles } from './consumption-form.styles';
+import { useStyles } from './document-form.styles';
 
 export const ConsumptionForm: React.FC<ConsumptionFormProps> = (props) => {
   const { formProps } = props;

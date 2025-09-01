@@ -97,29 +97,29 @@ export const createDataProvider = (
     ): Promise<CreateResponse<TData>> {
       const { resource, variables } = params;
       const url = `${resource}`;
-    
-      if (resource === "documents") {
+
+      if (resource === 'documents') {
         const v = (variables ?? {}) as any;
-    
+
         // AntD Upload → valuePropName="fileList"
         const file: File | undefined =
           Array.isArray(v.file) && v.file[0]?.originFileObj
             ? (v.file[0].originFileObj as File)
             : undefined;
-    
+
         if (!file) {
-          throw new Error("Please select a file before submitting.");
+          throw new Error('Please select a file before submitting.');
         }
-    
+
         const fd = new FormData();
-        fd.append("file", file); // EMËR -> përputhet me @AzureStorageFileInterceptor('file')
-        if (v.name) fd.append("name", String(v.name));
-        if (v.description) fd.append("description", String(v.description));
-        if (v.documentType) fd.append("documentType", String(v.documentType));
-        if (v.customerId != null) fd.append("customerId", String(v.customerId));
+        fd.append('file', file); // EMËR -> përputhet me @AzureStorageFileInterceptor('file')
+        if (v.name) fd.append('name', String(v.name));
+        if (v.description) fd.append('description', String(v.description));
+        if (v.documentType) fd.append('documentType', String(v.documentType));
+        if (v.customerId != null) fd.append('customerId', String(v.customerId));
 
         const res = await fetch(`${API_URL}/documents`, {
-          method: "POST",
+          method: 'POST',
           headers: { Authorization: `Bearer ${authStorage.get()}` },
           body: fd, // mos vendos Content-Type
         });
@@ -129,27 +129,28 @@ export const createDataProvider = (
         return { data };
       }
 
-      if (resource === "consumptions") {
+      if (resource === 'consumptions') {
         const v = (variables ?? {}) as any;
-    
+
         // AntD Upload → valuePropName="fileList"
         const file: File | undefined =
           Array.isArray(v.file) && v.file[0]?.originFileObj
             ? (v.file[0].originFileObj as File)
             : undefined;
-    
+
         if (!file) {
-          throw new Error("Please select a file before submitting.");
+          throw new Error('Please select a file before submitting.');
         }
-    
+
         const fd = new FormData();
-        fd.append("file", file);
-        if (v.meteringPointId) fd.append("meteringPointId", String(v.meteringPointId));
-        if (v.contractId) fd.append("contractId", String(v.contractId));
-        if (v.description) fd.append("description", String(v.description));
+        fd.append('file', file);
+        if (v.meteringPointId)
+          fd.append('meteringPointId', String(v.meteringPointId));
+        if (v.contractId) fd.append('contractId', String(v.contractId));
+        if (v.description) fd.append('description', String(v.description));
 
         const res = await fetch(`${API_URL}/consumptions`, {
-          method: "POST",
+          method: 'POST',
           headers: { Authorization: `Bearer ${authStorage.get()}` },
           body: fd, // mos vendos Content-Type
         });
@@ -158,9 +159,11 @@ export const createDataProvider = (
 
         return { data };
       }
-    
+
       // resurset e tjera → JSON normal
-      const response = await httpClient.post(url, { json: variables }).json<TData>();
+      const response = await httpClient
+        .post(url, { json: variables })
+        .json<TData>();
       return { data: response };
     },
 
@@ -219,13 +222,6 @@ export const createDataProvider = (
         );
       }
 
-      // Ndërto URL absolute: API_URL + params.url (pa // të dyfishtë)
-      const joinUrl = (base: string, p: string) =>
-        `${base.replace(/\/+$/, '')}/${String(p).replace(/^\/+/, '')}`;
-      const absUrl = /^https?:\/\//i.test(params.url)
-        ? params.url
-        : joinUrl(API_URL, params.url);
-
       // Për filename nga Content-Disposition
       const parseFilename = (cd?: string | null) => {
         const m = /filename\*?=(?:UTF-8'')?"?([^"]+)"?/i.exec(cd ?? '');
@@ -233,7 +229,7 @@ export const createDataProvider = (
       };
 
       // Bëj kërkesën me fetch që të lexojmë headers + blob
-      const res = await fetch(absUrl, {
+      const res = await fetch(`${API_URL}/${params.url}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${authStorage.get()}` },
       });
