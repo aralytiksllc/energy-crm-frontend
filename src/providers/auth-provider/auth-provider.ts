@@ -44,13 +44,16 @@ export const authProvider: AuthProvider = {
 
   async getIdentity() {
     const token = authStorage.get();
+
     if (!token) {
       return null;
     }
 
     try {
       const response = await httpClient.get('me');
+
       const data = await response.json<IUser>();
+
       return data;
     } catch (error) {
       return null;

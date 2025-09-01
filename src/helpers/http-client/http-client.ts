@@ -18,6 +18,10 @@ export const httpClient = ky.create({
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }
+
+        if (request.body instanceof FormData) {
+          request.headers.delete("content-type");
+        }
       },
     ],
 

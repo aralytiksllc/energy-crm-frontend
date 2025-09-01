@@ -24,8 +24,6 @@ import { ContactList } from './pages/contacts/contact-list';
 import { MeteringPointList } from './pages/metering-points/metering-point-list';
 import { MeteringPointCreate } from './pages/metering-points/metering-point-create';
 import { MeteringPointEdit } from './pages/metering-points/metering-point-edit';
-import { ConsumptionList } from './pages/consumption/consumption-list';
-import { DocumentsList } from './pages/documents/documents-list';
 
 import { ContractList } from './pages/contracts/contract-list';
 import { ContractCreate } from './pages/contracts/contract-create';
@@ -33,8 +31,6 @@ import { ContractEdit } from './pages/contracts/contract-edit';
 
 import { Forecast } from './pages/forecast/forecast';
 import { CommingSoon } from './pages/comming-soon';
-
-import UsersProfile from './pages/__users__/profile';
 
 import { PermissionsMatrix } from './pages/permissions';
 
@@ -48,6 +44,15 @@ import { RoleList } from './pages/roles/role-list';
 import { RoleCreate } from './pages/roles/role-create';
 import { RoleEdit } from './pages/roles/role-edit';
 import { ErrorComponent } from '@refinedev/antd';
+
+// Documents
+import { DocumentList } from './pages/documents/document-list';
+import { DocumentCreate } from './pages/documents/document-create';
+import { DocumentEdit } from './pages/documents/document-edit';
+
+import { ConsumptionList } from './pages/consumptions2/consumption-list';
+import { ConsumptionCreate } from './pages/consumptions2/consumption-create';
+import { ConsumptionEdit } from './pages/consumptions2/consumption-edit';
 
 export type AppRoutesProps = {};
 
@@ -91,15 +96,15 @@ export const AppRoutes: React.FC = () => (
           <Route path="create" element={<MeteringPointCreate />} />
           <Route path=":id" element={<MeteringPointEdit />} />
         </Route>
-        <Route path=":customerId/consumption">
+        <Route path=":customerId/consumptions">
           <Route index element={<ConsumptionList />} />
-          <Route path="create" element={<CommingSoon />} />
-          <Route path=":consumptionId" element={<CommingSoon />} />
+          <Route path="create" element={<ConsumptionCreate />} />
+          <Route path=":id" element={<ConsumptionEdit />} />
         </Route>
         <Route path=":customerId/documents">
-          <Route index element={<DocumentsList />} />
-          <Route path="create" element={<CommingSoon />} />
-          <Route path=":documentId" element={<CommingSoon />} />
+          <Route index element={<DocumentList />} />
+          <Route path="create" element={<DocumentCreate />} />
+          <Route path=":id" element={<DocumentEdit />} />
         </Route>
       </Route>
 
@@ -148,7 +153,6 @@ export const AppRoutes: React.FC = () => (
         </Authenticated>
       }
     >
-      <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/update-password" element={<UpdatePassword />} />

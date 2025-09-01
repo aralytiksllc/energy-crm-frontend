@@ -40,7 +40,7 @@ export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
         delaySearch={true}
         allowClear={true}
       />
-      <Form layout="vertical">
+      {/* <Form layout="vertical">
         <Form.Item label="Filter by Stage:" name="stage">
           <Select
             options={stageOptions}
@@ -50,7 +50,7 @@ export const CustomerFilter: React.FC<CustomerFilterProps> = (props) => {
             }}
           />
         </Form.Item>
-      </Form>
+      </Form> */}
     </Space>
   );
 };

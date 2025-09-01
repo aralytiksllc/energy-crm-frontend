@@ -35,6 +35,25 @@ export const resources: ResourceProps[] = [
     edit: '/customers/:customerId/metering-points/:id',
     meta: { canDelete: true },
   },
+
+  {
+    name: 'documents',
+    identifier: 'documents',
+    list: '/customers/:customerId/documents',
+    create: '/customers/:customerId/documents/create',
+    edit: '/customers/:customerId/documents/:id',
+    meta: { canDelete: true },
+  },
+
+  {
+    name: 'consumptions',
+    identifier: 'consumptions',
+    list: '/customers/:customerId/consumptions',
+    create: '/customers/:customerId/consumptions/create',
+    edit: '/customers/:customerId/consumptions/:id',
+    meta: { canDelete: true },
+  },
+
   {
     name: 'contracts',
     identifier: 'contracts',

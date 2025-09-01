@@ -5,6 +5,8 @@ import { AuthPage } from '@refinedev/antd';
 
 export type LoginProps = {};
 
+const registerLink = <></>;
+
 export const Login: React.FC<LoginProps> = () => {
-  return <AuthPage type="login" />;
+  return <AuthPage type="login" registerLink={registerLink} />;
 };

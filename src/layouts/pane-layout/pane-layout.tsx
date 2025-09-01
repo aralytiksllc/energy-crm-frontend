@@ -58,8 +58,8 @@ export const AppNav = () => {
       disabled: !customerId,
     },
     {
-      key: `/customers/${customerId}/consumption`,
-      label: 'Consumption',
+      key: `/customers/${customerId}/consumptions`,
+      label: 'Consumptions',
       disabled: !customerId,
     },
     {

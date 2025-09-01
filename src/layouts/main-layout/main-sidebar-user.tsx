@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Avatar, Typography, Dropdown } from 'antd';
+import { Card, Typography, Dropdown } from 'antd';
 import {
   UserOutlined,
   CreditCardOutlined,
@@ -7,6 +7,10 @@ import {
   MoreOutlined,
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
+import { useLogout } from '@refinedev/core';
+import { useGetIdentity } from '@refinedev/core';
+import { IUser } from '@/interfaces/users';
+import { Avatar } from '@/components/avatar';
 
 const { Text } = Typography;
 
@@ -89,38 +93,51 @@ export const MainSidebarUser: React.FC<SidebarUserCardProps> = ({
 }) => {
   const { styles, cx } = useStyles();
 
+  const { mutate, isLoading } = useLogout();
+
+  const { data: identity } = useGetIdentity<IUser>();
+
+  const name = `${identity?.firstName} ${identity?.lastName}`;
+
+  const items: any[] = [
+    {
+      key: 'user-info',
+      label: (
+        <div className={styles.menuUserInfo}>
+          <Avatar name={name} size={40} />
+          <div>
+            <Text strong>{name}</Text>
+            <br />
+            <Text type="secondary" className={styles.menuEmail}>
+              {identity?.email}
+            </Text>
+          </div>
+        </div>
+      ),
+    },
+    { type: 'divider' },
+    { key: 'account', icon: <UserOutlined />, label: 'Account' },
+    { key: 'billing', icon: <CreditCardOutlined />, label: 'Billing' },
+    {
+      key: 'notifications',
+      icon: <BellOutlined />,
+      label: 'Notifications',
+    },
+    { type: 'divider' },
+    { key: 'logout', danger: true, label: 'Log out' },
+  ];
+
   return (
     <Dropdown
       placement="topLeft"
       trigger={['click']}
       menu={{
-        items: [
-          {
-            key: 'user-info',
-            label: (
-              <div className={styles.menuUserInfo}>
-                <Avatar src="https://i.pravatar.cc/100" size={40} />
-                <div>
-                  <Text strong>shadcn</Text>
-                  <br />
-                  <Text type="secondary" className={styles.menuEmail}>
-                    m@example.com
-                  </Text>
-                </div>
-              </div>
-            ),
-          },
-          { type: 'divider' },
-          { key: 'account', icon: <UserOutlined />, label: 'Account' },
-          { key: 'billing', icon: <CreditCardOutlined />, label: 'Billing' },
-          {
-            key: 'notifications',
-            icon: <BellOutlined />,
-            label: 'Notifications',
-          },
-          { type: 'divider' },
-          { key: 'logout', danger: true, label: 'Log out' },
-        ],
+        items,
+        onClick: ({ key }) => {
+          if (key === 'logout' && !isLoading) {
+            mutate();
+          }
+        },
       }}
     >
       <Card size="small" className={styles.card}>
@@ -130,15 +147,15 @@ export const MainSidebarUser: React.FC<SidebarUserCardProps> = ({
             collapsed ? styles.rowCollapsed : styles.rowExpanded,
           )}
         >
-          <Avatar src="https://i.pravatar.cc/100" size={collapsed ? 32 : 40} />
+          <Avatar name={name} size={collapsed ? 32 : 40} />
 
           <div className={cx(styles.info, collapsed && styles.infoCollapsed)}>
             <Text strong ellipsis>
-              shadcn
+              {identity?.firstName} {identity?.lastName}
             </Text>
             <br />
             <Text type="secondary" ellipsis className={styles.emailInline}>
-              m@example.com
+              {identity?.email}
             </Text>
           </div>
 

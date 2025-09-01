@@ -20,6 +20,7 @@ import { API_URL } from '@/helpers/http-client/http-constants';
 import { httpClient } from '@/helpers/http-client/http-client';
 import { dataHelper } from './data-helper';
 import { urls, resolveUrl } from './urls';
+import { authStorage } from '@/helpers/auth-storage';
 
 export const createDataProvider = (
   resources: ResourceProps[],
@@ -94,17 +95,73 @@ export const createDataProvider = (
     async create<TData extends BaseRecord, TVariables>(
       params: CreateParams<TVariables>,
     ): Promise<CreateResponse<TData>> {
-      const url = `${params.resource}`;
+      const { resource, variables } = params;
+      const url = `${resource}`;
+    
+      if (resource === "documents") {
+        const v = (variables ?? {}) as any;
+    
+        // AntD Upload → valuePropName="fileList"
+        const file: File | undefined =
+          Array.isArray(v.file) && v.file[0]?.originFileObj
+            ? (v.file[0].originFileObj as File)
+            : undefined;
+    
+        if (!file) {
+          throw new Error("Please select a file before submitting.");
+        }
+    
+        const fd = new FormData();
+        fd.append("file", file); // EMËR -> përputhet me @AzureStorageFileInterceptor('file')
+        if (v.name) fd.append("name", String(v.name));
+        if (v.description) fd.append("description", String(v.description));
+        if (v.documentType) fd.append("documentType", String(v.documentType));
+        if (v.customerId != null) fd.append("customerId", String(v.customerId));
 
-      const response = await httpClient
-        .post(url, {
-          json: params.variables,
-        })
-        .json<TData>();
+        const res = await fetch(`${API_URL}/documents`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${authStorage.get()}` },
+          body: fd, // mos vendos Content-Type
+        });
 
-      return {
-        data: response,
-      };
+        const data = await res.json();
+
+        return { data };
+      }
+
+      if (resource === "consumptions") {
+        const v = (variables ?? {}) as any;
+    
+        // AntD Upload → valuePropName="fileList"
+        const file: File | undefined =
+          Array.isArray(v.file) && v.file[0]?.originFileObj
+            ? (v.file[0].originFileObj as File)
+            : undefined;
+    
+        if (!file) {
+          throw new Error("Please select a file before submitting.");
+        }
+    
+        const fd = new FormData();
+        fd.append("file", file);
+        if (v.meteringPointId) fd.append("meteringPointId", String(v.meteringPointId));
+        if (v.contractId) fd.append("contractId", String(v.contractId));
+        if (v.description) fd.append("description", String(v.description));
+
+        const res = await fetch(`${API_URL}/consumptions`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${authStorage.get()}` },
+          body: fd, // mos vendos Content-Type
+        });
+
+        const data = await res.json();
+
+        return { data };
+      }
+    
+      // resurset e tjera → JSON normal
+      const response = await httpClient.post(url, { json: variables }).json<TData>();
+      return { data: response };
     },
 
     async update<TData extends BaseRecord, TVariables>(

@@ -19,8 +19,6 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
 
   const [collapsed, setCollapsed] = React.useState(false);
 
-  const { mutate, isLoading } = useLogout();
-
   const icon = collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />;
 
   const handleToggle = React.useCallback(
@@ -46,9 +44,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
             }}
           />
 
-          <Button size="large" disabled={isLoading} onClick={() => mutate()}>
-            Logout
-          </Button>
+
         </Header>
         <Content className={styles.content}>{children}</Content>
       </Layout>
