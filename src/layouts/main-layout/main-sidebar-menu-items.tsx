@@ -11,6 +11,7 @@ import {
   UserOutlined,
   SafetyOutlined,
   KeyOutlined,
+  DashboardOutlined,
 } from '@ant-design/icons';
 import { useMenu } from '@refinedev/core';
 
@@ -33,6 +34,11 @@ export const MainSidebarMenuItems: React.FC<Props> = ({
         </Text>
       ),
       children: [
+        {
+          key: '/',
+          icon: <DashboardOutlined />,
+          label: <Link to="/">Dashboard</Link>,
+        },
         {
           key: '/customers',
           icon: <TeamOutlined />,

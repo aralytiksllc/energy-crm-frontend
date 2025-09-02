@@ -54,6 +54,8 @@ import { ConsumptionList } from './pages/consumptions2/consumption-list';
 import { ConsumptionCreate } from './pages/consumptions2/consumption-create';
 import { ConsumptionEdit } from './pages/consumptions2/consumption-edit';
 
+import EnergyDashboard from './EnergyDashboard';
+
 export type AppRoutesProps = {};
 
 export const AppRoutes: React.FC = () => (
@@ -136,6 +138,8 @@ export const AppRoutes: React.FC = () => (
         <Route path="/permissions" element={<PermissionsMatrix />} />
       </Route>
 
+      <Route path="/" element={<EnergyDashboard />} />
+
       <Route path="/forecasting" element={<Forecast />} />
       <Route path="/consumptions" element={<CommingSoon />} />
       <Route path="/invoices" element={<CommingSoon />} />
@@ -143,6 +147,7 @@ export const AppRoutes: React.FC = () => (
       <Route path="/reports" element={<CommingSoon />} />
       <Route path="/settings" element={<CommingSoon />} />
       <Route path="*" element={<ErrorComponent />} />
+      
     </Route>
 
     {/* PUBLIC AUTH PAGES */}

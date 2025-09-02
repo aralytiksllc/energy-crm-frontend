@@ -80,4 +80,11 @@ export const resources: ResourceProps[] = [
     edit: '/users/:id/edit',
     meta: { canDelete: true },
   },
+
+  {
+    name: 'dashboard',
+    identifier: 'dashboard',
+    list: '/',
+    meta: { canDelete: true },
+  },
 ];
