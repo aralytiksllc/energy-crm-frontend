@@ -30,7 +30,7 @@ export const MainSidebarMenuItems: React.FC<Props> = ({
       key: 'main-menu',
       label: collapsed ? null : (
         <Text type="secondary" style={{ fontSize: 12 }}>
-          Main Manu
+          Main Menu
         </Text>
       ),
       children: [
